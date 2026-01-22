@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Segoe UI',
+    'Meiryo',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* フォーカス可視化（A11y） */
+:focus-visible {
+  outline: 2px solid theme('colors.amber.400');
+  outline-offset: 2px;
+}
+
+/* スクロールバーのスタイル（Windows向け） */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: theme('colors.zinc.800');
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.zinc.600');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.zinc.500');
+}
