@@ -46,7 +46,7 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
   {
     pattern: /(\d+)\s*日間?/,
     toMinutes: (match) => {
-      const days = parseInt(match[1] ?? '0', 10)
+      const days = parseInt(match[1]!, 10)
       return days * 24 * 60
     },
   },
@@ -54,7 +54,7 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
   {
     pattern: /(\d+)\s*時間/,
     toMinutes: (match) => {
-      const hours = parseInt(match[1] ?? '0', 10)
+      const hours = parseInt(match[1]!, 10)
       return hours * 60
     },
   },
@@ -62,8 +62,7 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
   {
     pattern: /([一二三四五六七八九十]+)\s*時間/,
     toMinutes: (match) => {
-      const kanjiNum = match[1] ?? ''
-      const hours = kanjiToNumber(kanjiNum)
+      const hours = kanjiToNumber(match[1]!)
       return hours * 60
     },
   },
@@ -102,9 +101,9 @@ function parseJapaneseDate(text: string): string | null {
     return null
   }
 
-  const year = Number.parseInt(match[1] ?? '', 10)
-  const month = Number.parseInt(match[2] ?? '', 10)
-  const day = Number.parseInt(match[3] ?? '', 10)
+  const year = Number.parseInt(match[1]!, 10)
+  const month = Number.parseInt(match[2]!, 10)
+  const day = Number.parseInt(match[3]!, 10)
 
   if (!isValidDateParts(year, month, day)) {
     return null
@@ -148,12 +147,12 @@ function extractPromoCodes(text: string): string[] {
 function findInputDeadline(lines: string[], codeIndex: number): string | null {
   // コードの前後の行から「入力期限」を含む行を探す
   const searchRange = 10
+  const deadlineRegex = /(入力期限|有効期限|期限)/
 
   for (let i = Math.max(0, codeIndex - searchRange); i < lines.length && i <= codeIndex + searchRange; i++) {
-    const line = lines[i]
-    if (line === undefined) continue
+    const line = lines[i] ?? ''
 
-    if (line.includes('入力期限') || line.includes('有効期限') || line.includes('期限')) {
+    if (deadlineRegex.test(line)) {
       // 同じ行または次の行から日付を抽出
       const dateFromSameLine = parseJapaneseDate(line)
       if (dateFromSameLine) {
@@ -161,20 +160,16 @@ function findInputDeadline(lines: string[], codeIndex: number): string | null {
       }
 
       // 次の行をチェック
-      const nextLine = lines[i + 1]
-      if (nextLine) {
-        const dateFromNextLine = parseJapaneseDate(nextLine)
-        if (dateFromNextLine) {
-          return dateFromNextLine
-        }
+      const nextLine = lines[i + 1] ?? ''
+      const dateFromNextLine = parseJapaneseDate(nextLine)
+      if (dateFromNextLine) {
+        return dateFromNextLine
       }
     }
   }
 
   // 見出しが見つからない場合、テキスト全体から日付を探す
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    if (line === undefined) continue
+  for (const line of lines) {
     const date = parseJapaneseDate(line)
     if (date) {
       return date
@@ -190,13 +185,13 @@ function findInputDeadline(lines: string[], codeIndex: number): string | null {
 function findValidityDuration(lines: string[], codeIndex: number): number | null {
   // コードの前後の行から「データ使い放題」などの見出しを探す
   const searchRange = 10
+  const validTitleRegex = /(データ使い放題|使い放題)/
 
   for (let i = Math.max(0, codeIndex - searchRange); i < lines.length && i <= codeIndex + searchRange; i++) {
-    const line = lines[i]
-    if (line === undefined) continue
+    const line = lines[i] ?? ''
 
     // 「データ使い放題」「○日間」「○時間」を含む行
-    if (line.includes('データ使い放題') || line.includes('使い放題')) {
+    if (validTitleRegex.test(line)) {
       const duration = extractValidityDuration(line)
       if (duration !== null) {
         return duration
@@ -274,7 +269,7 @@ export function parseEmailForRegistration(text: string): {
       codes,
     }
   } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : '不明なエラー'
+    const errorMessage = String(e)
     return {
       success: false,
       codes: [],
@@ -291,9 +286,9 @@ export function parseDateInput(input: string): string | null {
   // ISO 8601形式（YYYY-MM-DD）
   const isoMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(input)
   if (isoMatch) {
-    const year = Number.parseInt(isoMatch[1] ?? '', 10)
-    const month = Number.parseInt(isoMatch[2] ?? '', 10)
-    const day = Number.parseInt(isoMatch[3] ?? '', 10)
+    const year = Number.parseInt(isoMatch[1]!, 10)
+    const month = Number.parseInt(isoMatch[2]!, 10)
+    const day = Number.parseInt(isoMatch[3]!, 10)
 
     if (!isValidDateParts(year, month, day)) {
       return null
@@ -307,9 +302,9 @@ export function parseDateInput(input: string): string | null {
   // YYYY/MM/DD形式
   const slashMatch = /^(\d{4})\/(\d{1,2})\/(\d{1,2})/.exec(input)
   if (slashMatch) {
-    const year = Number.parseInt(slashMatch[1] ?? '', 10)
-    const month = Number.parseInt(slashMatch[2] ?? '', 10)
-    const day = Number.parseInt(slashMatch[3] ?? '', 10)
+    const year = Number.parseInt(slashMatch[1]!, 10)
+    const month = Number.parseInt(slashMatch[2]!, 10)
+    const day = Number.parseInt(slashMatch[3]!, 10)
 
     if (!isValidDateParts(year, month, day)) {
       return null

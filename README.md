@@ -24,12 +24,15 @@ povo 2.0のプロモコードを管理するWindows 11向けデスクトップ�
 
 ### 前提条件
 
-- Node.js 22以上
-- pnpm 10以上
+- Node.js 22以上（LTS）
+- pnpm 10以上（Corepackで有効化）
 
 ### セットアップ
 
 ```bash
+# Corepack有効化
+corepack enable
+
 # 依存パッケージのインストール
 pnpm install
 
@@ -70,6 +73,21 @@ pnpm build
 # Windowsインストーラー作成
 pnpm build:win
 ```
+
+## 環境変数
+
+現在は必須の環境変数はありません。必要になった場合は `.env.example` を用意し、
+`dotenv-safe` で検証します。
+
+## 運用・デプロイ
+
+- Windows向けの配布物は `pnpm build:win` で作成します
+- 生成物は `dist/`（electron-builderの出力先）に配置されます
+
+## トラブルシュート
+
+- アプリログ: `app.getPath('userData')\logs\app.log`（通常は `%APPDATA%\povo-promo-code-notify\logs\app.log`）
+- 画面が起動しない場合はログを確認し、`pnpm build` と `pnpm test` を再実行してください
 
 ## ディレクトリ構造
 

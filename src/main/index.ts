@@ -3,11 +3,26 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell } from 'electron'
 import { registerIpcHandlers } from './ipc-handlers'
 import {
+  configureObservability,
+  createTraceId,
+  logEvent,
+  setupProcessErrorHandlers,
+} from './observability'
+import {
   getAllCodes,
   getNotificationSettings,
   startNotificationScheduler,
   stopNotificationScheduler,
 } from './services'
+
+configureObservability({ logLevel: 'info' })
+setupProcessErrorHandlers()
+
+logEvent({
+  level: 'info',
+  message: 'app:boot',
+  traceId: createTraceId(),
+})
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -31,16 +46,37 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url).catch(console.error)
+    shell.openExternal(details.url).catch((error) => {
+      logEvent({
+        level: 'error',
+        message: 'window:openExternal:failed',
+        traceId: createTraceId(),
+        context: { error: error instanceof Error ? error.message : String(error) },
+      })
+    })
     return { action: 'deny' }
   })
 
   // HMR for renderer based on electron-vite CLI
   // Load the remote URL for development or the local html file for production
   if (is.dev && process.env['ELECTRON_RENDERER_URL'] !== undefined) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']).catch(console.error)
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']).catch((error) => {
+      logEvent({
+        level: 'error',
+        message: 'window:loadURL:failed',
+        traceId: createTraceId(),
+        context: { error: error instanceof Error ? error.message : String(error) },
+      })
+    })
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html')).catch(console.error)
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html')).catch((error) => {
+      logEvent({
+        level: 'error',
+        message: 'window:loadFile:failed',
+        traceId: createTraceId(),
+        context: { error: error instanceof Error ? error.message : String(error) },
+      })
+    })
   }
 }
 
@@ -91,6 +127,11 @@ function initNotificationScheduler(): void {
     const settings = getNotificationSettings()
     startNotificationScheduler(codes, settings)
   } catch (error) {
-    console.error('通知スケジューラーの初期化に失敗:', error)
+    logEvent({
+      level: 'error',
+      message: 'scheduler:init:failed',
+      traceId: createTraceId(),
+      context: { error: error instanceof Error ? error.message : String(error) },
+    })
   }
 }

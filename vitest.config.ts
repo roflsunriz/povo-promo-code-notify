@@ -28,10 +28,7 @@ export default defineConfig({
       ],
       thresholds: {
         lines: 90,
-        // branches は防御的コード（noUncheckedIndexedAccess 対応）やエラーハンドリングにより
-        // 90% 達成が困難なため、85% を閾値とする
-        // 未カバー分岐: email-parser.ts の catch ブロック、coverage.ts/next-candidate.ts の null チェック
-        branches: 85,
+        branches: 90,
         functions: 90,
         statements: 90,
       },

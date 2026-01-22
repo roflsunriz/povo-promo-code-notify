@@ -245,6 +245,18 @@ UL1H97X3CKAR6
         expect(result[0]?.validityDurationMinutes).toBe(20160) // 14 * 24 * 60
       })
 
+      it('見出しに期間がない場合は別行の期間を採用すること', () => {
+        const text = `
+データ使い放題ボーナス
+UL1H97X3CKAR6
+有効: 3日間
+        `
+        const result = parseEmailText(text)
+
+        expect(result).toHaveLength(1)
+        expect(result[0]?.validityDurationMinutes).toBe(4320) // 3 * 24 * 60
+      })
+
       it('有効期間パターンがない場合はデフォルト7日間になること', () => {
         const text = 'UL1H97X3CKAR6'
         const result = parseEmailText(text)
@@ -340,6 +352,15 @@ MNOPQR345678
       expect(result.success).toBe(true)
       expect(result.codes).toHaveLength(3)
     })
+
+    it('不正な入力で例外が発生してもエラーを返すこと', () => {
+      const invalidInput = null as unknown as string
+      const result = parseEmailForRegistration(invalidInput)
+
+      expect(result.success).toBe(false)
+      expect(result.codes).toHaveLength(0)
+      expect(result.error).toContain('解析エラー')
+    })
   })
 
   describe('parseDateInput', () => {
@@ -420,6 +441,30 @@ MNOPQR345678
         const result = parseDateInput('2026年2月30日')
 
         expect(result).toBeNull()
+      })
+
+      it('範囲外の月はnullを返すこと（ISO）', () => {
+        expect(parseDateInput('2026-00-10')).toBeNull()
+        expect(parseDateInput('2026-13-10')).toBeNull()
+      })
+
+      it('範囲外の月はnullを返すこと（スラッシュ）', () => {
+        expect(parseDateInput('2026/0/10')).toBeNull()
+        expect(parseDateInput('2026/13/10')).toBeNull()
+      })
+
+      it('範囲外の月はnullを返すこと（日本語）', () => {
+        expect(parseDateInput('2026年0月10日')).toBeNull()
+        expect(parseDateInput('2026年13月10日')).toBeNull()
+      })
+
+      it('範囲外の日はnullを返すこと', () => {
+        expect(parseDateInput('2026-01-00')).toBeNull()
+        expect(parseDateInput('2026-01-32')).toBeNull()
+        expect(parseDateInput('2026/1/0')).toBeNull()
+        expect(parseDateInput('2026/1/32')).toBeNull()
+        expect(parseDateInput('2026年1月0日')).toBeNull()
+        expect(parseDateInput('2026年1月32日')).toBeNull()
       })
     })
   })

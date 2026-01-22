@@ -16,14 +16,19 @@ const isoDateTimeString = z.string().refine(
   { message: '有効なISO 8601形式の日時文字列を入力してください' }
 )
 
+export const IsoDateTimeStringSchema = isoDateTimeString
+
 /**
  * プロモコード文字列のバリデーション
  * 英数字のみ、空でない
  */
 const promoCodeString = z
   .string()
+  .trim()
   .min(1, 'プロモコードは必須です')
   .regex(/^[A-Za-z0-9]+$/, 'プロモコードは英数字のみ使用できます')
+
+export const PromoCodeIdSchema = z.string().uuid('内部IDはUUID形式である必要があります')
 
 /**
  * 有効期間（分単位）のバリデーション
@@ -52,7 +57,7 @@ export const CodeStatusSchema = z.enum(['unused', 'active', 'consumed', 'expired
  * プロモコードエンティティスキーマ
  */
 export const PromoCodeSchema = z.object({
-  id: z.string().uuid('内部IDはUUID形式である必要があります'),
+  id: PromoCodeIdSchema,
   order: orderNumber,
   code: promoCodeString,
   inputDeadline: isoDateTimeString,

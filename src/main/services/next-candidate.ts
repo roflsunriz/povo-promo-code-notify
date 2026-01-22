@@ -26,13 +26,6 @@ export function getNextCandidate(
   // 未使用のコードを取得（期限切れは含まれない）
   const unusedCodes = getUnusedCodes(codes, now)
 
-  if (unusedCodes.length === 0) {
-    return {
-      hasCandidate: false,
-      candidate: null,
-    }
-  }
-
   // 登録順序（order）でソートし、同順位の場合は内部ID（id）でソート
   const sortedCodes = [...unusedCodes].sort((a, b) => {
     if (a.order !== b.order) {
@@ -42,11 +35,9 @@ export function getNextCandidate(
     return a.id.localeCompare(b.id)
   })
 
-  const candidate = sortedCodes[0]
+  const candidate = sortedCodes[0] ?? null
 
-  // sortedCodes.length > 0 なので candidate は undefined にならないが、
-  // TypeScript の noUncheckedIndexedAccess のため明示的にチェック
-  if (candidate === undefined) {
+  if (candidate === null) {
     return {
       hasCandidate: false,
       candidate: null,
