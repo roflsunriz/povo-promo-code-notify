@@ -15,6 +15,18 @@ import {
   stopNotificationScheduler
 } from './services'
 
+/**
+ * Get the application icon path based on environment
+ */
+function getIconPath(): string {
+  if (is.dev) {
+    // Development: use resources folder in project root
+    return join(app.getAppPath(), 'resources', 'icon.ico')
+  }
+  // Production: use resources folder in packaged app
+  return join(process.resourcesPath, 'icon.ico')
+}
+
 /** システムトレイインスタンス */
 let tray: Tray | null = null
 /** メインウィンドウインスタンス */
@@ -40,6 +52,7 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     title: 'povo プロモコード管理',
+    icon: getIconPath(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -96,18 +109,16 @@ function createWindow(): void {
 }
 
 /**
- * システムトレイを作成
+ * Create system tray
  */
 function createTray(): void {
-  // 開発環境ではアイコンがない場合があるため、アイコンなしでも動作するようにする
-  // 本番環境では適切なアイコンを設定する
   try {
-    // 16x16のシンプルなアイコンを作成（オレンジ色の四角）
-    const iconDataUrl =
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAM0lEQVQ4T2NkYGD4z0ABYBw1YDQMGBgYGP6TYwA+lzOQawA+/aMGjIYBIwMDA/l+GAoAAHCWBBF0M5WeAAAAAElFTkSuQmCC'
-    const icon = nativeImage.createFromDataURL(iconDataUrl)
+    const iconPath = getIconPath()
+    const icon = nativeImage.createFromPath(iconPath)
+    // Resize for tray (16x16 or 32x32 recommended for Windows)
+    const trayIcon = icon.resize({ width: 16, height: 16 })
 
-    tray = new Tray(icon)
+    tray = new Tray(trayIcon)
     tray.setToolTip('povo プロモコード管理')
 
     const contextMenu = Menu.buildFromTemplate([
