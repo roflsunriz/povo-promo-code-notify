@@ -22,13 +22,13 @@ const variantClasses: Record<ButtonVariant, string> = {
   danger:
     'bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-400 disabled:bg-red-600/50',
   ghost:
-    'bg-transparent text-zinc-300 hover:bg-zinc-800 focus-visible:ring-zinc-500 disabled:text-zinc-500',
+    'bg-transparent text-zinc-300 hover:bg-zinc-800 focus-visible:ring-zinc-500 disabled:text-zinc-500'
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
   sm: 'px-3 py-1.5 text-sm',
   md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
+  lg: 'px-6 py-3 text-lg'
 }
 
 export function Button({

@@ -57,7 +57,7 @@ function formatDateTime(isoString: string | null): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    weekday: 'short',
+    weekday: 'short'
   })
 }
 
@@ -77,7 +77,8 @@ function maskCode(code: string): string {
 function ActiveCodeCard({ code }: { code: PromoCodeWithStatus }): JSX.Element {
   const expiresAt = code.expiresAt ? new Date(code.expiresAt) : null
   const remainingMs = expiresAt ? expiresAt.getTime() - Date.now() : null
-  const remainingMinutes = remainingMs !== null ? Math.max(0, Math.floor(remainingMs / (1000 * 60))) : null
+  const remainingMinutes =
+    remainingMs !== null ? Math.max(0, Math.floor(remainingMs / (1000 * 60))) : null
 
   return (
     <div className="flex items-center justify-between p-3 bg-zinc-700/50 rounded-lg">
@@ -88,9 +89,7 @@ function ActiveCodeCard({ code }: { code: PromoCodeWithStatus }): JSX.Element {
       <div className="text-right">
         <div className="text-sm text-zinc-400">有効期限</div>
         <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
-        <div className="text-sm text-amber-400">
-          残り {formatRemainingTime(remainingMinutes)}
-        </div>
+        <div className="text-sm text-amber-400">残り {formatRemainingTime(remainingMinutes)}</div>
       </div>
     </div>
   )
@@ -167,9 +166,7 @@ export function OverviewTab(): JSX.Element {
 
             <div>
               <div className="text-sm text-zinc-400">カバレッジ終端</div>
-              <div className="text-lg text-zinc-200">
-                {formatDateTime(coverage.coverageEndAt)}
-              </div>
+              <div className="text-lg text-zinc-200">{formatDateTime(coverage.coverageEndAt)}</div>
             </div>
 
             {coverage.hasGap && coverage.gapStartAt && (

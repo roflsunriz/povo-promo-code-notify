@@ -16,8 +16,8 @@ test.beforeAll(async () => {
     args: [path.join(__dirname, '../out/main/index.js')],
     env: {
       ...process.env,
-      NODE_ENV: 'test',
-    },
+      NODE_ENV: 'test'
+    }
   })
 
   // 最初のウィンドウを取得

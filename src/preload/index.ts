@@ -32,14 +32,13 @@ import type {
   UpdateNotificationSettingsRequest,
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
-  UpdateOrdersResponse,
+  UpdateOrdersResponse
 } from '../types/ipc'
 
 // Custom APIs for renderer
 const api = {
   // コード操作
-  getAllCodes: (): Promise<GetAllCodesResponse> =>
-    ipcRenderer.invoke(IPC_CHANNELS.GET_ALL_CODES),
+  getAllCodes: (): Promise<GetAllCodesResponse> => ipcRenderer.invoke(IPC_CHANNELS.GET_ALL_CODES),
 
   createCode: (request: CreateCodeRequest): Promise<CreateCodeResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.CREATE_CODE, request),
@@ -64,15 +63,13 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.EDIT_STARTED_AT, request),
 
   // カバレッジ・候補
-  getCoverage: (): Promise<GetCoverageResponse> =>
-    ipcRenderer.invoke(IPC_CHANNELS.GET_COVERAGE),
+  getCoverage: (): Promise<GetCoverageResponse> => ipcRenderer.invoke(IPC_CHANNELS.GET_COVERAGE),
 
   getNextCandidate: (): Promise<GetNextCandidateResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.GET_NEXT_CANDIDATE),
 
   // ダッシュボード
-  getDashboard: (): Promise<GetDashboardResponse> =>
-    ipcRenderer.invoke(IPC_CHANNELS.GET_DASHBOARD),
+  getDashboard: (): Promise<GetDashboardResponse> => ipcRenderer.invoke(IPC_CHANNELS.GET_DASHBOARD),
 
   // フィルター付き取得
   getFilteredCodes: (request: GetFilteredCodesRequest): Promise<GetFilteredCodesResponse> =>
@@ -88,14 +85,12 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.UPDATE_NOTIFICATION_SETTINGS, request),
 
   // エクスポート/インポート
-  exportData: (): Promise<ExportDataResponse> =>
-    ipcRenderer.invoke(IPC_CHANNELS.EXPORT_DATA),
+  exportData: (): Promise<ExportDataResponse> => ipcRenderer.invoke(IPC_CHANNELS.EXPORT_DATA),
 
   importData: (request: ImportDataRequest): Promise<ImportDataResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.IMPORT_DATA, request),
 
-  createBackup: (): Promise<CreateBackupResponse> =>
-    ipcRenderer.invoke(IPC_CHANNELS.CREATE_BACKUP),
+  createBackup: (): Promise<CreateBackupResponse> => ipcRenderer.invoke(IPC_CHANNELS.CREATE_BACKUP),
 
   exportToFile: (): Promise<ExportToFileResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.EXPORT_TO_FILE),
@@ -109,7 +104,7 @@ const api = {
 
   // テスト通知
   sendTestNotification: (): Promise<{ success: boolean }> =>
-    ipcRenderer.invoke(IPC_CHANNELS.SEND_TEST_NOTIFICATION),
+    ipcRenderer.invoke(IPC_CHANNELS.SEND_TEST_NOTIFICATION)
 }
 
 export type ApiType = typeof api

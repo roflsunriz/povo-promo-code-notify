@@ -4,7 +4,12 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { parseEmailText, parseEmailForRegistration, parseDateInput, parseValidityInput } from './email-parser'
+import {
+  parseEmailText,
+  parseEmailForRegistration,
+  parseDateInput,
+  parseValidityInput
+} from './email-parser'
 
 describe('email-parser', () => {
   describe('parseEmailText', () => {

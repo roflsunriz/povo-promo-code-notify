@@ -40,7 +40,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
           ${className}
         `}
         aria-invalid={error ? 'true' : 'false'}
-        aria-describedby={error ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined}
+        aria-describedby={
+          error ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined
+        }
         {...props}
       />
       {error && (

@@ -33,7 +33,7 @@ const tabs: Tab[] = [
           d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
         />
       </svg>
-    ),
+    )
   },
   {
     id: 'codes',
@@ -53,7 +53,7 @@ const tabs: Tab[] = [
           d="M4 6h16M4 10h16M4 14h16M4 18h16"
         />
       </svg>
-    ),
+    )
   },
   {
     id: 'register',
@@ -73,7 +73,7 @@ const tabs: Tab[] = [
           d="M12 6v6m0 0v6m0-6h6m-6 0H6"
         />
       </svg>
-    ),
+    )
   },
   {
     id: 'edit',
@@ -93,7 +93,7 @@ const tabs: Tab[] = [
           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
         />
       </svg>
-    ),
+    )
   },
   {
     id: 'notification',
@@ -113,8 +113,8 @@ const tabs: Tab[] = [
           d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
         />
       </svg>
-    ),
-  },
+    )
+  }
 ]
 
 interface TabLayoutProps {
@@ -131,7 +131,11 @@ export function TabLayout({ children }: TabLayoutProps): JSX.Element {
   return (
     <div className="flex flex-col h-full">
       {/* タブナビゲーション */}
-      <nav className="flex border-b border-zinc-700" role="tablist" aria-label="メインナビゲーション">
+      <nav
+        className="flex border-b border-zinc-700"
+        role="tablist"
+        aria-label="メインナビゲーション"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}

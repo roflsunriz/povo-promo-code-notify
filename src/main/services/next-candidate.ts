@@ -40,13 +40,13 @@ export function getNextCandidate(
   if (candidate === null) {
     return {
       hasCandidate: false,
-      candidate: null,
+      candidate: null
     }
   }
 
   return {
     hasCandidate: true,
-    candidate,
+    candidate
   }
 }
 
@@ -94,7 +94,7 @@ export function getNextCandidateSummary(
       hasCandidate: false,
       candidateCode: null,
       candidateOrder: null,
-      remainingUnusedCount: 0,
+      remainingUnusedCount: 0
     }
   }
 
@@ -102,6 +102,6 @@ export function getNextCandidateSummary(
     hasCandidate: true,
     candidateCode: result.candidate.code,
     candidateOrder: result.candidate.order,
-    remainingUnusedCount: unusedCodes.length,
+    remainingUnusedCount: unusedCodes.length
   }
 }

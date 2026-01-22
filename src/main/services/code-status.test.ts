@@ -14,7 +14,7 @@ import {
   getConsumedCodes,
   getExpiredCodes,
   isCodeUsable,
-  isCodeFinished,
+  isCodeFinished
 } from './code-status'
 import type { PromoCode } from '@types/code'
 
@@ -32,7 +32,7 @@ function createTestCode(overrides: Partial<PromoCode> = {}): PromoCode {
     expiresAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
-    ...overrides,
+    ...overrides
   }
 }
 
@@ -53,7 +53,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       })
 
       expect(determineCodeStatus(code)).toBe('unused')
@@ -65,7 +65,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       })
 
       expect(determineCodeStatus(code)).toBe('unused')
@@ -79,7 +79,7 @@ describe('determineCodeStatus', () => {
 
       const code = createTestCode({
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z', // 7日後
+        expiresAt: '2026-01-22T12:00:00.000Z' // 7日後
       })
 
       expect(determineCodeStatus(code)).toBe('active')
@@ -90,7 +90,7 @@ describe('determineCodeStatus', () => {
 
       const code = createTestCode({
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z',
+        expiresAt: '2026-01-22T12:00:00.000Z'
       })
 
       expect(determineCodeStatus(code)).toBe('active')
@@ -103,7 +103,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z', // 過去
         startedAt: '2026-06-15T12:00:00.000Z',
-        expiresAt: '2026-07-15T12:00:00.000Z', // まだ有効
+        expiresAt: '2026-07-15T12:00:00.000Z' // まだ有効
       })
 
       expect(determineCodeStatus(code)).toBe('active')
@@ -117,7 +117,7 @@ describe('determineCodeStatus', () => {
 
       const code = createTestCode({
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z', // 7日後
+        expiresAt: '2026-01-22T12:00:00.000Z' // 7日後
       })
 
       expect(determineCodeStatus(code)).toBe('consumed')
@@ -128,7 +128,7 @@ describe('determineCodeStatus', () => {
 
       const code = createTestCode({
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z',
+        expiresAt: '2026-01-22T12:00:00.000Z'
       })
 
       expect(determineCodeStatus(code)).toBe('consumed')
@@ -143,7 +143,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       })
 
       expect(determineCodeStatus(code)).toBe('expired')
@@ -155,7 +155,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       })
 
       expect(determineCodeStatus(code)).toBe('expired')
@@ -167,7 +167,7 @@ describe('determineCodeStatus', () => {
       const code = createTestCode({
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       })
 
       // 期限前
@@ -195,7 +195,7 @@ describe('attachStatus', () => {
 
     expect(result).toEqual({
       ...code,
-      status: 'unused',
+      status: 'unused'
     })
   })
 })
@@ -216,13 +216,13 @@ describe('attachStatusToAll', () => {
       createTestCode({
         id: '2',
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z',
+        expiresAt: '2026-01-22T12:00:00.000Z'
       }), // active
       createTestCode({
         id: '3',
         startedAt: '2026-01-01T12:00:00.000Z',
-        expiresAt: '2026-01-08T12:00:00.000Z',
-      }), // consumed
+        expiresAt: '2026-01-08T12:00:00.000Z'
+      }) // consumed
     ]
 
     const result = attachStatusToAll(codes)
@@ -251,8 +251,8 @@ describe('filterByStatus', () => {
       createTestCode({
         id: '3',
         startedAt: '2026-01-15T12:00:00.000Z',
-        expiresAt: '2026-01-22T12:00:00.000Z',
-      }), // active
+        expiresAt: '2026-01-22T12:00:00.000Z'
+      }) // active
     ]
 
     const unusedCodes = filterByStatus(codes, 'unused')
@@ -280,27 +280,27 @@ describe('getActiveCodes / getUnusedCodes / getConsumedCodes / getExpiredCodes',
         id: '1',
         inputDeadline: '2026-12-31T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       // active: 使用中
       createTestCode({
         id: '2',
         startedAt: '2026-06-25T12:00:00.000Z',
-        expiresAt: '2026-07-02T12:00:00.000Z',
+        expiresAt: '2026-07-02T12:00:00.000Z'
       }),
       // consumed: 使用済み
       createTestCode({
         id: '3',
         startedAt: '2026-06-01T12:00:00.000Z',
-        expiresAt: '2026-06-08T12:00:00.000Z',
+        expiresAt: '2026-06-08T12:00:00.000Z'
       }),
       // expired: 入力期限切れ
       createTestCode({
         id: '4',
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
-        expiresAt: null,
-      }),
+        expiresAt: null
+      })
     ]
 
     expect(getUnusedCodes(codes)).toHaveLength(1)
@@ -329,11 +329,11 @@ describe('isCodeUsable / isCodeFinished', () => {
     const unusedCode = createTestCode({ startedAt: null, expiresAt: null })
     const activeCode = createTestCode({
       startedAt: '2026-01-15T12:00:00.000Z',
-      expiresAt: '2026-01-22T12:00:00.000Z',
+      expiresAt: '2026-01-22T12:00:00.000Z'
     })
     const consumedCode = createTestCode({
       startedAt: '2026-01-01T12:00:00.000Z',
-      expiresAt: '2026-01-08T12:00:00.000Z',
+      expiresAt: '2026-01-08T12:00:00.000Z'
     })
 
     expect(isCodeUsable(unusedCode)).toBe(true)
@@ -345,7 +345,7 @@ describe('isCodeUsable / isCodeFinished', () => {
     const unusedCode = createTestCode({ startedAt: null, expiresAt: null })
     const consumedCode = createTestCode({
       startedAt: '2026-01-01T12:00:00.000Z',
-      expiresAt: '2026-01-08T12:00:00.000Z',
+      expiresAt: '2026-01-08T12:00:00.000Z'
     })
 
     expect(isCodeFinished(unusedCode)).toBe(false)

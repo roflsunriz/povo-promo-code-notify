@@ -37,7 +37,7 @@ function ThresholdRow({
   enabled,
   onToggle,
   onRemove,
-  isDefault,
+  isDefault
 }: {
   value: number
   enabled: boolean
@@ -54,21 +54,18 @@ function ThresholdRow({
           onChange={onToggle}
           aria-label={`${formatMinutes(value)}の通知を${enabled ? '無効' : '有効'}にする`}
         />
-        <span className={enabled ? 'text-zinc-200' : 'text-zinc-500'}>
-          {formatMinutes(value)}
-        </span>
-        {isDefault && (
-          <span className="text-xs text-zinc-500">(既定)</span>
-        )}
+        <span className={enabled ? 'text-zinc-200' : 'text-zinc-500'}>{formatMinutes(value)}</span>
+        {isDefault && <span className="text-xs text-zinc-500">(既定)</span>}
       </div>
       {!isDefault && (
-        <button
-          onClick={onRemove}
-          className="p-1 text-zinc-400 hover:text-red-400"
-          title="削除"
-        >
+        <button onClick={onRemove} className="p-1 text-zinc-400 hover:text-red-400" title="削除">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       )}
@@ -81,7 +78,7 @@ function ThresholdRow({
  */
 function AddThresholdForm({
   onAdd,
-  existingValues,
+  existingValues
 }: {
   onAdd: (minutes: number) => void
   existingValues: number[]
@@ -150,7 +147,8 @@ function AddThresholdForm({
 }
 
 export function NotificationTab(): JSX.Element {
-  const { settings, isLoading, error, updateSettings, sendTestNotification, refresh } = useNotificationSettings()
+  const { settings, isLoading, error, updateSettings, sendTestNotification, refresh } =
+    useNotificationSettings()
   const { exportToFile, importFromFile, isExporting, isImporting } = useDataExportImport()
 
   const [localExpiryThresholds, setLocalExpiryThresholds] = useState<number[]>([])
@@ -230,7 +228,9 @@ export function NotificationTab(): JSX.Element {
 
     const newSettings: NotificationSettings = {
       expiryThresholdsMinutes: localExpiryThresholds.filter((v) => enabledExpiryThresholds.has(v)),
-      inputDeadlineThresholdsMinutes: localDeadlineThresholds.filter((v) => enabledDeadlineThresholds.has(v)),
+      inputDeadlineThresholdsMinutes: localDeadlineThresholds.filter((v) =>
+        enabledDeadlineThresholds.has(v)
+      )
     }
 
     const success = await updateSettings(newSettings)
@@ -243,7 +243,14 @@ export function NotificationTab(): JSX.Element {
 
     setIsSaving(false)
     setTimeout(() => setSaveMessage(null), 3000)
-  }, [localExpiryThresholds, localDeadlineThresholds, enabledExpiryThresholds, enabledDeadlineThresholds, updateSettings, refresh])
+  }, [
+    localExpiryThresholds,
+    localDeadlineThresholds,
+    enabledExpiryThresholds,
+    enabledDeadlineThresholds,
+    updateSettings,
+    refresh
+  ])
 
   const handleTestNotification = useCallback(async () => {
     const success = await sendTestNotification()
@@ -315,27 +322,28 @@ export function NotificationTab(): JSX.Element {
   }
 
   // 全ての閾値（既定含む）を取得
-  const allExpiryThresholds = [...new Set([...DEFAULT_EXPIRY_THRESHOLDS, ...localExpiryThresholds])].sort((a, b) => b - a)
+  const allExpiryThresholds = [
+    ...new Set([...DEFAULT_EXPIRY_THRESHOLDS, ...localExpiryThresholds])
+  ].sort((a, b) => b - a)
   const allDeadlineThresholds = [...localDeadlineThresholds].sort((a, b) => b - a)
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       {/* 保存メッセージ */}
       {saveMessage && (
-        <div className={`p-4 rounded-lg ${
-          saveMessage.includes('失敗') 
-            ? 'bg-red-500/10 border border-red-500/30 text-red-400'
-            : 'bg-green-500/10 border border-green-500/30 text-green-400'
-        }`}>
+        <div
+          className={`p-4 rounded-lg ${
+            saveMessage.includes('失敗')
+              ? 'bg-red-500/10 border border-red-500/30 text-red-400'
+              : 'bg-green-500/10 border border-green-500/30 text-green-400'
+          }`}
+        >
           {saveMessage}
         </div>
       )}
 
       {/* 利用終了通知 */}
-      <Card
-        title="利用終了通知"
-        description="使用中コードの有効期限に対して通知します"
-      >
+      <Card title="利用終了通知" description="使用中コードの有効期限に対して通知します">
         <div className="space-y-4">
           <div className="space-y-2">
             {allExpiryThresholds.map((value) => (
@@ -350,10 +358,7 @@ export function NotificationTab(): JSX.Element {
             ))}
           </div>
 
-          <AddThresholdForm
-            onAdd={handleAddExpiry}
-            existingValues={allExpiryThresholds}
-          />
+          <AddThresholdForm onAdd={handleAddExpiry} existingValues={allExpiryThresholds} />
         </div>
       </Card>
 
@@ -382,19 +387,14 @@ export function NotificationTab(): JSX.Element {
             </div>
           )}
 
-          <AddThresholdForm
-            onAdd={handleAddDeadline}
-            existingValues={allDeadlineThresholds}
-          />
+          <AddThresholdForm onAdd={handleAddDeadline} existingValues={allDeadlineThresholds} />
         </div>
       </Card>
 
       {/* テスト通知 */}
       <Card title="テスト通知">
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
-            通知が正常に機能しているかテストできます。
-          </p>
+          <p className="text-sm text-zinc-400">通知が正常に機能しているかテストできます。</p>
           <Button variant="secondary" onClick={() => void handleTestNotification()}>
             テスト通知を送信
           </Button>
@@ -424,9 +424,7 @@ export function NotificationTab(): JSX.Element {
             未使用のコードの入力期限が近づくと通知されます。
             既定ではオフですが、必要に応じて閾値を追加できます。
           </p>
-          <p className="text-zinc-500">
-            ※ アプリが起動していない場合は通知されません
-          </p>
+          <p className="text-zinc-500">※ アプリが起動していない場合は通知されません</p>
         </div>
       </Card>
 
@@ -437,28 +435,22 @@ export function NotificationTab(): JSX.Element {
       >
         <div className="space-y-4">
           {importMessage && (
-            <div className={`p-3 rounded-lg text-sm ${
-              importMessage.includes('失敗')
-                ? 'bg-red-500/10 border border-red-500/30 text-red-400'
-                : 'bg-green-500/10 border border-green-500/30 text-green-400'
-            }`}>
+            <div
+              className={`p-3 rounded-lg text-sm ${
+                importMessage.includes('失敗')
+                  ? 'bg-red-500/10 border border-red-500/30 text-red-400'
+                  : 'bg-green-500/10 border border-green-500/30 text-green-400'
+              }`}
+            >
               {importMessage}
             </div>
           )}
 
           <div className="flex gap-4">
-            <Button
-              variant="secondary"
-              onClick={() => void handleExport()}
-              isLoading={isExporting}
-            >
+            <Button variant="secondary" onClick={() => void handleExport()} isLoading={isExporting}>
               エクスポート
             </Button>
-            <Button
-              variant="secondary"
-              onClick={handleImportConfirm}
-              isLoading={isImporting}
-            >
+            <Button variant="secondary" onClick={handleImportConfirm} isLoading={isImporting}>
               インポート
             </Button>
           </div>
@@ -492,9 +484,7 @@ export function NotificationTab(): JSX.Element {
             <Button variant="secondary" onClick={() => setShowImportConfirm(false)}>
               キャンセル
             </Button>
-            <Button onClick={() => void handleImport()}>
-              インポート実行
-            </Button>
+            <Button onClick={() => void handleImport()}>インポート実行</Button>
           </div>
         </div>
       </Dialog>

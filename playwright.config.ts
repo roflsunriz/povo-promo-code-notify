@@ -15,12 +15,12 @@ export default defineConfig({
   timeout: 60000, // 60秒タイムアウト
   use: {
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    screenshot: 'only-on-failure'
   },
   projects: [
     {
       name: 'electron',
-      testMatch: /.*\.e2e\.ts/,
-    },
-  ],
+      testMatch: /.*\.e2e\.ts/
+    }
+  ]
 })

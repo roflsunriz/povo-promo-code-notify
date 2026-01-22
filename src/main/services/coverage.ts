@@ -35,7 +35,7 @@ function extractIntervals(codes: readonly PromoCode[], now: Date): TimeInterval[
     .map((code) => ({
       // 非nullは上でフィルタ済み
       start: new Date(code.startedAt!).getTime(),
-      end: new Date(code.expiresAt!).getTime(),
+      end: new Date(code.expiresAt!).getTime()
     }))
 }
 
@@ -143,7 +143,7 @@ export function calculateCoverage(
       coverageEndAt: null,
       remainingMinutes: null,
       hasGap: false,
-      gapStartAt: null,
+      gapStartAt: null
     }
   }
 
@@ -156,7 +156,7 @@ export function calculateCoverage(
       coverageEndAt: null,
       remainingMinutes: null,
       hasGap: false,
-      gapStartAt: null,
+      gapStartAt: null
     }
   }
 
@@ -168,7 +168,7 @@ export function calculateCoverage(
     coverageEndAt: new Date(coverageEnd).toISOString(),
     remainingMinutes,
     hasGap: gapStart !== null,
-    gapStartAt: gapStart !== null ? new Date(gapStart).toISOString() : null,
+    gapStartAt: gapStart !== null ? new Date(gapStart).toISOString() : null
   }
 }
 
@@ -224,6 +224,6 @@ export function formatCoverageEndAt(isoString: string | null): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    weekday: 'short',
+    weekday: 'short'
   })
 }

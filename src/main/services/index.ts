@@ -13,7 +13,7 @@ export {
   getConsumedCodes,
   getExpiredCodes,
   isCodeUsable,
-  isCodeFinished,
+  isCodeFinished
 } from './code-status'
 
 // 連続カバレッジ計算
@@ -43,7 +43,7 @@ export {
   createBackup,
   importData,
   resetStore,
-  getStorePath,
+  getStorePath
 } from './store'
 
 // メール解析
@@ -51,7 +51,7 @@ export {
   parseEmailText,
   parseEmailForRegistration,
   parseDateInput,
-  parseValidityInput,
+  parseValidityInput
 } from './email-parser'
 
 // 通知スケジューラー
@@ -61,6 +61,5 @@ export {
   stopNotificationScheduler,
   updateNotificationSchedulerCodes,
   updateNotificationSchedulerSettings,
-  rescheduleNotifications,
+  rescheduleNotifications
 } from './notification-scheduler'
-

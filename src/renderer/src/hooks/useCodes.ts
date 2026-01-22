@@ -6,14 +6,9 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import type {
   CreatePromoCodeInput,
   NotificationSettings,
-  PromoCodeWithStatus,
+  PromoCodeWithStatus
 } from '../../../types/code'
-import type {
-  CodeFilter,
-  CodeSort,
-  DashboardData,
-  ParsedCodeInfo,
-} from '../../../types/ipc'
+import type { CodeFilter, CodeSort, DashboardData, ParsedCodeInfo } from '../../../types/ipc'
 
 /**
  * ダッシュボードデータ取得フック
@@ -133,22 +128,19 @@ export function useCodeActions(): {
     }
   }, [])
 
-  const editStartedAt = useCallback(
-    async (id: string, newStartedAt: string): Promise<boolean> => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const response = await window.api.editStartedAt({ id, newStartedAt })
-        return response.code !== null
-      } catch (e) {
-        setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
-        return false
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    []
-  )
+  const editStartedAt = useCallback(async (id: string, newStartedAt: string): Promise<boolean> => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await window.api.editStartedAt({ id, newStartedAt })
+      return response.code !== null
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
+      return false
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   const deleteCode = useCallback(async (id: string): Promise<boolean> => {
     try {
@@ -246,20 +238,23 @@ export function useNotificationSettings(): {
     void refresh()
   }, [refresh])
 
-  const updateSettings = useCallback(async (newSettings: NotificationSettings): Promise<boolean> => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      await window.api.updateNotificationSettings({ settings: newSettings })
-      setSettings(newSettings)
-      return true
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
-      return false
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const updateSettings = useCallback(
+    async (newSettings: NotificationSettings): Promise<boolean> => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        await window.api.updateNotificationSettings({ settings: newSettings })
+        setSettings(newSettings)
+        return true
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
+        return false
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    []
+  )
 
   const sendTestNotification = useCallback(async (): Promise<boolean> => {
     try {

@@ -19,7 +19,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   consumed: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30',
   expired: 'bg-red-500/20 text-red-400 border-red-500/30',
   info: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-  warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30'
 }
 
 export function Badge({ variant, children, className = '' }: BadgeProps): JSX.Element {
@@ -57,7 +57,7 @@ export function getStatusLabel(status: 'active' | 'unused' | 'consumed' | 'expir
     active: '使用中',
     unused: '未使用',
     consumed: '消費済み',
-    expired: '期限切れ',
+    expired: '期限切れ'
   }
   return labels[status] ?? status
 }

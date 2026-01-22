@@ -21,7 +21,7 @@ function createTestCode(overrides: Partial<PromoCode> = {}): PromoCode {
     expiresAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
-    ...overrides,
+    ...overrides
   }
 }
 
@@ -45,7 +45,7 @@ describe('calculateCoverage', () => {
         coverageEndAt: null,
         remainingMinutes: null,
         hasGap: false,
-        gapStartAt: null,
+        gapStartAt: null
       })
     })
 
@@ -53,7 +53,7 @@ describe('calculateCoverage', () => {
       vi.setSystemTime(new Date('2026-01-15T12:00:00.000Z'))
 
       const codes = [
-        createTestCode({ id: '1', startedAt: null, expiresAt: null }), // 未使用
+        createTestCode({ id: '1', startedAt: null, expiresAt: null }) // 未使用
       ]
 
       const result = calculateCoverage(codes)
@@ -68,8 +68,8 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-01T12:00:00.000Z',
-          expiresAt: '2026-01-08T12:00:00.000Z', // すでに終了
-        }),
+          expiresAt: '2026-01-08T12:00:00.000Z' // すでに終了
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -86,8 +86,8 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-17T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -106,8 +106,8 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-17T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -124,13 +124,13 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
+          expiresAt: '2026-01-17T12:00:00.000Z'
         }),
         createTestCode({
           id: '2',
           startedAt: '2026-01-17T12:00:00.000Z', // 前の終端と同一
-          expiresAt: '2026-01-24T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-24T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -147,13 +147,13 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
+          expiresAt: '2026-01-17T12:00:00.000Z'
         }),
         createTestCode({
           id: '2',
           startedAt: '2026-01-16T12:00:00.000Z', // 重なっている
-          expiresAt: '2026-01-23T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-23T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -170,18 +170,18 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
+          expiresAt: '2026-01-17T12:00:00.000Z'
         }),
         createTestCode({
           id: '2',
           startedAt: '2026-01-17T12:00:00.000Z',
-          expiresAt: '2026-01-24T12:00:00.000Z',
+          expiresAt: '2026-01-24T12:00:00.000Z'
         }),
         createTestCode({
           id: '3',
           startedAt: '2026-01-24T12:00:00.000Z',
-          expiresAt: '2026-01-31T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-31T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -199,13 +199,13 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
+          expiresAt: '2026-01-17T12:00:00.000Z'
         }),
         createTestCode({
           id: '2',
           startedAt: '2026-01-14T12:00:00.000Z',
-          expiresAt: '2026-01-21T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-21T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -224,13 +224,13 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
+          expiresAt: '2026-01-17T12:00:00.000Z'
         }),
         createTestCode({
           id: '2',
           startedAt: '2026-01-20T12:00:00.000Z', // 3日のギャップ
-          expiresAt: '2026-01-27T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-27T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)
@@ -250,8 +250,8 @@ describe('calculateCoverage', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-17T12:00:00.000Z'
+        })
       ]
 
       const result = calculateCoverage(codes)

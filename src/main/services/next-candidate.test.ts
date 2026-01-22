@@ -21,7 +21,7 @@ function createTestCode(overrides: Partial<PromoCode> = {}): PromoCode {
     expiresAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
-    ...overrides,
+    ...overrides
   }
 }
 
@@ -42,7 +42,7 @@ describe('getNextCandidate', () => {
 
       expect(result).toEqual({
         hasCandidate: false,
-        candidate: null,
+        candidate: null
       })
     })
 
@@ -53,8 +53,8 @@ describe('getNextCandidate', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-10T12:00:00.000Z',
-          expiresAt: '2026-01-17T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-17T12:00:00.000Z'
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -70,8 +70,8 @@ describe('getNextCandidate', () => {
           id: '1',
           inputDeadline: '2026-06-20T23:59:59.000Z',
           startedAt: null,
-          expiresAt: null,
-        }),
+          expiresAt: null
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -86,8 +86,8 @@ describe('getNextCandidate', () => {
         createTestCode({
           id: '1',
           startedAt: '2026-01-01T12:00:00.000Z',
-          expiresAt: '2026-01-08T12:00:00.000Z',
-        }),
+          expiresAt: '2026-01-08T12:00:00.000Z'
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -106,8 +106,8 @@ describe('getNextCandidate', () => {
           order: 1,
           code: 'CODE001',
           startedAt: null,
-          expiresAt: null,
-        }),
+          expiresAt: null
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -125,22 +125,22 @@ describe('getNextCandidate', () => {
           order: 3,
           code: 'CODE003',
           startedAt: null,
-          expiresAt: null,
+          expiresAt: null
         }),
         createTestCode({
           id: '1',
           order: 1,
           code: 'CODE001',
           startedAt: null,
-          expiresAt: null,
+          expiresAt: null
         }),
         createTestCode({
           id: '2',
           order: 2,
           code: 'CODE002',
           startedAt: null,
-          expiresAt: null,
-        }),
+          expiresAt: null
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -159,15 +159,15 @@ describe('getNextCandidate', () => {
           order: 1,
           code: 'CODE_Z',
           startedAt: null,
-          expiresAt: null,
+          expiresAt: null
         }),
         createTestCode({
           id: 'aaa-uuid',
           order: 1, // 同じ順序
           code: 'CODE_A',
           startedAt: null,
-          expiresAt: null,
-        }),
+          expiresAt: null
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -187,7 +187,7 @@ describe('getNextCandidate', () => {
           order: 1,
           code: 'ACTIVE',
           startedAt: '2026-01-15T12:00:00.000Z',
-          expiresAt: '2026-01-22T12:00:00.000Z',
+          expiresAt: '2026-01-22T12:00:00.000Z'
         }),
         // order: 2 → 消費済み
         createTestCode({
@@ -195,7 +195,7 @@ describe('getNextCandidate', () => {
           order: 2,
           code: 'CONSUMED',
           startedAt: '2026-01-01T12:00:00.000Z',
-          expiresAt: '2026-01-08T12:00:00.000Z',
+          expiresAt: '2026-01-08T12:00:00.000Z'
         }),
         // order: 3 → 未使用（これが候補）
         createTestCode({
@@ -203,8 +203,8 @@ describe('getNextCandidate', () => {
           order: 3,
           code: 'UNUSED',
           startedAt: null,
-          expiresAt: null,
-        }),
+          expiresAt: null
+        })
       ]
 
       const result = getNextCandidate(codes)
@@ -233,22 +233,22 @@ describe('getUnusedCodesSorted', () => {
         order: 3,
         code: 'CODE003',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: '1',
         order: 1,
         code: 'CODE001',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: '2',
         order: 2,
         code: 'CODE002',
         startedAt: null,
-        expiresAt: null,
-      }),
+        expiresAt: null
+      })
     ]
 
     const result = getUnusedCodesSorted(codes)
@@ -265,9 +265,9 @@ describe('getUnusedCodesSorted', () => {
         id: '1',
         order: 1,
         startedAt: '2026-01-10T12:00:00.000Z',
-        expiresAt: '2026-01-17T12:00:00.000Z',
+        expiresAt: '2026-01-17T12:00:00.000Z'
       }), // 使用中
-      createTestCode({ id: '2', order: 2, startedAt: null, expiresAt: null }), // 未使用
+      createTestCode({ id: '2', order: 2, startedAt: null, expiresAt: null }) // 未使用
     ]
 
     const result = getUnusedCodesSorted(codes)
@@ -283,22 +283,22 @@ describe('getUnusedCodesSorted', () => {
         order: 1,
         code: 'CODE_Z',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: 'aaa-uuid',
         order: 1, // 同じ順序
         code: 'CODE_A',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: 'mmm-uuid',
         order: 1, // 同じ順序
         code: 'CODE_M',
         startedAt: null,
-        expiresAt: null,
-      }),
+        expiresAt: null
+      })
     ]
 
     const result = getUnusedCodesSorted(codes)
@@ -327,7 +327,7 @@ describe('getNextCandidateSummary', () => {
       hasCandidate: false,
       candidateCode: null,
       candidateOrder: null,
-      remainingUnusedCount: 0,
+      remainingUnusedCount: 0
     })
   })
 
@@ -338,22 +338,22 @@ describe('getNextCandidateSummary', () => {
         order: 1,
         code: 'CODE001',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: '2',
         order: 2,
         code: 'CODE002',
         startedAt: null,
-        expiresAt: null,
+        expiresAt: null
       }),
       createTestCode({
         id: '3',
         order: 3,
         code: 'CODE003',
         startedAt: null,
-        expiresAt: null,
-      }),
+        expiresAt: null
+      })
     ]
 
     const result = getNextCandidateSummary(codes)
@@ -362,7 +362,7 @@ describe('getNextCandidateSummary', () => {
       hasCandidate: true,
       candidateCode: 'CODE001',
       candidateOrder: 1,
-      remainingUnusedCount: 3,
+      remainingUnusedCount: 3
     })
   })
 })

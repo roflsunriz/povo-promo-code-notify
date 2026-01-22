@@ -176,7 +176,7 @@ class NotificationScheduler {
         type: 'expiry',
         thresholdMinutes,
         notifyAt,
-        targetTime: expiresAt,
+        targetTime: expiresAt
       })
     }
   }
@@ -205,7 +205,7 @@ class NotificationScheduler {
         type: 'inputDeadline',
         thresholdMinutes,
         notifyAt,
-        targetTime: inputDeadline,
+        targetTime: inputDeadline
       })
     }
   }
@@ -247,7 +247,7 @@ class NotificationScheduler {
       scheduledAt: notifyAt,
       type,
       codeId,
-      thresholdMinutes,
+      thresholdMinutes
     })
   }
 
@@ -317,7 +317,7 @@ class NotificationScheduler {
     return new Notification({
       title,
       body,
-      silent: false,
+      silent: false
     })
   }
 
@@ -353,7 +353,7 @@ class NotificationScheduler {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -419,9 +419,7 @@ class NotificationScheduler {
    * 特定のコードのスケジュール済み通知を取得（テスト用）
    */
   getScheduledForCode(codeId: string): ScheduledNotification[] {
-    return Array.from(this.scheduledNotifications.values()).filter(
-      (n) => n.codeId === codeId
-    )
+    return Array.from(this.scheduledNotifications.values()).filter((n) => n.codeId === codeId)
   }
 }
 

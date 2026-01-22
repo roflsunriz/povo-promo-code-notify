@@ -21,7 +21,7 @@ const levelOrder: Record<LogLevel, number> = {
   debug: 10,
   info: 20,
   warn: 30,
-  error: 40,
+  error: 40
 }
 
 let currentLogLevel: LogLevel = 'info'
@@ -59,7 +59,7 @@ export function logEvent(event: Omit<LogEvent, 'timestamp'>): void {
 
   const payload: LogEvent = {
     ...event,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   }
 
   const line = JSON.stringify(payload)
@@ -80,7 +80,7 @@ function serializeError(error: unknown): Record<string, unknown> {
     return {
       name: error.name,
       message: error.message,
-      stack: error.stack,
+      stack: error.stack
     }
   }
   return { message: String(error) }
@@ -92,7 +92,7 @@ export function setupProcessErrorHandlers(): void {
       level: 'error',
       message: 'uncaughtException',
       traceId: createTraceId(),
-      context: { error: serializeError(error) },
+      context: { error: serializeError(error) }
     })
   })
 
@@ -101,7 +101,7 @@ export function setupProcessErrorHandlers(): void {
       level: 'error',
       message: 'unhandledRejection',
       traceId: createTraceId(),
-      context: { error: serializeError(reason) },
+      context: { error: serializeError(reason) }
     })
   })
 }
@@ -121,7 +121,7 @@ export async function withTrace<T>(
       level: 'error',
       message: `${name}:error`,
       traceId,
-      context: { error: serializeError(error) },
+      context: { error: serializeError(error) }
     })
     throw error
   }

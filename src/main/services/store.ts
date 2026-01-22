@@ -16,7 +16,7 @@ import type {
   NotificationSettings,
   PromoCode,
   StoreData,
-  UpdatePromoCodeInput,
+  UpdatePromoCodeInput
 } from '@types/code'
 
 /**
@@ -25,16 +25,16 @@ import type {
 const schema = {
   version: {
     type: 'number' as const,
-    default: 1,
+    default: 1
   },
   codes: {
     type: 'array' as const,
-    default: [],
+    default: []
   },
   notificationSettings: {
     type: 'object' as const,
-    default: INITIAL_STORE_DATA.notificationSettings,
-  },
+    default: INITIAL_STORE_DATA.notificationSettings
+  }
 }
 
 /**
@@ -43,7 +43,7 @@ const schema = {
 const store = new Store<StoreData>({
   name: 'povo-promo-codes',
   schema,
-  defaults: INITIAL_STORE_DATA,
+  defaults: INITIAL_STORE_DATA
 })
 
 /**
@@ -96,7 +96,7 @@ export function createCode(input: CreatePromoCodeInput): PromoCode {
     startedAt: null,
     expiresAt: null,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   }
 
   const codes = getAllCodes()
@@ -122,7 +122,7 @@ export function createCodes(inputs: CreatePromoCodeInput[]): PromoCode[] {
     startedAt: null,
     expiresAt: null,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   }))
 
   const codes = getAllCodes()
@@ -154,7 +154,7 @@ export function updateCode(id: string, input: UpdatePromoCodeInput): PromoCode |
   const updatedCode: PromoCode = {
     ...existingCode,
     ...input,
-    updatedAt: nowISO(),
+    updatedAt: nowISO()
   }
 
   codes[index] = updatedCode
@@ -208,7 +208,7 @@ export function startCode(id: string, startedAt?: Date): PromoCode | undefined {
 
   return updateCode(id, {
     startedAt: startTime.toISOString(),
-    expiresAt: expiresAt.toISOString(),
+    expiresAt: expiresAt.toISOString()
   })
 }
 
@@ -220,7 +220,7 @@ export function startCode(id: string, startedAt?: Date): PromoCode | undefined {
 export function cancelCode(id: string): PromoCode | undefined {
   return updateCode(id, {
     startedAt: null,
-    expiresAt: null,
+    expiresAt: null
   })
 }
 
@@ -240,7 +240,7 @@ export function editStartedAt(id: string, newStartedAt: Date): PromoCode | undef
 
   return updateCode(id, {
     startedAt: newStartedAt.toISOString(),
-    expiresAt: expiresAt.toISOString(),
+    expiresAt: expiresAt.toISOString()
   })
 }
 
@@ -305,7 +305,7 @@ export function getStoreData(): StoreData {
   return {
     version: store.get('version', 1),
     codes: getAllCodes(),
-    notificationSettings: getNotificationSettings(),
+    notificationSettings: getNotificationSettings()
   }
 }
 
@@ -317,7 +317,7 @@ export function exportData(): string {
   const data = getStoreData()
   const exportData = {
     ...data,
-    exportedAt: nowISO(),
+    exportedAt: nowISO()
   }
   return JSON.stringify(exportData, null, 2)
 }
@@ -344,7 +344,7 @@ export function importData(jsonString: string): { success: boolean; error?: stri
     if (!result.success) {
       return {
         success: false,
-        error: `バリデーションエラー: ${result.error.message}`,
+        error: `バリデーションエラー: ${result.error.message}`
       }
     }
 
@@ -360,7 +360,7 @@ export function importData(jsonString: string): { success: boolean; error?: stri
     const errorMessage = e instanceof Error ? e.message : '不明なエラー'
     return {
       success: false,
-      error: `JSONパースエラー: ${errorMessage}`,
+      error: `JSONパースエラー: ${errorMessage}`
     }
   }
 }

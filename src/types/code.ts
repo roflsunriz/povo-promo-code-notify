@@ -200,7 +200,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   // 24時間=1440分, 3時間=180分, 1時間=60分, 30分=30分
   expiryThresholdsMinutes: [1440, 180, 60, 30],
   // 公式入力期限通知は既定でオフ
-  inputDeadlineThresholdsMinutes: [],
+  inputDeadlineThresholdsMinutes: []
 }
 
 /**
@@ -209,7 +209,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
 export const VALIDITY_DURATIONS = {
   ONE_HOUR: 60,
   SEVEN_DAYS: 10080, // 7 * 24 * 60
-  TWENTY_FOUR_HOURS: 1440, // 24 * 60
+  TWENTY_FOUR_HOURS: 1440 // 24 * 60
 } as const
 
 /**
@@ -218,5 +218,5 @@ export const VALIDITY_DURATIONS = {
 export const INITIAL_STORE_DATA: StoreData = {
   version: 1,
   codes: [],
-  notificationSettings: DEFAULT_NOTIFICATION_SETTINGS,
+  notificationSettings: DEFAULT_NOTIFICATION_SETTINGS
 }

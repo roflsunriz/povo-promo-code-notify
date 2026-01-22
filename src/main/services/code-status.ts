@@ -57,7 +57,7 @@ export function determineCodeStatus(code: PromoCode, now: Date = new Date()): Co
 export function attachStatus(code: PromoCode, now: Date = new Date()): PromoCodeWithStatus {
   return {
     ...code,
-    status: determineCodeStatus(code, now),
+    status: determineCodeStatus(code, now)
   }
 }
 

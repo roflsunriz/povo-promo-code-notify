@@ -24,7 +24,7 @@ function formatDateTime(isoString: string | null): string {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit',
+    minute: '2-digit'
   })
 }
 
@@ -53,7 +53,7 @@ function datetimeLocalToIso(datetimeLocal: string): string {
 function CodeSelectCard({
   code,
   isSelected,
-  onSelect,
+  onSelect
 }: {
   code: PromoCodeWithStatus
   isSelected: boolean
@@ -64,17 +64,16 @@ function CodeSelectCard({
       onClick={onSelect}
       className={`
         w-full p-4 rounded-lg border text-left transition-colors
-        ${isSelected
-          ? 'bg-amber-500/10 border-amber-500/50'
-          : 'bg-zinc-700/50 border-zinc-700 hover:border-zinc-600'
+        ${
+          isSelected
+            ? 'bg-amber-500/10 border-amber-500/50'
+            : 'bg-zinc-700/50 border-zinc-700 hover:border-zinc-600'
         }
       `}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Badge variant={getStatusBadgeVariant(code.status)}>
-            {getStatusLabel(code.status)}
-          </Badge>
+          <Badge variant={getStatusBadgeVariant(code.status)}>{getStatusLabel(code.status)}</Badge>
           <span className="font-mono text-zinc-200">{code.code}</span>
         </div>
         <Badge variant="info">#{code.order}</Badge>
@@ -97,7 +96,7 @@ function CodeEditPanel({
   onEditStartedAt,
   onDeleteCode,
   isLoading,
-  onRefresh,
+  onRefresh
 }: {
   code: PromoCodeWithStatus
   onStartCode: (id: string) => Promise<boolean>
@@ -107,9 +106,7 @@ function CodeEditPanel({
   isLoading: boolean
   onRefresh: () => Promise<void>
 }): JSX.Element {
-  const [editedStartedAt, setEditedStartedAt] = useState(
-    isoToDatetimeLocal(code.startedAt)
-  )
+  const [editedStartedAt, setEditedStartedAt] = useState(isoToDatetimeLocal(code.startedAt))
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
@@ -212,15 +209,15 @@ function CodeEditPanel({
               <Button
                 onClick={() => void handleEditStartedAt()}
                 isLoading={isLoading}
-                disabled={!editedStartedAt || editedStartedAt === isoToDatetimeLocal(code.startedAt)}
+                disabled={
+                  !editedStartedAt || editedStartedAt === isoToDatetimeLocal(code.startedAt)
+                }
               >
                 更新
               </Button>
             </div>
             {editedStartedAt && editedStartedAt !== isoToDatetimeLocal(code.startedAt) && (
-              <p className="text-sm text-amber-400">
-                有効期限が再計算されます
-              </p>
+              <p className="text-sm text-amber-400">有効期限が再計算されます</p>
             )}
           </div>
         )}
@@ -261,11 +258,10 @@ function CodeEditPanel({
         isLoading={isLoading}
       >
         <p>
-          コード <span className="font-mono text-amber-400">{code.code}</span> の使用を取り消します。
+          コード <span className="font-mono text-amber-400">{code.code}</span>{' '}
+          の使用を取り消します。
         </p>
-        <p className="mt-2">
-          使用開始日時と有効期限が未設定に戻り、未使用として扱われます。
-        </p>
+        <p className="mt-2">使用開始日時と有効期限が未設定に戻り、未使用として扱われます。</p>
       </Dialog>
 
       {/* 削除確認ダイアログ */}
@@ -281,9 +277,7 @@ function CodeEditPanel({
         <p>
           コード <span className="font-mono text-amber-400">{code.code}</span> を削除します。
         </p>
-        <p className="mt-2 text-red-400">
-          この操作は取り消せません。
-        </p>
+        <p className="mt-2 text-red-400">この操作は取り消せません。</p>
       </Dialog>
     </Card>
   )
@@ -291,7 +285,13 @@ function CodeEditPanel({
 
 export function EditTab(): JSX.Element {
   const { codes, isLoading: isCodesLoading, refresh } = useCodes()
-  const { startCode, cancelCode, editStartedAt, deleteCode, isLoading: isActionLoading } = useCodeActions()
+  const {
+    startCode,
+    cancelCode,
+    editStartedAt,
+    deleteCode,
+    isLoading: isActionLoading
+  } = useCodeActions()
 
   const [selectedCodeId, setSelectedCodeId] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<'all' | 'unused' | 'active'>('all')

@@ -17,7 +17,7 @@ vi.mock('electron', () => ({
       this.body = options.body
     }
     show = vi.fn()
-  },
+  }
 }))
 
 // 動的インポートでモック後にモジュールを読み込む
@@ -27,7 +27,7 @@ const {
   stopNotificationScheduler,
   updateNotificationSchedulerCodes,
   updateNotificationSchedulerSettings,
-  rescheduleNotifications,
+  rescheduleNotifications
 } = await import('./notification-scheduler')
 
 describe('NotificationScheduler', () => {
@@ -58,7 +58,7 @@ describe('NotificationScheduler', () => {
       expiresAt: null,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      ...overrides,
+      ...overrides
     }
   }
 
@@ -73,13 +73,13 @@ describe('NotificationScheduler', () => {
     return createTestCode({
       id: `active-${expiresInMinutes}`,
       startedAt: startedAt.toISOString(),
-      expiresAt: expiresAt.toISOString(),
+      expiresAt: expiresAt.toISOString()
     })
   }
 
   const defaultSettings: NotificationSettings = {
     expiryThresholdsMinutes: [1440, 180, 60, 30], // 24h, 3h, 1h, 30m
-    inputDeadlineThresholdsMinutes: [],
+    inputDeadlineThresholdsMinutes: []
   }
 
   describe('start', () => {
@@ -99,12 +99,12 @@ describe('NotificationScheduler', () => {
       // 入力期限が25時間後のコード（24h, 1hの両方の閾値がスケジュール可能）
       const codes = [
         createTestCode({
-          inputDeadline: new Date(now.getTime() + 25 * 60 * 60 * 1000).toISOString(),
-        }),
+          inputDeadline: new Date(now.getTime() + 25 * 60 * 60 * 1000).toISOString()
+        })
       ]
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [],
-        inputDeadlineThresholdsMinutes: [1440, 60], // 24h, 1h前
+        inputDeadlineThresholdsMinutes: [1440, 60] // 24h, 1h前
       }
       notificationScheduler.start(codes, settings)
       expect(notificationScheduler.getScheduledCount()).toBe(2)
@@ -170,7 +170,7 @@ describe('NotificationScheduler', () => {
       // 閾値を減らす
       const newSettings: NotificationSettings = {
         expiryThresholdsMinutes: [60], // 1時間前のみ
-        inputDeadlineThresholdsMinutes: [],
+        inputDeadlineThresholdsMinutes: []
       }
       notificationScheduler.updateSettings(newSettings)
 
@@ -227,7 +227,7 @@ describe('NotificationScheduler', () => {
       const now = new Date()
       const code = createTestCode({
         startedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-        expiresAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3日前に期限切れ
+        expiresAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3日前に期限切れ
       })
 
       notificationScheduler.start([code], defaultSettings)
@@ -237,12 +237,12 @@ describe('NotificationScheduler', () => {
     it('期限切れコードに対して入力期限通知がスケジュールされないこと', () => {
       const now = new Date()
       const code = createTestCode({
-        inputDeadline: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1日前に期限切れ
+        inputDeadline: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString() // 1日前に期限切れ
       })
 
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [],
-        inputDeadlineThresholdsMinutes: [1440, 60],
+        inputDeadlineThresholdsMinutes: [1440, 60]
       }
 
       notificationScheduler.start([code], settings)
@@ -255,7 +255,7 @@ describe('NotificationScheduler', () => {
       const codes = [
         createActiveCode(25 * 60),
         createActiveCode(26 * 60),
-        createActiveCode(27 * 60),
+        createActiveCode(27 * 60)
       ]
 
       notificationScheduler.start(codes, defaultSettings)
@@ -272,18 +272,18 @@ describe('NotificationScheduler', () => {
         createTestCode({
           id: 'unused-1',
           // 入力期限が2時間後（1時間前の閾値がスケジュール可能）
-          inputDeadline: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(),
+          inputDeadline: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString()
         }), // 未使用
         createTestCode({
           id: 'consumed-1',
           startedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-          expiresAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        }), // 消費済み
+          expiresAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        }) // 消費済み
       ]
 
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [60],
-        inputDeadlineThresholdsMinutes: [60],
+        inputDeadlineThresholdsMinutes: [60]
       }
 
       notificationScheduler.start(codes, settings)
@@ -298,7 +298,7 @@ describe('NotificationScheduler', () => {
       const codes = [createActiveCode(35)]
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [30],
-        inputDeadlineThresholdsMinutes: [],
+        inputDeadlineThresholdsMinutes: []
       }
       notificationScheduler.start(codes, settings)
 
@@ -318,12 +318,12 @@ describe('NotificationScheduler', () => {
       const code = createTestCode({
         id: 'active-to-consumed',
         startedAt: startedAt.toISOString(),
-        expiresAt: expiresAt.toISOString(),
+        expiresAt: expiresAt.toISOString()
       })
 
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [30],
-        inputDeadlineThresholdsMinutes: [],
+        inputDeadlineThresholdsMinutes: []
       }
       notificationScheduler.start([code], settings)
       expect(notificationScheduler.getScheduledCount()).toBe(1)
@@ -332,7 +332,7 @@ describe('NotificationScheduler', () => {
       const consumedCode = createTestCode({
         id: 'active-to-consumed',
         startedAt: startedAt.toISOString(),
-        expiresAt: new Date(now.getTime() - 1000).toISOString(), // 過去に設定
+        expiresAt: new Date(now.getTime() - 1000).toISOString() // 過去に設定
       })
       notificationScheduler.updateCodes([consumedCode])
 
@@ -345,12 +345,12 @@ describe('NotificationScheduler', () => {
       const codes = [
         createTestCode({
           id: 'unused-to-active',
-          inputDeadline: new Date(now.getTime() + 35 * 60 * 1000).toISOString(),
-        }),
+          inputDeadline: new Date(now.getTime() + 35 * 60 * 1000).toISOString()
+        })
       ]
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [],
-        inputDeadlineThresholdsMinutes: [30],
+        inputDeadlineThresholdsMinutes: [30]
       }
       notificationScheduler.start(codes, settings)
       expect(notificationScheduler.getScheduledCount()).toBe(1)
@@ -360,7 +360,7 @@ describe('NotificationScheduler', () => {
         id: 'unused-to-active',
         inputDeadline: new Date(now.getTime() + 35 * 60 * 1000).toISOString(),
         startedAt: now.toISOString(),
-        expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
       })
       notificationScheduler.updateCodes([activeCode])
 
@@ -402,7 +402,7 @@ describe('NotificationScheduler', () => {
 
       const newSettings: NotificationSettings = {
         expiryThresholdsMinutes: [60],
-        inputDeadlineThresholdsMinutes: [],
+        inputDeadlineThresholdsMinutes: []
       }
       updateNotificationSchedulerSettings(newSettings)
       expect(notificationScheduler.getScheduledCount()).toBe(1)
@@ -442,12 +442,12 @@ describe('NotificationScheduler', () => {
         createTestCode({
           id: 'far-future',
           startedAt: now.toISOString(),
-          expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        }),
+          expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        })
       ]
       const settings: NotificationSettings = {
         expiryThresholdsMinutes: [1440], // 24時間前
-        inputDeadlineThresholdsMinutes: [],
+        inputDeadlineThresholdsMinutes: []
       }
       notificationScheduler.start(codes, settings)
 

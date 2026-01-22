@@ -6,13 +6,13 @@ import {
   configureObservability,
   createTraceId,
   logEvent,
-  setupProcessErrorHandlers,
+  setupProcessErrorHandlers
 } from './observability'
 import {
   getAllCodes,
   getNotificationSettings,
   startNotificationScheduler,
-  stopNotificationScheduler,
+  stopNotificationScheduler
 } from './services'
 
 configureObservability({ logLevel: 'info' })
@@ -21,7 +21,7 @@ setupProcessErrorHandlers()
 logEvent({
   level: 'info',
   message: 'app:boot',
-  traceId: createTraceId(),
+  traceId: createTraceId()
 })
 
 function createWindow(): void {
@@ -51,7 +51,7 @@ function createWindow(): void {
         level: 'error',
         message: 'window:openExternal:failed',
         traceId: createTraceId(),
-        context: { error: error instanceof Error ? error.message : String(error) },
+        context: { error: error instanceof Error ? error.message : String(error) }
       })
     })
     return { action: 'deny' }
@@ -65,7 +65,7 @@ function createWindow(): void {
         level: 'error',
         message: 'window:loadURL:failed',
         traceId: createTraceId(),
-        context: { error: error instanceof Error ? error.message : String(error) },
+        context: { error: error instanceof Error ? error.message : String(error) }
       })
     })
   } else {
@@ -74,7 +74,7 @@ function createWindow(): void {
         level: 'error',
         message: 'window:loadFile:failed',
         traceId: createTraceId(),
-        context: { error: error instanceof Error ? error.message : String(error) },
+        context: { error: error instanceof Error ? error.message : String(error) }
       })
     })
   }
@@ -131,7 +131,7 @@ function initNotificationScheduler(): void {
       level: 'error',
       message: 'scheduler:init:failed',
       traceId: createTraceId(),
-      context: { error: error instanceof Error ? error.message : String(error) },
+      context: { error: error instanceof Error ? error.message : String(error) }
     })
   }
 }

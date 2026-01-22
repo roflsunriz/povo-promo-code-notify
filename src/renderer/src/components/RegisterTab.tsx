@@ -23,7 +23,7 @@ function formatDateTime(isoString: string | null): string {
   return date.toLocaleString('ja-JP', {
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit',
+    day: '2-digit'
   })
 }
 
@@ -69,7 +69,7 @@ function ParsedCodeEditForm({
   onMoveUp,
   onMoveDown,
   isFirst,
-  isLast,
+  isLast
 }: ParsedCodeEditFormProps): JSX.Element {
   const [isEditing, setIsEditing] = useState(false)
   const [editedCode, setEditedCode] = useState(code.code)
@@ -81,14 +81,12 @@ function ParsedCodeEditForm({
   )
 
   const handleSave = useCallback(() => {
-    const deadlineIso = editedDeadline
-      ? `${editedDeadline}T23:59:59.999+09:00`
-      : null
+    const deadlineIso = editedDeadline ? `${editedDeadline}T23:59:59.999+09:00` : null
 
     onUpdate(index, {
       code: editedCode,
       inputDeadline: deadlineIso,
-      validityDurationMinutes: parseInt(editedDuration, 10) || 10080,
+      validityDurationMinutes: parseInt(editedDuration, 10) || 10080
     })
     setIsEditing(false)
   }, [index, editedCode, editedDeadline, editedDuration, onUpdate])
@@ -114,7 +112,12 @@ function ParsedCodeEditForm({
               title="上に移動"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 15l7-7 7 7"
+                />
               </svg>
             </button>
             <button
@@ -124,7 +127,12 @@ function ParsedCodeEditForm({
               title="下に移動"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           </div>
@@ -211,7 +219,7 @@ function ParsedCodeEditForm({
  */
 function ManualInputForm({
   onAdd,
-  isLoading,
+  isLoading
 }: {
   onAdd: (code: ParsedCodeInfo) => void
   isLoading: boolean
@@ -235,7 +243,7 @@ function ManualInputForm({
     onAdd({
       code: code.trim().toUpperCase(),
       inputDeadline: deadlineIso,
-      validityDurationMinutes: parseInt(duration, 10) || 10080,
+      validityDurationMinutes: parseInt(duration, 10) || 10080
     })
 
     // フォームをリセット
@@ -362,7 +370,7 @@ export function RegisterTab(): JSX.Element {
       order: nextOrder++,
       code: code.code,
       inputDeadline: code.inputDeadline!,
-      validityDurationMinutes: code.validityDurationMinutes!,
+      validityDurationMinutes: code.validityDurationMinutes!
     }))
 
     const success = await registerCodes(inputs)
@@ -410,11 +418,13 @@ export function RegisterTab(): JSX.Element {
             placeholder="メール本文をここに貼り付け..."
             rows={8}
           />
-          {parseError && (
-            <div className="text-red-400 text-sm">{parseError}</div>
-          )}
+          {parseError && <div className="text-red-400 text-sm">{parseError}</div>}
           <div className="flex gap-2">
-            <Button onClick={() => void handleParse()} isLoading={isLoading} disabled={!emailText.trim()}>
+            <Button
+              onClick={() => void handleParse()}
+              isLoading={isLoading}
+              disabled={!emailText.trim()}
+            >
               抽出
             </Button>
             {emailText && (
@@ -467,7 +477,9 @@ export function RegisterTab(): JSX.Element {
           <p>2. 「抽出」ボタンをクリックすると、コードと期限情報が自動で抽出されます</p>
           <p>3. 抽出結果を確認し、必要に応じて編集・削除・並べ替えを行います</p>
           <p>4. 「登録」ボタンをクリックして保存します</p>
-          <p className="text-zinc-500">※ 自動抽出に失敗した場合は、手入力フォームから追加できます</p>
+          <p className="text-zinc-500">
+            ※ 自動抽出に失敗した場合は、手入力フォームから追加できます
+          </p>
         </div>
       </Card>
     </div>

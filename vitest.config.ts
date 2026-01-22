@@ -24,23 +24,23 @@ export default defineConfig({
         'src/types/ipc.ts',
         // 通知スケジューラーの発火ロジックはElectron Notification APIに依存するため、E2Eテストでカバー
         // 単体テストではスケジューリングロジックのみをカバー
-        '**/notification-scheduler.ts',
+        '**/notification-scheduler.ts'
       ],
       thresholds: {
         lines: 90,
         branches: 90,
         functions: 90,
-        statements: 90,
-      },
+        statements: 90
+      }
     },
     // タイムゾーン固定（Asia/Tokyo）
     env: {
-      TZ: 'Asia/Tokyo',
-    },
+      TZ: 'Asia/Tokyo'
+    }
   },
   resolve: {
     alias: {
-      '@types': resolve(__dirname, 'src/types'),
-    },
-  },
+      '@types': resolve(__dirname, 'src/types')
+    }
+  }
 })

@@ -25,7 +25,7 @@ function formatDateTime(isoString: string | null): string {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit',
+    minute: '2-digit'
   })
 }
 
@@ -70,7 +70,7 @@ function getDaysUntilDeadline(inputDeadline: string): number {
 function CodeRow({
   code,
   showFullCode,
-  onToggleCode,
+  onToggleCode
 }: {
   code: PromoCodeWithStatus
   showFullCode: boolean
@@ -81,9 +81,7 @@ function CodeRow({
 
   return (
     <tr className="border-b border-zinc-700 hover:bg-zinc-700/30">
-      <td className="px-4 py-3 text-center text-zinc-400">
-        #{code.order}
-      </td>
+      <td className="px-4 py-3 text-center text-zinc-400">#{code.order}</td>
       <td className="px-4 py-3">
         <button
           onClick={onToggleCode}
@@ -94,22 +92,14 @@ function CodeRow({
         </button>
       </td>
       <td className="px-4 py-3">
-        <Badge variant={getStatusBadgeVariant(code.status)}>
-          {getStatusLabel(code.status)}
-        </Badge>
+        <Badge variant={getStatusBadgeVariant(code.status)}>{getStatusLabel(code.status)}</Badge>
       </td>
       <td className={`px-4 py-3 ${isDeadlineSoon ? 'text-amber-400' : 'text-zinc-300'}`}>
         {formatDateTime(code.inputDeadline)}
-        {isDeadlineSoon && (
-          <span className="ml-2 text-xs">({daysUntil}日後)</span>
-        )}
+        {isDeadlineSoon && <span className="ml-2 text-xs">({daysUntil}日後)</span>}
       </td>
-      <td className="px-4 py-3 text-zinc-300">
-        {formatDateTime(code.startedAt)}
-      </td>
-      <td className="px-4 py-3 text-zinc-300">
-        {formatDateTime(code.expiresAt)}
-      </td>
+      <td className="px-4 py-3 text-zinc-300">{formatDateTime(code.startedAt)}</td>
+      <td className="px-4 py-3 text-zinc-300">{formatDateTime(code.expiresAt)}</td>
       <td className="px-4 py-3 text-zinc-400 text-sm">
         {formatValidityDuration(code.validityDurationMinutes)}
       </td>
@@ -121,7 +111,7 @@ export function CodesListTab(): JSX.Element {
   // フィルター状態
   const [selectedStatuses, setSelectedStatuses] = useState<CodeStatus[]>([])
   const [deadlineWithinDays, setDeadlineWithinDays] = useState<number | null>(null)
-  
+
   // ソート状態
   const [sortKey, setSortKey] = useState<CodeSortKey>('order')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
@@ -137,14 +127,17 @@ export function CodesListTab(): JSX.Element {
     }
     return {
       statuses: selectedStatuses.length > 0 ? selectedStatuses : undefined,
-      inputDeadlineWithinDays: deadlineWithinDays,
+      inputDeadlineWithinDays: deadlineWithinDays
     }
   }, [selectedStatuses, deadlineWithinDays])
 
-  const sort: CodeSort = useMemo(() => ({
-    key: sortKey,
-    direction: sortDirection,
-  }), [sortKey, sortDirection])
+  const sort: CodeSort = useMemo(
+    () => ({
+      key: sortKey,
+      direction: sortDirection
+    }),
+    [sortKey, sortDirection]
+  )
 
   const { codes, isLoading, error, refresh } = useCodes(filter, sort)
 
@@ -169,27 +162,30 @@ export function CodesListTab(): JSX.Element {
     })
   }, [])
 
-  const handleSortChange = useCallback((key: CodeSortKey) => {
-    if (sortKey === key) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-    } else {
-      setSortKey(key)
-      setSortDirection('asc')
-    }
-  }, [sortKey])
+  const handleSortChange = useCallback(
+    (key: CodeSortKey) => {
+      if (sortKey === key) {
+        setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+      } else {
+        setSortKey(key)
+        setSortDirection('asc')
+      }
+    },
+    [sortKey]
+  )
 
   const sortOptions = [
     { value: 'order', label: '順序' },
     { value: 'inputDeadline', label: '入力期限' },
     { value: 'status', label: '状態' },
-    { value: 'createdAt', label: '登録日' },
+    { value: 'createdAt', label: '登録日' }
   ]
 
   const deadlineOptions = [
     { value: '', label: 'すべて' },
     { value: '7', label: '7日以内' },
     { value: '14', label: '14日以内' },
-    { value: '30', label: '30日以内' },
+    { value: '30', label: '30日以内' }
   ]
 
   if (isLoading && codes.length === 0) {
@@ -277,11 +273,21 @@ export function CodesListTab(): JSX.Element {
           >
             {sortDirection === 'asc' ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+                />
               </svg>
             ) : (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+                />
               </svg>
             )}
           </button>
@@ -316,9 +322,7 @@ export function CodesListTab(): JSX.Element {
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">
-                  コード
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">コード</th>
                 <th
                   className="px-4 py-3 text-left text-sm font-medium text-zinc-400 cursor-pointer hover:text-zinc-200"
                   onClick={() => handleSortChange('status')}
@@ -337,15 +341,9 @@ export function CodesListTab(): JSX.Element {
                     <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">
-                  使用開始
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">
-                  有効期限
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">
-                  有効期間
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用開始</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期限</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期間</th>
               </tr>
             </thead>
             <tbody>
@@ -363,9 +361,7 @@ export function CodesListTab(): JSX.Element {
       )}
 
       {/* 件数表示 */}
-      <div className="text-sm text-zinc-400 text-right">
-        {codes.length}件を表示
-      </div>
+      <div className="text-sm text-zinc-400 text-right">{codes.length}件を表示</div>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import {
   CreatePromoCodeInputSchema,
   IsoDateTimeStringSchema,
   NotificationSettingsSchema,
-  PromoCodeIdSchema,
+  PromoCodeIdSchema
 } from './schemas'
 
 const trimmedNonEmptyString = z.string().trim().min(1, '入力は必須です')
@@ -19,29 +19,29 @@ const codeSortDirectionSchema = z.enum(['asc', 'desc'])
 
 export const CodeFilterSchema = z.object({
   statuses: z.array(CodeStatusSchema).optional(),
-  inputDeadlineWithinDays: z.number().int().nonnegative().nullable().optional(),
+  inputDeadlineWithinDays: z.number().int().nonnegative().nullable().optional()
 })
 
 export const CodeSortSchema = z.object({
   key: codeSortKeySchema,
-  direction: codeSortDirectionSchema,
+  direction: codeSortDirectionSchema
 })
 
 export const GetFilteredCodesRequestSchema = z.object({
   filter: CodeFilterSchema.optional(),
-  sort: CodeSortSchema.optional(),
+  sort: CodeSortSchema.optional()
 })
 
 export const CreateCodeRequestSchema = z.object({
-  input: CreatePromoCodeInputSchema,
+  input: CreatePromoCodeInputSchema
 })
 
 export const CreateCodesRequestSchema = z.object({
-  inputs: z.array(CreatePromoCodeInputSchema).min(1, 'コードがありません'),
+  inputs: z.array(CreatePromoCodeInputSchema).min(1, 'コードがありません')
 })
 
 export const DeleteCodeRequestSchema = z.object({
-  id: PromoCodeIdSchema,
+  id: PromoCodeIdSchema
 })
 
 export const UpdateOrdersRequestSchema = z.object({
@@ -49,34 +49,34 @@ export const UpdateOrdersRequestSchema = z.object({
     .array(
       z.object({
         id: PromoCodeIdSchema,
-        order: z.number().int().positive(),
+        order: z.number().int().positive()
       })
     )
-    .min(1, '更新対象がありません'),
+    .min(1, '更新対象がありません')
 })
 
 export const StartCodeRequestSchema = z.object({
   id: PromoCodeIdSchema,
-  startedAt: IsoDateTimeStringSchema.optional(),
+  startedAt: IsoDateTimeStringSchema.optional()
 })
 
 export const CancelCodeRequestSchema = z.object({
-  id: PromoCodeIdSchema,
+  id: PromoCodeIdSchema
 })
 
 export const EditStartedAtRequestSchema = z.object({
   id: PromoCodeIdSchema,
-  newStartedAt: IsoDateTimeStringSchema,
+  newStartedAt: IsoDateTimeStringSchema
 })
 
 export const UpdateNotificationSettingsRequestSchema = z.object({
-  settings: NotificationSettingsSchema,
+  settings: NotificationSettingsSchema
 })
 
 export const ImportDataRequestSchema = z.object({
-  json: trimmedNonEmptyString.max(5_000_000, 'データが大きすぎます'),
+  json: trimmedNonEmptyString.max(5_000_000, 'データが大きすぎます')
 })
 
 export const ParseEmailRequestSchema = z.object({
-  text: trimmedNonEmptyString.max(200_000, 'メール本文が大きすぎます'),
+  text: trimmedNonEmptyString.max(200_000, 'メール本文が大きすぎます')
 })

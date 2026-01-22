@@ -17,7 +17,7 @@ import {
   ParseEmailRequestSchema,
   StartCodeRequestSchema,
   UpdateNotificationSettingsRequestSchema,
-  UpdateOrdersRequestSchema,
+  UpdateOrdersRequestSchema
 } from '@types/ipc-schemas'
 import { app, dialog, ipcMain, Notification } from 'electron'
 import { withTrace } from './observability'
@@ -42,7 +42,7 @@ import {
   getUnusedCodes,
   parseEmailForRegistration,
   updateNotificationSchedulerCodes,
-  updateNotificationSchedulerSettings,
+  updateNotificationSchedulerSettings
 } from './services'
 import type { CodeStatus, PromoCodeWithStatus } from '@types/code'
 import type {
@@ -79,7 +79,7 @@ import type {
   UpdateNotificationSettingsRequest,
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
-  UpdateOrdersResponse,
+  UpdateOrdersResponse
 } from '@types/ipc'
 import type { ZodType } from 'zod'
 
@@ -148,101 +148,87 @@ function registerGetAllCodes(): void {
 }
 
 function registerCreateCode(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.CREATE_CODE,
-    (_event, request: CreateCodeRequest) =>
-      withTrace('ipc:createCode', (): CreateCodeResponse => {
-        const parsed = parseRequest(CreateCodeRequestSchema, request)
-        const code = createCode(parsed.input)
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { code }
-      })
+  ipcMain.handle(IPC_CHANNELS.CREATE_CODE, (_event, request: CreateCodeRequest) =>
+    withTrace('ipc:createCode', (): CreateCodeResponse => {
+      const parsed = parseRequest(CreateCodeRequestSchema, request)
+      const code = createCode(parsed.input)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { code }
+    })
   )
 }
 
 function registerCreateCodes(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.CREATE_CODES,
-    (_event, request: CreateCodesRequest) =>
-      withTrace('ipc:createCodes', (): CreateCodesResponse => {
-        const parsed = parseRequest(CreateCodesRequestSchema, request)
-        const codes = createCodes(parsed.inputs)
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { codes }
-      })
+  ipcMain.handle(IPC_CHANNELS.CREATE_CODES, (_event, request: CreateCodesRequest) =>
+    withTrace('ipc:createCodes', (): CreateCodesResponse => {
+      const parsed = parseRequest(CreateCodesRequestSchema, request)
+      const codes = createCodes(parsed.inputs)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { codes }
+    })
   )
 }
 
 function registerDeleteCode(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.DELETE_CODE,
-    (_event, request: DeleteCodeRequest) =>
-      withTrace('ipc:deleteCode', (): DeleteCodeResponse => {
-        const parsed = parseRequest(DeleteCodeRequestSchema, request)
-        const success = deleteCode(parsed.id)
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { success }
-      })
+  ipcMain.handle(IPC_CHANNELS.DELETE_CODE, (_event, request: DeleteCodeRequest) =>
+    withTrace('ipc:deleteCode', (): DeleteCodeResponse => {
+      const parsed = parseRequest(DeleteCodeRequestSchema, request)
+      const success = deleteCode(parsed.id)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { success }
+    })
   )
 }
 
 function registerUpdateOrders(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.UPDATE_ORDERS,
-    (_event, request: UpdateOrdersRequest) =>
-      withTrace('ipc:updateOrders', (): UpdateOrdersResponse => {
-        const parsed = parseRequest(UpdateOrdersRequestSchema, request)
-        updateOrders(parsed.orders)
-        return { success: true }
-      })
+  ipcMain.handle(IPC_CHANNELS.UPDATE_ORDERS, (_event, request: UpdateOrdersRequest) =>
+    withTrace('ipc:updateOrders', (): UpdateOrdersResponse => {
+      const parsed = parseRequest(UpdateOrdersRequestSchema, request)
+      updateOrders(parsed.orders)
+      return { success: true }
+    })
   )
 }
 
 // ==================== 使用開始・取り消し ====================
 
 function registerStartCode(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.START_CODE,
-    (_event, request: StartCodeRequest) =>
-      withTrace('ipc:startCode', (): StartCodeResponse => {
-        const parsed = parseRequest(StartCodeRequestSchema, request)
-        const startedAt = parsed.startedAt ? new Date(parsed.startedAt) : undefined
-        const code = startCode(parsed.id, startedAt)
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { code: code ?? null }
-      })
+  ipcMain.handle(IPC_CHANNELS.START_CODE, (_event, request: StartCodeRequest) =>
+    withTrace('ipc:startCode', (): StartCodeResponse => {
+      const parsed = parseRequest(StartCodeRequestSchema, request)
+      const startedAt = parsed.startedAt ? new Date(parsed.startedAt) : undefined
+      const code = startCode(parsed.id, startedAt)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { code: code ?? null }
+    })
   )
 }
 
 function registerCancelCode(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.CANCEL_CODE,
-    (_event, request: CancelCodeRequest) =>
-      withTrace('ipc:cancelCode', (): CancelCodeResponse => {
-        const parsed = parseRequest(CancelCodeRequestSchema, request)
-        const code = cancelCode(parsed.id)
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { code: code ?? null }
-      })
+  ipcMain.handle(IPC_CHANNELS.CANCEL_CODE, (_event, request: CancelCodeRequest) =>
+    withTrace('ipc:cancelCode', (): CancelCodeResponse => {
+      const parsed = parseRequest(CancelCodeRequestSchema, request)
+      const code = cancelCode(parsed.id)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { code: code ?? null }
+    })
   )
 }
 
 function registerEditStartedAt(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.EDIT_STARTED_AT,
-    (_event, request: EditStartedAtRequest) =>
-      withTrace('ipc:editStartedAt', (): EditStartedAtResponse => {
-        const parsed = parseRequest(EditStartedAtRequestSchema, request)
-        const code = editStartedAt(parsed.id, new Date(parsed.newStartedAt))
-        // 通知スケジューラーを更新
-        updateNotificationSchedulerCodes(getAllCodes())
-        return { code: code ?? null }
-      })
+  ipcMain.handle(IPC_CHANNELS.EDIT_STARTED_AT, (_event, request: EditStartedAtRequest) =>
+    withTrace('ipc:editStartedAt', (): EditStartedAtResponse => {
+      const parsed = parseRequest(EditStartedAtRequestSchema, request)
+      const code = editStartedAt(parsed.id, new Date(parsed.newStartedAt))
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { code: code ?? null }
+    })
   )
 }
 
@@ -286,7 +272,7 @@ function registerGetDashboard(): void {
         nextCandidate,
         activeCodes,
         unusedCount: unusedCodes.length,
-        totalCount: codes.length,
+        totalCount: codes.length
       }
 
       return { data }
@@ -297,30 +283,28 @@ function registerGetDashboard(): void {
 // ==================== フィルター付き取得 ====================
 
 function registerGetFilteredCodes(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.GET_FILTERED_CODES,
-    (_event, request: GetFilteredCodesRequest) =>
-      withTrace('ipc:getFilteredCodes', (): GetFilteredCodesResponse => {
-        const parsed = parseRequest(GetFilteredCodesRequestSchema, request)
-        const codes = getAllCodes()
-        const now = new Date()
-        let codesWithStatus = attachStatusToAll(codes, now)
+  ipcMain.handle(IPC_CHANNELS.GET_FILTERED_CODES, (_event, request: GetFilteredCodesRequest) =>
+    withTrace('ipc:getFilteredCodes', (): GetFilteredCodesResponse => {
+      const parsed = parseRequest(GetFilteredCodesRequestSchema, request)
+      const codes = getAllCodes()
+      const now = new Date()
+      let codesWithStatus = attachStatusToAll(codes, now)
 
-        // フィルター適用
-        if (parsed.filter) {
-          codesWithStatus = applyFilter(codesWithStatus, parsed.filter, now)
-        }
+      // フィルター適用
+      if (parsed.filter) {
+        codesWithStatus = applyFilter(codesWithStatus, parsed.filter, now)
+      }
 
-        // ソート適用
-        if (parsed.sort) {
-          codesWithStatus = applySort(codesWithStatus, parsed.sort)
-        } else {
-          // デフォルトは順序の昇順
-          codesWithStatus = applySort(codesWithStatus, { key: 'order', direction: 'asc' })
-        }
+      // ソート適用
+      if (parsed.sort) {
+        codesWithStatus = applySort(codesWithStatus, parsed.sort)
+      } else {
+        // デフォルトは順序の昇順
+        codesWithStatus = applySort(codesWithStatus, { key: 'order', direction: 'asc' })
+      }
 
-        return { codes: codesWithStatus }
-      })
+      return { codes: codesWithStatus }
+    })
   )
 }
 
@@ -367,14 +351,12 @@ function applySort(codes: PromoCodeWithStatus[], sort: CodeSort): PromoCodeWithS
           active: 0,
           unused: 1,
           consumed: 2,
-          expired: 3,
+          expired: 3
         }
         return (statusOrder[a.status] - statusOrder[b.status]) * direction
       }
       case 'createdAt':
-        return (
-          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction
-        )
+        return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction
       default:
         return 0
     }
@@ -420,19 +402,17 @@ function registerExportData(): void {
 }
 
 function registerImportData(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.IMPORT_DATA,
-    (_event, request: ImportDataRequest) =>
-      withTrace('ipc:importData', (): ImportDataResponse => {
-        const parsed = parseRequest(ImportDataRequestSchema, request)
-        const result = importData(parsed.json)
-        if (result.success) {
-          // 通知スケジューラーを更新（コードと設定の両方）
-          updateNotificationSchedulerCodes(getAllCodes())
-          updateNotificationSchedulerSettings(getNotificationSettings())
-        }
-        return result
-      })
+  ipcMain.handle(IPC_CHANNELS.IMPORT_DATA, (_event, request: ImportDataRequest) =>
+    withTrace('ipc:importData', (): ImportDataResponse => {
+      const parsed = parseRequest(ImportDataRequestSchema, request)
+      const result = importData(parsed.json)
+      if (result.success) {
+        // 通知スケジューラーを更新（コードと設定の両方）
+        updateNotificationSchedulerCodes(getAllCodes())
+        updateNotificationSchedulerSettings(getNotificationSettings())
+      }
+      return result
+    })
   )
 }
 
@@ -455,7 +435,7 @@ function registerExportToFile(): void {
       const result = await dialog.showSaveDialog({
         title: 'データをエクスポート',
         defaultPath: `povo-codes-${formatDateForFilename(new Date())}.json`,
-        filters: [{ name: 'JSON Files', extensions: ['json'] }],
+        filters: [{ name: 'JSON Files', extensions: ['json'] }]
       })
 
       if (result.canceled || !result.filePath) {
@@ -486,7 +466,7 @@ function registerImportFromFile(): void {
       const result = await dialog.showOpenDialog({
         title: 'データをインポート',
         filters: [{ name: 'JSON Files', extensions: ['json'] }],
-        properties: ['openFile'],
+        properties: ['openFile']
       })
 
       if (result.canceled || result.filePaths.length === 0) {
@@ -511,7 +491,7 @@ function registerImportFromFile(): void {
         return {
           success: false,
           error: importResult.error,
-          backupPath,
+          backupPath
         }
       }
 
@@ -562,13 +542,11 @@ async function createAutoBackup(): Promise<string> {
 // ==================== メール解析 ====================
 
 function registerParseEmail(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.PARSE_EMAIL,
-    (_event, request: ParseEmailRequest) =>
-      withTrace('ipc:parseEmail', (): ParseEmailResponse => {
-        const parsed = parseRequest(ParseEmailRequestSchema, request)
-        return parseEmailForRegistration(parsed.text)
-      })
+  ipcMain.handle(IPC_CHANNELS.PARSE_EMAIL, (_event, request: ParseEmailRequest) =>
+    withTrace('ipc:parseEmail', (): ParseEmailResponse => {
+      const parsed = parseRequest(ParseEmailRequestSchema, request)
+      return parseEmailForRegistration(parsed.text)
+    })
   )
 }
 
@@ -584,7 +562,7 @@ function registerSendTestNotification(): void {
       const notification = new Notification({
         title: 'povo プロモコード管理',
         body: 'テスト通知です。通知が正常に機能しています。',
-        icon: undefined, // アイコンは後で追加可能
+        icon: undefined // アイコンは後で追加可能
       })
 
       notification.show()

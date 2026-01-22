@@ -65,7 +65,7 @@ export const PromoCodeSchema = z.object({
   startedAt: isoDateTimeString.nullable(),
   expiresAt: isoDateTimeString.nullable(),
   createdAt: isoDateTimeString,
-  updatedAt: isoDateTimeString,
+  updatedAt: isoDateTimeString
 })
 
 /**
@@ -75,7 +75,7 @@ export const CreatePromoCodeInputSchema = z.object({
   order: orderNumber,
   code: promoCodeString,
   inputDeadline: isoDateTimeString,
-  validityDurationMinutes: validityDurationMinutes,
+  validityDurationMinutes: validityDurationMinutes
 })
 
 /**
@@ -87,7 +87,7 @@ export const UpdatePromoCodeInputSchema = z.object({
   inputDeadline: isoDateTimeString.optional(),
   validityDurationMinutes: validityDurationMinutes.optional(),
   startedAt: isoDateTimeString.nullable().optional(),
-  expiresAt: isoDateTimeString.nullable().optional(),
+  expiresAt: isoDateTimeString.nullable().optional()
 })
 
 /**
@@ -99,7 +99,7 @@ export const NotificationSettingsSchema = z.object({
   ),
   inputDeadlineThresholdsMinutes: z.array(
     z.number().int().nonnegative('閾値は0以上の整数で入力してください')
-  ),
+  )
 })
 
 /**
@@ -108,7 +108,7 @@ export const NotificationSettingsSchema = z.object({
 export const StoreDataSchema = z.object({
   version: z.number().int().positive(),
   codes: z.array(PromoCodeSchema),
-  notificationSettings: NotificationSettingsSchema,
+  notificationSettings: NotificationSettingsSchema
 })
 
 /**
@@ -119,7 +119,7 @@ export const ExportDataSchema = z.object({
   version: z.number().int().positive(),
   exportedAt: isoDateTimeString,
   codes: z.array(PromoCodeSchema),
-  notificationSettings: NotificationSettingsSchema,
+  notificationSettings: NotificationSettingsSchema
 })
 
 /**

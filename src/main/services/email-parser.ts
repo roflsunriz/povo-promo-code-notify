@@ -32,9 +32,7 @@ function isValidDateParts(year: number, month: number, day: number): boolean {
 
   const date = new Date(Date.UTC(year, month - 1, day))
   return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
   )
 }
 
@@ -48,7 +46,7 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
     toMinutes: (match) => {
       const days = parseInt(match[1]!, 10)
       return days * 24 * 60
-    },
+    }
   },
   // 「24時間」形式
   {
@@ -56,7 +54,7 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
     toMinutes: (match) => {
       const hours = parseInt(match[1]!, 10)
       return hours * 60
-    },
+    }
   },
   // 「1時間」形式（漢数字対応）
   {
@@ -64,8 +62,8 @@ const VALIDITY_PATTERNS: ValidityPattern[] = [
     toMinutes: (match) => {
       const hours = kanjiToNumber(match[1]!)
       return hours * 60
-    },
-  },
+    }
+  }
 ]
 
 /**
@@ -82,7 +80,7 @@ function kanjiToNumber(kanji: string): number {
     七: 7,
     八: 8,
     九: 9,
-    十: 10,
+    十: 10
   }
   // 単純な1〜10のみ対応
   return kanjiMap[kanji] ?? 0
@@ -149,7 +147,11 @@ function findInputDeadline(lines: string[], codeIndex: number): string | null {
   const searchRange = 10
   const deadlineRegex = /(入力期限|有効期限|期限)/
 
-  for (let i = Math.max(0, codeIndex - searchRange); i < lines.length && i <= codeIndex + searchRange; i++) {
+  for (
+    let i = Math.max(0, codeIndex - searchRange);
+    i < lines.length && i <= codeIndex + searchRange;
+    i++
+  ) {
     const line = lines[i] ?? ''
 
     if (deadlineRegex.test(line)) {
@@ -187,7 +189,11 @@ function findValidityDuration(lines: string[], codeIndex: number): number | null
   const searchRange = 10
   const validTitleRegex = /(データ使い放題|使い放題)/
 
-  for (let i = Math.max(0, codeIndex - searchRange); i < lines.length && i <= codeIndex + searchRange; i++) {
+  for (
+    let i = Math.max(0, codeIndex - searchRange);
+    i < lines.length && i <= codeIndex + searchRange;
+    i++
+  ) {
     const line = lines[i] ?? ''
 
     // 「データ使い放題」「○日間」「○時間」を含む行
@@ -237,7 +243,7 @@ export function parseEmailText(text: string): ParsedCodeInfo[] {
     results.push({
       code,
       inputDeadline,
-      validityDurationMinutes,
+      validityDurationMinutes
     })
   }
 
@@ -260,20 +266,21 @@ export function parseEmailForRegistration(text: string): {
       return {
         success: false,
         codes: [],
-        error: 'プロモコードが見つかりませんでした。英数字10〜20文字のコードを含むテキストを貼り付けてください。',
+        error:
+          'プロモコードが見つかりませんでした。英数字10〜20文字のコードを含むテキストを貼り付けてください。'
       }
     }
 
     return {
       success: true,
-      codes,
+      codes
     }
   } catch (e) {
     const errorMessage = String(e)
     return {
       success: false,
       codes: [],
-      error: `解析エラー: ${errorMessage}`,
+      error: `解析エラー: ${errorMessage}`
     }
   }
 }

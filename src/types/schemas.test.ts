@@ -13,7 +13,7 @@ import {
   validateCreatePromoCodeInput,
   validateUpdatePromoCodeInput,
   validateStoreData,
-  validateExportData,
+  validateExportData
 } from './schemas'
 
 describe('PromoCodeSchema', () => {
@@ -26,7 +26,7 @@ describe('PromoCodeSchema', () => {
     startedAt: null,
     expiresAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z'
   }
 
   it('有効なプロモコードを検証できる', () => {
@@ -38,7 +38,7 @@ describe('PromoCodeSchema', () => {
     const result = PromoCodeSchema.safeParse({
       ...validPromoCode,
       startedAt: '2026-01-15T12:00:00.000Z',
-      expiresAt: '2026-01-22T12:00:00.000Z',
+      expiresAt: '2026-01-22T12:00:00.000Z'
     })
     expect(result.success).toBe(true)
   })
@@ -47,7 +47,7 @@ describe('PromoCodeSchema', () => {
     it('無効なUUIDは拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        id: 'invalid-uuid',
+        id: 'invalid-uuid'
       })
       expect(result.success).toBe(false)
     })
@@ -55,7 +55,7 @@ describe('PromoCodeSchema', () => {
     it('空のコードは拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        code: '',
+        code: ''
       })
       expect(result.success).toBe(false)
     })
@@ -63,7 +63,7 @@ describe('PromoCodeSchema', () => {
     it('英数字以外を含むコードは拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        code: 'CODE-123!',
+        code: 'CODE-123!'
       })
       expect(result.success).toBe(false)
     })
@@ -71,7 +71,7 @@ describe('PromoCodeSchema', () => {
     it('負の順序は拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        order: -1,
+        order: -1
       })
       expect(result.success).toBe(false)
     })
@@ -79,7 +79,7 @@ describe('PromoCodeSchema', () => {
     it('0の順序は拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        order: 0,
+        order: 0
       })
       expect(result.success).toBe(false)
     })
@@ -87,7 +87,7 @@ describe('PromoCodeSchema', () => {
     it('負の有効期間は拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        validityDurationMinutes: -60,
+        validityDurationMinutes: -60
       })
       expect(result.success).toBe(false)
     })
@@ -95,7 +95,7 @@ describe('PromoCodeSchema', () => {
     it('無効な日時文字列は拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
-        inputDeadline: 'invalid-date',
+        inputDeadline: 'invalid-date'
       })
       expect(result.success).toBe(false)
     })
@@ -108,7 +108,7 @@ describe('CreatePromoCodeInputSchema', () => {
       order: 1,
       code: 'TESTCODE123',
       inputDeadline: '2026-06-20T23:59:59.000Z',
-      validityDurationMinutes: 10080,
+      validityDurationMinutes: 10080
     })
     expect(result.success).toBe(true)
   })
@@ -118,7 +118,7 @@ describe('CreatePromoCodeInputSchema', () => {
       order: 1,
       code: 'TESTCODE123',
       // inputDeadlineが欠けている
-      validityDurationMinutes: 10080,
+      validityDurationMinutes: 10080
     })
     expect(result.success).toBe(false)
   })
@@ -127,7 +127,7 @@ describe('CreatePromoCodeInputSchema', () => {
 describe('UpdatePromoCodeInputSchema', () => {
   it('部分更新を検証できる', () => {
     const result = UpdatePromoCodeInputSchema.safeParse({
-      order: 2,
+      order: 2
     })
     expect(result.success).toBe(true)
   })
@@ -140,7 +140,7 @@ describe('UpdatePromoCodeInputSchema', () => {
   it('startedAtとexpiresAtをnullに設定できる', () => {
     const result = UpdatePromoCodeInputSchema.safeParse({
       startedAt: null,
-      expiresAt: null,
+      expiresAt: null
     })
     expect(result.success).toBe(true)
   })
@@ -148,7 +148,7 @@ describe('UpdatePromoCodeInputSchema', () => {
   it('startedAtとexpiresAtを日時に設定できる', () => {
     const result = UpdatePromoCodeInputSchema.safeParse({
       startedAt: '2026-01-15T12:00:00.000Z',
-      expiresAt: '2026-01-22T12:00:00.000Z',
+      expiresAt: '2026-01-22T12:00:00.000Z'
     })
     expect(result.success).toBe(true)
   })
@@ -158,7 +158,7 @@ describe('NotificationSettingsSchema', () => {
   it('有効な通知設定を検証できる', () => {
     const result = NotificationSettingsSchema.safeParse({
       expiryThresholdsMinutes: [1440, 180, 60, 30],
-      inputDeadlineThresholdsMinutes: [],
+      inputDeadlineThresholdsMinutes: []
     })
     expect(result.success).toBe(true)
   })
@@ -166,7 +166,7 @@ describe('NotificationSettingsSchema', () => {
   it('空の閾値配列も有効', () => {
     const result = NotificationSettingsSchema.safeParse({
       expiryThresholdsMinutes: [],
-      inputDeadlineThresholdsMinutes: [],
+      inputDeadlineThresholdsMinutes: []
     })
     expect(result.success).toBe(true)
   })
@@ -174,7 +174,7 @@ describe('NotificationSettingsSchema', () => {
   it('負の閾値は拒否される', () => {
     const result = NotificationSettingsSchema.safeParse({
       expiryThresholdsMinutes: [-1],
-      inputDeadlineThresholdsMinutes: [],
+      inputDeadlineThresholdsMinutes: []
     })
     expect(result.success).toBe(false)
   })
@@ -187,8 +187,8 @@ describe('StoreDataSchema', () => {
       codes: [],
       notificationSettings: {
         expiryThresholdsMinutes: [1440, 180, 60, 30],
-        inputDeadlineThresholdsMinutes: [],
-      },
+        inputDeadlineThresholdsMinutes: []
+      }
     })
     expect(result.success).toBe(true)
   })
@@ -206,13 +206,13 @@ describe('StoreDataSchema', () => {
           startedAt: null,
           expiresAt: null,
           createdAt: '2026-01-01T00:00:00.000Z',
-          updatedAt: '2026-01-01T00:00:00.000Z',
-        },
+          updatedAt: '2026-01-01T00:00:00.000Z'
+        }
       ],
       notificationSettings: {
         expiryThresholdsMinutes: [1440],
-        inputDeadlineThresholdsMinutes: [],
-      },
+        inputDeadlineThresholdsMinutes: []
+      }
     })
     expect(result.success).toBe(true)
   })
@@ -230,7 +230,7 @@ describe('ヘルパー関数', () => {
         startedAt: null,
         expiresAt: null,
         createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z'
       })
 
       expect(result.success).toBe(true)
@@ -240,7 +240,7 @@ describe('ヘルパー関数', () => {
 
     it('無効なデータでsuccess: falseとerrorsを返す', () => {
       const result = validatePromoCode({
-        id: 'invalid',
+        id: 'invalid'
       })
 
       expect(result.success).toBe(false)
@@ -255,7 +255,7 @@ describe('ヘルパー関数', () => {
         order: 1,
         code: 'TESTCODE123',
         inputDeadline: '2026-06-20T23:59:59.000Z',
-        validityDurationMinutes: 10080,
+        validityDurationMinutes: 10080
       })
 
       expect(result.success).toBe(true)
@@ -269,8 +269,8 @@ describe('ヘルパー関数', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       })
 
       expect(result.success).toBe(true)
@@ -280,7 +280,7 @@ describe('ヘルパー関数', () => {
   describe('validateUpdatePromoCodeInput', () => {
     it('有効な更新入力を検証できる', () => {
       const result = validateUpdatePromoCodeInput({
-        startedAt: '2026-01-15T12:00:00.000Z',
+        startedAt: '2026-01-15T12:00:00.000Z'
       })
 
       expect(result.success).toBe(true)
@@ -294,7 +294,7 @@ describe('ヘルパー関数', () => {
 
     it('無効な日時形式は拒否される', () => {
       const result = validateUpdatePromoCodeInput({
-        startedAt: 'invalid-date',
+        startedAt: 'invalid-date'
       })
 
       expect(result.success).toBe(false)
@@ -308,9 +308,9 @@ describe('ヘルパー関数', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: []
         },
-        exportedAt: '2026-01-23T12:00:00.000Z',
+        exportedAt: '2026-01-23T12:00:00.000Z'
       })
 
       expect(result.success).toBe(true)
@@ -322,8 +322,8 @@ describe('ヘルパー関数', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       })
 
       expect(result.success).toBe(false)
@@ -348,14 +348,14 @@ describe('エクスポート/インポート検証', () => {
             startedAt: null,
             expiresAt: null,
             createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
-          },
+            updatedAt: '2026-01-01T00:00:00.000Z'
+          }
         ],
         notificationSettings: {
           expiryThresholdsMinutes: [1440, 180, 60, 30],
-          inputDeadlineThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: []
         },
-        exportedAt: '2026-01-22T12:00:00.000Z', // エクスポート時に追加されるフィールド
+        exportedAt: '2026-01-22T12:00:00.000Z' // エクスポート時に追加されるフィールド
       }
 
       const result = validateStoreData(exportedData)
@@ -368,8 +368,8 @@ describe('エクスポート/インポート検証', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       }
 
       const result = validateStoreData(data)
@@ -386,8 +386,8 @@ describe('エクスポート/インポート検証', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       }
 
       const result = validateStoreData(data)
@@ -407,13 +407,13 @@ describe('エクスポート/インポート検証', () => {
             startedAt: null,
             expiresAt: null,
             createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
-          },
+            updatedAt: '2026-01-01T00:00:00.000Z'
+          }
         ],
         notificationSettings: {
           expiryThresholdsMinutes: [],
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       }
 
       const result = validateStoreData(data)
@@ -426,8 +426,8 @@ describe('エクスポート/インポート検証', () => {
         codes: [],
         notificationSettings: {
           expiryThresholdsMinutes: [-100], // 負の値
-          inputDeadlineThresholdsMinutes: [],
-        },
+          inputDeadlineThresholdsMinutes: []
+        }
       }
 
       const result = validateStoreData(data)
@@ -460,7 +460,7 @@ describe('エクスポート/インポート検証', () => {
             startedAt: null,
             expiresAt: null,
             createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z'
           },
           {
             id: '550e8400-e29b-41d4-a716-446655440002',
@@ -471,7 +471,7 @@ describe('エクスポート/インポート検証', () => {
             startedAt: '2026-01-15T10:00:00.000Z',
             expiresAt: '2026-01-22T10:00:00.000Z',
             createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-15T10:00:00.000Z',
+            updatedAt: '2026-01-15T10:00:00.000Z'
           },
           {
             id: '550e8400-e29b-41d4-a716-446655440003',
@@ -482,13 +482,13 @@ describe('エクスポート/インポート検証', () => {
             startedAt: null,
             expiresAt: null,
             createdAt: '2026-01-01T00:00:00.000Z',
-            updatedAt: '2026-01-01T00:00:00.000Z',
-          },
+            updatedAt: '2026-01-01T00:00:00.000Z'
+          }
         ],
         notificationSettings: {
           expiryThresholdsMinutes: [1440, 180, 60, 30],
-          inputDeadlineThresholdsMinutes: [1440],
-        },
+          inputDeadlineThresholdsMinutes: [1440]
+        }
       }
 
       const result = validateStoreData(data)

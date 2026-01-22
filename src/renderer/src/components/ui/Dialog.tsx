@@ -28,7 +28,7 @@ export function Dialog({
   cancelLabel = 'キャンセル',
   onConfirm,
   variant = 'default',
-  isLoading = false,
+  isLoading = false
 }: DialogProps): JSX.Element | null {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
