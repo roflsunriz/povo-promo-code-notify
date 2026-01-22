@@ -154,6 +154,17 @@ UL1H97X3CKAR6
         expect(result).toHaveLength(1)
         expect(result[0]?.inputDeadline).toBeNull()
       })
+
+      it('無効な日付は抽出されないこと', () => {
+        const text = `
+UL1H97X3CKAR6
+入力期限: 2026年2月30日
+        `
+        const result = parseEmailText(text)
+
+        expect(result).toHaveLength(1)
+        expect(result[0]?.inputDeadline).toBeNull()
+      })
     })
 
     describe('有効期間の抽出', () => {
@@ -389,6 +400,24 @@ MNOPQR345678
 
       it('空文字の場合はnullを返すこと', () => {
         const result = parseDateInput('')
+
+        expect(result).toBeNull()
+      })
+
+      it('存在しない日付はnullを返すこと（ISO）', () => {
+        const result = parseDateInput('2026-02-30')
+
+        expect(result).toBeNull()
+      })
+
+      it('存在しない日付はnullを返すこと（スラッシュ）', () => {
+        const result = parseDateInput('2026/02/30')
+
+        expect(result).toBeNull()
+      })
+
+      it('存在しない日付はnullを返すこと（日本語）', () => {
+        const result = parseDateInput('2026年2月30日')
 
         expect(result).toBeNull()
       })

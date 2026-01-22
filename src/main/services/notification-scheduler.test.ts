@@ -364,8 +364,9 @@ describe('NotificationScheduler', () => {
       })
       notificationScheduler.updateCodes([activeCode])
 
-      // 入力期限通知はスケジュールされない（使用中なので）、代わりに利用終了通知がスケジュールされる可能性
-      // しかし、7日後なので24h前の閾値もスケジュールされない場合がある
+      // 使用中になったため、入力期限通知はクリアされる
+      expect(notificationScheduler.getScheduledCount()).toBe(0)
+      expect(notificationScheduler.getFiredCount()).toBe(0)
     })
   })
 
@@ -434,7 +435,8 @@ describe('NotificationScheduler', () => {
 
   describe('タイムアウト上限', () => {
     it('24.8日を超える通知は定期チェックで再スケジュールされること', () => {
-      const now = new Date()
+      const now = new Date('2026-01-01T00:00:00.000Z')
+      vi.setSystemTime(now)
       // 30日後に期限切れ（MAX_TIMEOUTを超える）
       const codes = [
         createTestCode({
@@ -454,6 +456,13 @@ describe('NotificationScheduler', () => {
       // この動作を確認するため、時間を進めてrescheduleを呼ぶ
       const initialCount = notificationScheduler.getScheduledCount()
       expect(initialCount).toBe(0) // MAX_TIMEOUTを超えているためスケジュールされない
+
+      // 時間を進めて再スケジュール
+      const movedTime = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000)
+      vi.setSystemTime(movedTime)
+      notificationScheduler.reschedule()
+
+      expect(notificationScheduler.getScheduledCount()).toBe(1)
     })
   })
 })

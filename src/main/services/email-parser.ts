@@ -23,6 +23,22 @@ interface ValidityPattern {
 }
 
 /**
+ * 日付の妥当性を検証（YYYY/MM/DDの範囲と実在日）
+ */
+function isValidDateParts(year: number, month: number, day: number): boolean {
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return false
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day))
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  )
+}
+
+/**
  * 有効期間のパターン定義
  */
 const VALIDITY_PATTERNS: ValidityPattern[] = [
@@ -86,12 +102,19 @@ function parseJapaneseDate(text: string): string | null {
     return null
   }
 
-  const year = match[1]
-  const month = (match[2] ?? '').padStart(2, '0')
-  const day = (match[3] ?? '').padStart(2, '0')
+  const year = Number.parseInt(match[1] ?? '', 10)
+  const month = Number.parseInt(match[2] ?? '', 10)
+  const day = Number.parseInt(match[3] ?? '', 10)
+
+  if (!isValidDateParts(year, month, day)) {
+    return null
+  }
+
+  const paddedMonth = String(month).padStart(2, '0')
+  const paddedDay = String(day).padStart(2, '0')
 
   // 入力期限は当日の23:59:59として解釈（日本時間）
-  return `${year}-${month}-${day}T23:59:59.999+09:00`
+  return `${year}-${paddedMonth}-${paddedDay}T23:59:59.999+09:00`
 }
 
 /**
@@ -265,23 +288,36 @@ export function parseEmailForRegistration(text: string): {
  * 複数の形式に対応
  */
 export function parseDateInput(input: string): string | null {
-  // ISO 8601形式
-  if (/^\d{4}-\d{2}-\d{2}/.test(input)) {
-    const date = new Date(input)
-    if (!isNaN(date.getTime())) {
-      // 日本時間の23:59:59として解釈
-      const isoDate = input.substring(0, 10)
-      return `${isoDate}T23:59:59.999+09:00`
+  // ISO 8601形式（YYYY-MM-DD）
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(input)
+  if (isoMatch) {
+    const year = Number.parseInt(isoMatch[1] ?? '', 10)
+    const month = Number.parseInt(isoMatch[2] ?? '', 10)
+    const day = Number.parseInt(isoMatch[3] ?? '', 10)
+
+    if (!isValidDateParts(year, month, day)) {
+      return null
     }
+
+    // 日本時間の23:59:59として解釈
+    const isoDate = `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`
+    return `${isoDate}T23:59:59.999+09:00`
   }
 
   // YYYY/MM/DD形式
   const slashMatch = /^(\d{4})\/(\d{1,2})\/(\d{1,2})/.exec(input)
   if (slashMatch) {
-    const year = slashMatch[1]
-    const month = (slashMatch[2] ?? '').padStart(2, '0')
-    const day = (slashMatch[3] ?? '').padStart(2, '0')
-    return `${year}-${month}-${day}T23:59:59.999+09:00`
+    const year = Number.parseInt(slashMatch[1] ?? '', 10)
+    const month = Number.parseInt(slashMatch[2] ?? '', 10)
+    const day = Number.parseInt(slashMatch[3] ?? '', 10)
+
+    if (!isValidDateParts(year, month, day)) {
+      return null
+    }
+
+    const paddedMonth = String(month).padStart(2, '0')
+    const paddedDay = String(day).padStart(2, '0')
+    return `${year}-${paddedMonth}-${paddedDay}T23:59:59.999+09:00`
   }
 
   // 日本語形式
