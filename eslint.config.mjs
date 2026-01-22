@@ -22,6 +22,63 @@ export default [
       ...js.configs.recommended.rules
     }
   },
+  // TypeScript config for types (shared)
+  {
+    files: ['src/types/**/*.ts'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        projectService: true
+      },
+      globals: {
+        ...globals.node
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+      'unused-imports': unusedImports,
+      import: importPlugin
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports' }
+      ],
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_'
+        }
+      ],
+      'import/no-cycle': 'error',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'type'
+          ],
+          'newlines-between': 'never',
+          alphabetize: { order: 'asc', caseInsensitive: true }
+        }
+      ],
+      eqeqeq: ['error', 'always'],
+      'no-unused-vars': 'off'
+    }
+  },
   // TypeScript config for main (Node.js)
   {
     files: ['src/main/**/*.ts', 'electron.vite.config.ts'],
@@ -173,6 +230,19 @@ export default [
   // Config files (relaxed rules)
   {
     files: ['*.config.{js,mjs,ts}', 'electron.vite.config.ts'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      },
+      globals: {
+        ...globals.node
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint
+    },
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
