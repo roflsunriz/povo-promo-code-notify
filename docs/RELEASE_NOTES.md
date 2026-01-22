@@ -1,5 +1,27 @@
 # リリースノート
 
+## v1.0.2 (2026-01-23)
+
+### 変更概要
+
+- **セキュリティ修正**: `tar`パッケージの脆弱性を解消（GHSA-8qq5-rm4j-mr97, GHSA-r6q2-hw4h-h46w）
+- `electron-builder`を26.4.0→26.5.0にアップグレード
+- `pnpm.overrides`で`tar`>=7.5.4を強制し、推移的依存の脆弱性に対応
+- `electron-builder install-app-deps`のESM互換性問題を回避
+
+### 互換性
+
+- 破壊的変更はありません
+- ネイティブモジュールを追加する場合は、upstream（@electron/rebuild）の修正を待つ必要があります
+
+### 参考
+
+- https://github.com/advisories/GHSA-8qq5-rm4j-mr97
+- https://github.com/advisories/GHSA-r6q2-hw4h-h46w
+- https://github.com/electron-userland/electron-builder/issues/9143
+
+---
+
 ## v1.0.1 (2026-01-23)
 
 ### 変更概要

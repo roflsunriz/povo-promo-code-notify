@@ -1,3 +1,9 @@
+# npmRebuild: false を設定してpostinstallでのネイティブモジュールリビルドをスキップ
+# 理由: tar>=7.5.4がESM-onlyになり、@electron/rebuildとの互換性がないため
+# 参照: https://github.com/electron-userland/electron-builder/issues/9143
+# 注意: このプロジェクトにはネイティブ依存がないため影響なし
+npmRebuild: false
+
 appId: com.povo-promo-code-notify
 productName: povo プロモコード管理
 copyright: Copyright © 2026

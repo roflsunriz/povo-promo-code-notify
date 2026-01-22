@@ -1,6 +1,6 @@
 {
   "name": "povo-promo-code-notify",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "povo 2.0 プロモコード管理アプリ - Windows 11向けデスクトップアプリケーション",
   "main": "./out/main/index.js",
   "author": "",
@@ -18,7 +18,7 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "postinstall": "node node_modules/electron/install.js && electron-builder install-app-deps",
+    "postinstall": "node node_modules/electron/install.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
@@ -51,7 +51,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.17",
     "electron": "^40.0.0",
-    "electron-builder": "^26.4.0",
+    "electron-builder": "^26.5.0",
     "electron-vite": "^5.0.0",
     "eslint": "^9.27.0",
     "eslint-plugin-import": "^2.31.0",
@@ -67,5 +67,10 @@
     "typescript": "^5.8.3",
     "vite": "^7.3.1",
     "vitest": "^4.0.17"
+  },
+  "pnpm": {
+    "overrides": {
+      "tar": ">=7.5.4"
+    }
   }
 }
