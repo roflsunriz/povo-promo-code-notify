@@ -87,6 +87,28 @@ function kanjiToNumber(kanji: string): number {
 }
 
 /**
+ * 入力期限のデフォルト日数（システム日時からの日数）
+ */
+const DEFAULT_INPUT_DEADLINE_DAYS = 156
+
+/**
+ * システム日時から指定日数後のISO 8601形式日時を生成
+ * @param daysFromNow システム日時からの日数
+ * @returns ISO 8601形式の日時文字列（日本時間23:59:59）
+ */
+function getDefaultInputDeadline(daysFromNow: number = DEFAULT_INPUT_DEADLINE_DAYS): string {
+  const now = new Date()
+  const targetDate = new Date(now.getTime() + daysFromNow * 24 * 60 * 60 * 1000)
+
+  const year = targetDate.getFullYear()
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0')
+  const day = String(targetDate.getDate()).padStart(2, '0')
+
+  // 入力期限は当日の23:59:59として解釈（日本時間）
+  return `${year}-${month}-${day}T23:59:59.999+09:00`
+}
+
+/**
  * 日本語日付をISO 8601形式に変換
  * 例: "2026年6月20日（金）" → "2026-06-20T23:59:59.999+09:00"
  *
@@ -178,7 +200,8 @@ function findInputDeadline(lines: string[], codeIndex: number): string | null {
     }
   }
 
-  return null
+  // 日付が見つからない場合、デフォルト値（156日後）を返す
+  return getDefaultInputDeadline()
 }
 
 /**

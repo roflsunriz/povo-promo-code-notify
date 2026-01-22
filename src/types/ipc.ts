@@ -56,6 +56,23 @@ export interface DeleteCodeResponse {
 }
 
 /**
+ * コードを更新（基本情報編集用）
+ */
+export interface UpdateCodeRequest {
+  id: string
+  input: {
+    order?: number
+    code?: string
+    inputDeadline?: string
+    validityDurationMinutes?: number
+  }
+}
+
+export interface UpdateCodeResponse {
+  code: PromoCode | null
+}
+
+/**
  * 順序を更新
  */
 export interface UpdateOrdersRequest {
@@ -295,6 +312,7 @@ export const IPC_CHANNELS = {
   CREATE_CODE: 'codes:create',
   CREATE_CODES: 'codes:createMany',
   DELETE_CODE: 'codes:delete',
+  UPDATE_CODE: 'codes:update',
   UPDATE_ORDERS: 'codes:updateOrders',
 
   // 使用開始・取り消し

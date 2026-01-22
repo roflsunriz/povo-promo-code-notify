@@ -87,6 +87,24 @@ function CodeSelectCard({
 }
 
 /**
+ * ISOをdate形式（YYYY-MM-DD）に変換
+ */
+function isoToDate(isoString: string): string {
+  const date = new Date(isoString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * date形式をISOに変換（23:59:59として解釈）
+ */
+function dateToIso(dateStr: string): string {
+  return `${dateStr}T23:59:59.999+09:00`
+}
+
+/**
  * コード編集パネル
  */
 function CodeEditPanel({
@@ -95,6 +113,7 @@ function CodeEditPanel({
   onCancelCode,
   onEditStartedAt,
   onDeleteCode,
+  onUpdateCode,
   isLoading,
   onRefresh
 }: {
@@ -103,6 +122,10 @@ function CodeEditPanel({
   onCancelCode: (id: string) => Promise<boolean>
   onEditStartedAt: (id: string, newStartedAt: string) => Promise<boolean>
   onDeleteCode: (id: string) => Promise<boolean>
+  onUpdateCode: (
+    id: string,
+    input: { code?: string; inputDeadline?: string; validityDurationMinutes?: number }
+  ) => Promise<boolean>
   isLoading: boolean
   onRefresh: () => Promise<void>
 }): JSX.Element {
@@ -110,9 +133,17 @@ function CodeEditPanel({
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
+  // 基本情報編集用のstate
+  const [isEditingBasicInfo, setIsEditingBasicInfo] = useState(false)
+  const [editedCode, setEditedCode] = useState(code.code)
+  const [editedInputDeadline, setEditedInputDeadline] = useState(isoToDate(code.inputDeadline))
+  const [editedDuration, setEditedDuration] = useState(code.validityDurationMinutes.toString())
+
   const canStart = code.status === 'unused'
   const canCancel = code.status === 'active' || code.status === 'consumed'
   const canEdit = code.startedAt !== null
+  // 未使用・期限切れのコードのみ基本情報を編集可能
+  const canEditBasicInfo = code.status === 'unused' || code.status === 'expired'
 
   const handleStart = useCallback(async () => {
     const success = await onStartCode(code.id)
@@ -146,35 +177,127 @@ function CodeEditPanel({
     }
   }, [code.id, onDeleteCode, onRefresh])
 
+  const handleStartEditBasicInfo = useCallback(() => {
+    setEditedCode(code.code)
+    setEditedInputDeadline(isoToDate(code.inputDeadline))
+    setEditedDuration(code.validityDurationMinutes.toString())
+    setIsEditingBasicInfo(true)
+  }, [code])
+
+  const handleCancelEditBasicInfo = useCallback(() => {
+    setIsEditingBasicInfo(false)
+  }, [])
+
+  const handleSaveBasicInfo = useCallback(async () => {
+    const input: { code?: string; inputDeadline?: string; validityDurationMinutes?: number } = {}
+
+    // 変更があった項目のみ更新対象にする
+    if (editedCode !== code.code) {
+      input.code = editedCode.trim().toUpperCase()
+    }
+    if (editedInputDeadline !== isoToDate(code.inputDeadline)) {
+      input.inputDeadline = dateToIso(editedInputDeadline)
+    }
+    const newDuration = parseInt(editedDuration, 10)
+    if (!isNaN(newDuration) && newDuration !== code.validityDurationMinutes) {
+      input.validityDurationMinutes = newDuration
+    }
+
+    // 何も変更がなければ何もしない
+    if (Object.keys(input).length === 0) {
+      setIsEditingBasicInfo(false)
+      return
+    }
+
+    const success = await onUpdateCode(code.id, input)
+    if (success) {
+      setIsEditingBasicInfo(false)
+      await onRefresh()
+    }
+  }, [code, editedCode, editedInputDeadline, editedDuration, onUpdateCode, onRefresh])
+
   return (
     <Card title="コード操作">
       <div className="space-y-6">
         {/* コード情報 */}
         <div className="p-4 bg-zinc-700/50 rounded-lg">
-          <div className="flex items-center gap-3 mb-3">
-            <Badge variant={getStatusBadgeVariant(code.status)}>
-              {getStatusLabel(code.status)}
-            </Badge>
-            <span className="font-mono text-xl text-amber-400">{code.code}</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <Badge variant={getStatusBadgeVariant(code.status)}>
+                {getStatusLabel(code.status)}
+              </Badge>
+              {!isEditingBasicInfo && (
+                <span className="font-mono text-xl text-amber-400">{code.code}</span>
+              )}
+            </div>
+            {canEditBasicInfo && !isEditingBasicInfo && (
+              <button
+                onClick={handleStartEditBasicInfo}
+                className="p-2 text-zinc-400 hover:text-zinc-200"
+                title="基本情報を編集"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <div className="text-zinc-400">入力期限</div>
-              <div className="text-zinc-200">{formatDateTime(code.inputDeadline)}</div>
+
+          {isEditingBasicInfo ? (
+            <div className="space-y-4">
+              <Input
+                label="コード"
+                value={editedCode}
+                onChange={(e) => setEditedCode(e.target.value)}
+                placeholder="例: UL1H97X3CKAR6"
+              />
+              <Input
+                label="入力期限"
+                type="date"
+                value={editedInputDeadline}
+                onChange={(e) => setEditedInputDeadline(e.target.value)}
+              />
+              <Input
+                label="有効期間（分）"
+                type="number"
+                value={editedDuration}
+                onChange={(e) => setEditedDuration(e.target.value)}
+                helperText="7日=10080, 24時間=1440, 1時間=60"
+              />
+              <div className="flex gap-2">
+                <Button onClick={() => void handleSaveBasicInfo()} isLoading={isLoading}>
+                  保存
+                </Button>
+                <Button variant="secondary" onClick={handleCancelEditBasicInfo}>
+                  キャンセル
+                </Button>
+              </div>
             </div>
-            <div>
-              <div className="text-zinc-400">有効期間</div>
-              <div className="text-zinc-200">{code.validityDurationMinutes}分</div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-zinc-400">入力期限</div>
+                <div className="text-zinc-200">{formatDateTime(code.inputDeadline)}</div>
+              </div>
+              <div>
+                <div className="text-zinc-400">有効期間</div>
+                <div className="text-zinc-200">{code.validityDurationMinutes}分</div>
+              </div>
+              <div>
+                <div className="text-zinc-400">使用開始</div>
+                <div className="text-zinc-200">{formatDateTime(code.startedAt)}</div>
+              </div>
+              <div>
+                <div className="text-zinc-400">有効期限</div>
+                <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-zinc-400">使用開始</div>
-              <div className="text-zinc-200">{formatDateTime(code.startedAt)}</div>
-            </div>
-            <div>
-              <div className="text-zinc-400">有効期限</div>
-              <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* 使用開始 */}
@@ -290,6 +413,7 @@ export function EditTab(): JSX.Element {
     cancelCode,
     editStartedAt,
     deleteCode,
+    updateCode,
     isLoading: isActionLoading
   } = useCodeActions()
 
@@ -387,6 +511,7 @@ export function EditTab(): JSX.Element {
             onCancelCode={cancelCode}
             onEditStartedAt={editStartedAt}
             onDeleteCode={deleteCode}
+            onUpdateCode={updateCode}
             isLoading={isActionLoading}
             onRefresh={handleRefresh}
           />

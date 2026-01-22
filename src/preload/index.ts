@@ -29,6 +29,8 @@ import type {
   ParseEmailResponse,
   StartCodeRequest,
   StartCodeResponse,
+  UpdateCodeRequest,
+  UpdateCodeResponse,
   UpdateNotificationSettingsRequest,
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
@@ -48,6 +50,9 @@ const api = {
 
   deleteCode: (request: DeleteCodeRequest): Promise<DeleteCodeResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.DELETE_CODE, request),
+
+  updateCode: (request: UpdateCodeRequest): Promise<UpdateCodeResponse> =>
+    ipcRenderer.invoke(IPC_CHANNELS.UPDATE_CODE, request),
 
   updateOrders: (request: UpdateOrdersRequest): Promise<UpdateOrdersResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.UPDATE_ORDERS, request),

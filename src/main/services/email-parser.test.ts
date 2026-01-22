@@ -152,15 +152,23 @@ UL1H97X3CKAR6
         expect(result[0]?.inputDeadline).toBe('2026-08-10T23:59:59.999+09:00')
       })
 
-      it('日付がない場合はnullになること', () => {
+      it('日付がない場合はデフォルト値（156日後）になること', () => {
         const text = 'UL1H97X3CKAR6のみ'
         const result = parseEmailText(text)
 
         expect(result).toHaveLength(1)
-        expect(result[0]?.inputDeadline).toBeNull()
+        // デフォルト値は156日後のISO形式（23:59:59）
+        expect(result[0]?.inputDeadline).not.toBeNull()
+        expect(result[0]?.inputDeadline).toMatch(/^\d{4}-\d{2}-\d{2}T23:59:59\.999\+09:00$/)
+
+        // 156日後であることを確認
+        const expectedDate = new Date()
+        expectedDate.setDate(expectedDate.getDate() + 156)
+        const expectedDateStr = `${expectedDate.getFullYear()}-${String(expectedDate.getMonth() + 1).padStart(2, '0')}-${String(expectedDate.getDate()).padStart(2, '0')}`
+        expect(result[0]?.inputDeadline).toContain(expectedDateStr)
       })
 
-      it('無効な日付は抽出されないこと', () => {
+      it('無効な日付の場合はデフォルト値（156日後）になること', () => {
         const text = `
 UL1H97X3CKAR6
 入力期限: 2026年2月30日
@@ -168,7 +176,9 @@ UL1H97X3CKAR6
         const result = parseEmailText(text)
 
         expect(result).toHaveLength(1)
-        expect(result[0]?.inputDeadline).toBeNull()
+        // 無効な日付の場合もデフォルト値が設定される
+        expect(result[0]?.inputDeadline).not.toBeNull()
+        expect(result[0]?.inputDeadline).toMatch(/^\d{4}-\d{2}-\d{2}T23:59:59\.999\+09:00$/)
       })
     })
 

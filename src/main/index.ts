@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, Menu, nativeImage, shell, Tray } from 'electron'
 import { registerIpcHandlers } from './ipc-handlers'
 import {
   configureObservability,
@@ -15,6 +15,13 @@ import {
   stopNotificationScheduler
 } from './services'
 
+/** システムトレイインスタンス */
+let tray: Tray | null = null
+/** メインウィンドウインスタンス */
+let mainWindow: BrowserWindow | null = null
+/** アプリを完全に終了するかどうか（トレイから終了時にtrue） */
+let isQuitting = false
+
 configureObservability({ logLevel: 'info' })
 setupProcessErrorHandlers()
 
@@ -25,7 +32,7 @@ logEvent({
 })
 
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
@@ -42,7 +49,15 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
+  })
+
+  // ウィンドウを閉じようとした時、トレイに最小化する（完全終了フラグがfalseの場合）
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault()
+      mainWindow?.hide()
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -80,6 +95,62 @@ function createWindow(): void {
   }
 }
 
+/**
+ * システムトレイを作成
+ */
+function createTray(): void {
+  // 開発環境ではアイコンがない場合があるため、アイコンなしでも動作するようにする
+  // 本番環境では適切なアイコンを設定する
+  try {
+    // 16x16のシンプルなアイコンを作成（オレンジ色の四角）
+    const iconDataUrl =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAM0lEQVQ4T2NkYGD4z0ABYBw1YDQMGBgYGP6TYwA+lzOQawA+/aMGjIYBIwMDA/l+GAoAAHCWBBF0M5WeAAAAAElFTkSuQmCC'
+    const icon = nativeImage.createFromDataURL(iconDataUrl)
+
+    tray = new Tray(icon)
+    tray.setToolTip('povo プロモコード管理')
+
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'ウィンドウを表示',
+        click: () => {
+          mainWindow?.show()
+          mainWindow?.focus()
+        }
+      },
+      { type: 'separator' },
+      {
+        label: '終了',
+        click: () => {
+          isQuitting = true
+          app.quit()
+        }
+      }
+    ])
+
+    tray.setContextMenu(contextMenu)
+
+    // トレイアイコンをダブルクリックでウィンドウを表示
+    tray.on('double-click', () => {
+      mainWindow?.show()
+      mainWindow?.focus()
+    })
+
+    logEvent({
+      level: 'info',
+      message: 'tray:created',
+      traceId: createTraceId()
+    })
+  } catch (error) {
+    logEvent({
+      level: 'warn',
+      message: 'tray:create:failed',
+      traceId: createTraceId(),
+      context: { error: error instanceof Error ? error.message : String(error) }
+    })
+  }
+}
+
 // This method will be called when Electron has finished initialization
 void app.whenReady().then(() => {
   // Set app user model id for Windows
@@ -99,6 +170,9 @@ void app.whenReady().then(() => {
 
   createWindow()
 
+  // システムトレイを作成
+  createTray()
+
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open
@@ -106,16 +180,29 @@ void app.whenReady().then(() => {
   })
 })
 
-// Quit when all windows are closed, except on macOS
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+// before-quitイベントで終了フラグを立てる
+app.on('before-quit', () => {
+  isQuitting = true
 })
 
-// アプリ終了時に通知スケジューラーを停止
+// Quit when all windows are closed, except on macOS
+// ただし、トレイに常駐している間は終了しない
+app.on('window-all-closed', () => {
+  // トレイに常駐しているため、ウィンドウが閉じられても終了しない
+  // 終了はトレイメニューから行う
+  if (process.platform === 'darwin') {
+    // macOSでは通常の挙動（ウィンドウを閉じてもアプリは終了しない）
+  }
+  // Windowsではトレイに常駐するため、ここでは何もしない
+})
+
+// アプリ終了時に通知スケジューラーを停止、トレイを破棄
 app.on('will-quit', () => {
   stopNotificationScheduler()
+  if (tray !== null) {
+    tray.destroy()
+    tray = null
+  }
 })
 
 /**

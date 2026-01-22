@@ -9,7 +9,8 @@ import {
   CreatePromoCodeInputSchema,
   IsoDateTimeStringSchema,
   NotificationSettingsSchema,
-  PromoCodeIdSchema
+  PromoCodeIdSchema,
+  UpdatePromoCodeInputSchema
 } from './schemas'
 
 const trimmedNonEmptyString = z.string().trim().min(1, '入力は必須です')
@@ -42,6 +43,11 @@ export const CreateCodesRequestSchema = z.object({
 
 export const DeleteCodeRequestSchema = z.object({
   id: PromoCodeIdSchema
+})
+
+export const UpdateCodeRequestSchema = z.object({
+  id: PromoCodeIdSchema,
+  input: UpdatePromoCodeInputSchema
 })
 
 export const UpdateOrdersRequestSchema = z.object({

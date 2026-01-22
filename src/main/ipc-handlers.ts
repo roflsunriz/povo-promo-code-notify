@@ -16,6 +16,7 @@ import {
   ImportDataRequestSchema,
   ParseEmailRequestSchema,
   StartCodeRequestSchema,
+  UpdateCodeRequestSchema,
   UpdateNotificationSettingsRequestSchema,
   UpdateOrdersRequestSchema
 } from '@types/ipc-schemas'
@@ -26,6 +27,7 @@ import {
   createCode,
   createCodes,
   deleteCode,
+  updateCode,
   startCode,
   cancelCode,
   editStartedAt,
@@ -76,6 +78,8 @@ import type {
   ParseEmailResponse,
   StartCodeRequest,
   StartCodeResponse,
+  UpdateCodeRequest,
+  UpdateCodeResponse,
   UpdateNotificationSettingsRequest,
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
@@ -100,6 +104,7 @@ export function registerIpcHandlers(): void {
   registerCreateCode()
   registerCreateCodes()
   registerDeleteCode()
+  registerUpdateCode()
   registerUpdateOrders()
 
   // 使用開始・取り消し
@@ -179,6 +184,18 @@ function registerDeleteCode(): void {
       // 通知スケジューラーを更新
       updateNotificationSchedulerCodes(getAllCodes())
       return { success }
+    })
+  )
+}
+
+function registerUpdateCode(): void {
+  ipcMain.handle(IPC_CHANNELS.UPDATE_CODE, (_event, request: UpdateCodeRequest) =>
+    withTrace('ipc:updateCode', (): UpdateCodeResponse => {
+      const parsed = parseRequest(UpdateCodeRequestSchema, request)
+      const code = updateCode(parsed.id, parsed.input)
+      // 通知スケジューラーを更新
+      updateNotificationSchedulerCodes(getAllCodes())
+      return { code: code ?? null }
     })
   )
 }

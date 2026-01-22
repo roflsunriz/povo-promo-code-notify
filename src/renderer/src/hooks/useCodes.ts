@@ -6,7 +6,8 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import type {
   CreatePromoCodeInput,
   NotificationSettings,
-  PromoCodeWithStatus
+  PromoCodeWithStatus,
+  UpdatePromoCodeInput
 } from '../../../types/code'
 import type { CodeFilter, CodeSort, DashboardData, ParsedCodeInfo } from '../../../types/ipc'
 
@@ -94,6 +95,7 @@ export function useCodeActions(): {
   cancelCode: (id: string) => Promise<boolean>
   editStartedAt: (id: string, newStartedAt: string) => Promise<boolean>
   deleteCode: (id: string) => Promise<boolean>
+  updateCode: (id: string, input: UpdatePromoCodeInput) => Promise<boolean>
   isLoading: boolean
   error: string | null
 } {
@@ -156,7 +158,24 @@ export function useCodeActions(): {
     }
   }, [])
 
-  return { startCode, cancelCode, editStartedAt, deleteCode, isLoading, error }
+  const updateCode = useCallback(
+    async (id: string, input: UpdatePromoCodeInput): Promise<boolean> => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await window.api.updateCode({ id, input })
+        return response.code !== null
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
+        return false
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    []
+  )
+
+  return { startCode, cancelCode, editStartedAt, deleteCode, updateCode, isLoading, error }
 }
 
 /**
