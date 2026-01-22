@@ -18,7 +18,9 @@ export default [
       // E2Eテストは Playwright 独自の環境で実行されるため除外
       '**/e2e/**',
       '**/test-results/**',
-      '**/playwright-report/**'
+      '**/playwright-report/**',
+      // 開発用スクリプトは除外
+      '**/scripts/**'
     ]
   },
   // Base config for all files

@@ -115,8 +115,22 @@ function createTray(): void {
   try {
     const iconPath = getIconPath()
     const icon = nativeImage.createFromPath(iconPath)
-    // Resize for tray (16x16 or 32x32 recommended for Windows)
-    const trayIcon = icon.resize({ width: 16, height: 16 })
+
+    // アイコンが正しく読み込まれたか確認
+    if (icon.isEmpty()) {
+      logEvent({
+        level: 'warn',
+        message: 'tray:icon:empty',
+        traceId: createTraceId(),
+        context: { iconPath }
+      })
+      // フォールバック: デフォルトアイコンを使わずにエラーログのみ
+      return
+    }
+
+    // ICOファイルには複数サイズが含まれているため、Windowsが自動的に適切なサイズを選択
+    // 明示的にリサイズする場合は品質を維持するためオプションを指定
+    const trayIcon = icon.resize({ width: 16, height: 16, quality: 'best' })
 
     tray = new Tray(trayIcon)
     tray.setToolTip('povo プロモコード管理')
