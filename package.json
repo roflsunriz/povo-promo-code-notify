@@ -30,31 +30,31 @@
     "build:win": "pnpm build && electron-builder --win --config"
   },
   "dependencies": {
-    "electron-store": "^10.0.1",
-    "zod": "^3.25.28"
+    "electron-store": "^11.0.2",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/preload": "^3.0.1",
-    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@electron-toolkit/tsconfig": "^2.0.0",
     "@electron-toolkit/utils": "^4.0.0",
     "@eslint/js": "^9.39.2",
     "@tailwindcss/vite": "^4.1.10",
-    "@types/node": "^22.15.21",
+    "@types/node": "^25.0.10",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "@vitejs/plugin-react": "^4.5.2",
-    "@vitest/coverage-v8": "^3.2.4",
-    "electron": "^35.7.5",
-    "electron-builder": "^25.1.8",
-    "electron-vite": "^3.1.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.17",
+    "electron": "^40.0.0",
+    "electron-builder": "^26.4.0",
+    "electron-vite": "^5.0.0",
     "eslint": "^9.27.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^17.0.0",
     "prettier": "^3.5.3",
@@ -62,7 +62,7 @@
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
   }
 }
