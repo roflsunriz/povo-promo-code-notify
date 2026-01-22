@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Build Windows installer
+        run: pnpm build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.version }}
+          body: |
+            ## povo プロモコード管理 v${{ steps.version.outputs.version }}
+
+            ### ダウンロード
+
+            下の「Assets」セクションから `povo-promo-code-notify-${{ steps.version.outputs.version }}-setup.exe` をダウンロードしてください。
+
+            ### インストール方法
+
+            1. ダウンロードしたインストーラーを実行
+            2. インストールウィザードに従ってインストール
+            3. デスクトップまたはスタートメニューからアプリを起動
+
+            ### 変更内容
+
+            詳細は [RELEASE_NOTES.md](https://github.com/${{ github.repository }}/blob/main/docs/RELEASE_NOTES.md) を参照してください。
+          files: |
+            release/*.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
