@@ -9,7 +9,17 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['**/node_modules/**', '**/out/**', '**/dist/**', '**/.git/**', '**/*.d.ts']
+    ignores: [
+      '**/node_modules/**',
+      '**/out/**',
+      '**/dist/**',
+      '**/.git/**',
+      '**/*.d.ts',
+      // E2Eテストは Playwright 独自の環境で実行されるため除外
+      '**/e2e/**',
+      '**/test-results/**',
+      '**/playwright-report/**',
+    ]
   },
   // Base config for all files
   {

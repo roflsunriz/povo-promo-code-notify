@@ -275,6 +275,39 @@ describe('getUnusedCodesSorted', () => {
     expect(result).toHaveLength(1)
     expect(result[0]?.order).toBe(2)
   })
+
+  it('同順位の場合は内部IDの昇順でソートされる', () => {
+    const codes = [
+      createTestCode({
+        id: 'zzz-uuid',
+        order: 1,
+        code: 'CODE_Z',
+        startedAt: null,
+        expiresAt: null,
+      }),
+      createTestCode({
+        id: 'aaa-uuid',
+        order: 1, // 同じ順序
+        code: 'CODE_A',
+        startedAt: null,
+        expiresAt: null,
+      }),
+      createTestCode({
+        id: 'mmm-uuid',
+        order: 1, // 同じ順序
+        code: 'CODE_M',
+        startedAt: null,
+        expiresAt: null,
+      }),
+    ]
+
+    const result = getUnusedCodesSorted(codes)
+
+    expect(result).toHaveLength(3)
+    expect(result[0]?.id).toBe('aaa-uuid')
+    expect(result[1]?.id).toBe('mmm-uuid')
+    expect(result[2]?.id).toBe('zzz-uuid')
+  })
 })
 
 describe('getNextCandidateSummary', () => {

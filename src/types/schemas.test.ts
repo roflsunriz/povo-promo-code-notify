@@ -11,7 +11,9 @@ import {
   StoreDataSchema,
   validatePromoCode,
   validateCreatePromoCodeInput,
+  validateUpdatePromoCodeInput,
   validateStoreData,
+  validateExportData,
 } from './schemas'
 
 describe('PromoCodeSchema', () => {
@@ -272,6 +274,59 @@ describe('ヘルパー関数', () => {
       })
 
       expect(result.success).toBe(true)
+    })
+  })
+
+  describe('validateUpdatePromoCodeInput', () => {
+    it('有効な更新入力を検証できる', () => {
+      const result = validateUpdatePromoCodeInput({
+        startedAt: '2026-01-15T12:00:00.000Z',
+      })
+
+      expect(result.success).toBe(true)
+    })
+
+    it('空のオブジェクトも有効（全フィールドオプション）', () => {
+      const result = validateUpdatePromoCodeInput({})
+
+      expect(result.success).toBe(true)
+    })
+
+    it('無効な日時形式は拒否される', () => {
+      const result = validateUpdatePromoCodeInput({
+        startedAt: 'invalid-date',
+      })
+
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('validateExportData', () => {
+    it('有効なエクスポートデータを検証できる', () => {
+      const result = validateExportData({
+        version: 1,
+        codes: [],
+        notificationSettings: {
+          expiryThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: [],
+        },
+        exportedAt: '2026-01-23T12:00:00.000Z',
+      })
+
+      expect(result.success).toBe(true)
+    })
+
+    it('exportedAtがない場合は拒否される', () => {
+      const result = validateExportData({
+        version: 1,
+        codes: [],
+        notificationSettings: {
+          expiryThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: [],
+        },
+      })
+
+      expect(result.success).toBe(false)
     })
   })
 })
