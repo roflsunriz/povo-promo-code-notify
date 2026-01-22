@@ -1,6 +1,6 @@
 {
   "name": "povo-promo-code-notify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "povo 2.0 プロモコード管理アプリ - Windows 11向けデスクトップアプリケーション",
   "main": "./out/main/index.js",
   "author": "",
