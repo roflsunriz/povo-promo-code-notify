@@ -22,6 +22,10 @@ files:
 asarUnpack:
   - resources/**
 
+extraResources:
+  - from: resources/icon.ico
+    to: icon.ico
+
 win:
   executableName: povo-promo-code-notify
   target:
