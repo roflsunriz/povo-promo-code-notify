@@ -14,6 +14,7 @@ import type {
   EditStartedAtRequest,
   EditStartedAtResponse,
   ExportDataResponse,
+  ExportToFileResponse,
   GetAllCodesResponse,
   GetCoverageResponse,
   GetDashboardResponse,
@@ -23,6 +24,7 @@ import type {
   GetNotificationSettingsResponse,
   ImportDataRequest,
   ImportDataResponse,
+  ImportFromFileResponse,
   ParseEmailRequest,
   ParseEmailResponse,
   StartCodeRequest,
@@ -94,6 +96,12 @@ const api = {
 
   createBackup: (): Promise<CreateBackupResponse> =>
     ipcRenderer.invoke(IPC_CHANNELS.CREATE_BACKUP),
+
+  exportToFile: (): Promise<ExportToFileResponse> =>
+    ipcRenderer.invoke(IPC_CHANNELS.EXPORT_TO_FILE),
+
+  importFromFile: (): Promise<ImportFromFileResponse> =>
+    ipcRenderer.invoke(IPC_CHANNELS.IMPORT_FROM_FILE),
 
   // メール解析
   parseEmail: (request: ParseEmailRequest): Promise<ParseEmailResponse> =>

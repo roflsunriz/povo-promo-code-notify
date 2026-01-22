@@ -275,3 +275,172 @@ describe('ヘルパー関数', () => {
     })
   })
 })
+
+describe('エクスポート/インポート検証', () => {
+  describe('エクスポートデータ形式', () => {
+    it('エクスポートデータ（exportedAt付き）をインポート用に検証できる', () => {
+      // エクスポートされたJSONにはexportedAtが含まれるが、
+      // StoreDataSchemaはそれを無視してストアデータとして検証できる
+      const exportedData = {
+        version: 1,
+        codes: [
+          {
+            id: '550e8400-e29b-41d4-a716-446655440000',
+            order: 1,
+            code: 'TESTCODE123',
+            inputDeadline: '2026-06-20T23:59:59.000Z',
+            validityDurationMinutes: 10080,
+            startedAt: null,
+            expiresAt: null,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        notificationSettings: {
+          expiryThresholdsMinutes: [1440, 180, 60, 30],
+          inputDeadlineThresholdsMinutes: [],
+        },
+        exportedAt: '2026-01-22T12:00:00.000Z', // エクスポート時に追加されるフィールド
+      }
+
+      const result = validateStoreData(exportedData)
+      expect(result.success).toBe(true)
+    })
+
+    it('バージョン番号が含まれていることを確認できる', () => {
+      const data = {
+        version: 1,
+        codes: [],
+        notificationSettings: {
+          expiryThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: [],
+        },
+      }
+
+      const result = validateStoreData(data)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data?.version).toBe(1)
+      }
+    })
+  })
+
+  describe('インポートデータ検証エラー', () => {
+    it('バージョンがない場合は拒否される', () => {
+      const data = {
+        codes: [],
+        notificationSettings: {
+          expiryThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: [],
+        },
+      }
+
+      const result = validateStoreData(data)
+      expect(result.success).toBe(false)
+    })
+
+    it('不正なコードデータがある場合は拒否される', () => {
+      const data = {
+        version: 1,
+        codes: [
+          {
+            id: 'invalid-uuid', // 無効なUUID
+            order: 1,
+            code: 'TESTCODE123',
+            inputDeadline: '2026-06-20T23:59:59.000Z',
+            validityDurationMinutes: 10080,
+            startedAt: null,
+            expiresAt: null,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        notificationSettings: {
+          expiryThresholdsMinutes: [],
+          inputDeadlineThresholdsMinutes: [],
+        },
+      }
+
+      const result = validateStoreData(data)
+      expect(result.success).toBe(false)
+    })
+
+    it('不正な通知設定がある場合は拒否される', () => {
+      const data = {
+        version: 1,
+        codes: [],
+        notificationSettings: {
+          expiryThresholdsMinutes: [-100], // 負の値
+          inputDeadlineThresholdsMinutes: [],
+        },
+      }
+
+      const result = validateStoreData(data)
+      expect(result.success).toBe(false)
+    })
+
+    it('JSONとしてパースできない文字列は拒否される', () => {
+      const invalidJson = 'not a json'
+
+      expect(() => JSON.parse(invalidJson)).toThrow()
+    })
+
+    it('空のオブジェクトは拒否される', () => {
+      const result = validateStoreData({})
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('複数コードのインポート', () => {
+    it('複数のコードを含むデータを検証できる', () => {
+      const data = {
+        version: 1,
+        codes: [
+          {
+            id: '550e8400-e29b-41d4-a716-446655440001',
+            order: 1,
+            code: 'CODE001ABC',
+            inputDeadline: '2026-06-20T23:59:59.000Z',
+            validityDurationMinutes: 10080,
+            startedAt: null,
+            expiresAt: null,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+          {
+            id: '550e8400-e29b-41d4-a716-446655440002',
+            order: 2,
+            code: 'CODE002DEF',
+            inputDeadline: '2026-06-20T23:59:59.000Z',
+            validityDurationMinutes: 10080,
+            startedAt: '2026-01-15T10:00:00.000Z',
+            expiresAt: '2026-01-22T10:00:00.000Z',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-15T10:00:00.000Z',
+          },
+          {
+            id: '550e8400-e29b-41d4-a716-446655440003',
+            order: 3,
+            code: 'CODE003GHI',
+            inputDeadline: '2026-06-20T23:59:59.000Z',
+            validityDurationMinutes: 60, // 1時間
+            startedAt: null,
+            expiresAt: null,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+        notificationSettings: {
+          expiryThresholdsMinutes: [1440, 180, 60, 30],
+          inputDeadlineThresholdsMinutes: [1440],
+        },
+      }
+
+      const result = validateStoreData(data)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data?.codes.length).toBe(3)
+      }
+    })
+  })
+})

@@ -315,3 +315,74 @@ export function usePrevious<T>(value: T): T | undefined {
   }, [value])
   return ref.current
 }
+
+/**
+ * エクスポート結果
+ */
+export interface ExportResult {
+  success: boolean
+  filePath?: string
+  error?: string
+}
+
+/**
+ * インポート結果
+ */
+export interface ImportResult {
+  success: boolean
+  backupPath?: string
+  error?: string
+}
+
+/**
+ * エクスポート/インポートフック
+ */
+export function useDataExportImport(): {
+  exportToFile: () => Promise<ExportResult>
+  importFromFile: () => Promise<ImportResult>
+  isExporting: boolean
+  isImporting: boolean
+  error: string | null
+} {
+  const [isExporting, setIsExporting] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const exportToFile = useCallback(async (): Promise<ExportResult> => {
+    try {
+      setIsExporting(true)
+      setError(null)
+      const response = await window.api.exportToFile()
+      if (!response.success) {
+        setError(response.error ?? 'エクスポートに失敗しました')
+      }
+      return response
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : '不明なエラーが発生しました'
+      setError(errorMessage)
+      return { success: false, error: errorMessage }
+    } finally {
+      setIsExporting(false)
+    }
+  }, [])
+
+  const importFromFile = useCallback(async (): Promise<ImportResult> => {
+    try {
+      setIsImporting(true)
+      setError(null)
+      const response = await window.api.importFromFile()
+      if (!response.success) {
+        setError(response.error ?? 'インポートに失敗しました')
+      }
+      return response
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : '不明なエラーが発生しました'
+      setError(errorMessage)
+      return { success: false, error: errorMessage }
+    } finally {
+      setIsImporting(false)
+    }
+  }, [])
+
+  return { exportToFile, importFromFile, isExporting, isImporting, error }
+}

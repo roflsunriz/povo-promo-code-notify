@@ -4,8 +4,8 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useNotificationSettings } from '../hooks'
-import { Button, Input, Card, Checkbox } from './ui'
+import { useNotificationSettings, useDataExportImport } from '../hooks'
+import { Button, Input, Card, Checkbox, Dialog } from './ui'
 import type { NotificationSettings } from '../../../types/code'
 import type { JSX } from 'react'
 
@@ -151,6 +151,7 @@ function AddThresholdForm({
 
 export function NotificationTab(): JSX.Element {
   const { settings, isLoading, error, updateSettings, sendTestNotification, refresh } = useNotificationSettings()
+  const { exportToFile, importFromFile, isExporting, isImporting } = useDataExportImport()
 
   const [localExpiryThresholds, setLocalExpiryThresholds] = useState<number[]>([])
   const [localDeadlineThresholds, setLocalDeadlineThresholds] = useState<number[]>([])
@@ -159,6 +160,8 @@ export function NotificationTab(): JSX.Element {
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
+  const [showImportConfirm, setShowImportConfirm] = useState(false)
+  const [importMessage, setImportMessage] = useState<string | null>(null)
 
   // 設定を読み込んだら状態を初期化
   if (settings && !isInitialized) {
@@ -258,6 +261,36 @@ export function NotificationTab(): JSX.Element {
     setEnabledExpiryThresholds(new Set(DEFAULT_EXPIRY_THRESHOLDS))
     setEnabledDeadlineThresholds(new Set())
   }, [])
+
+  const handleExport = useCallback(async () => {
+    setImportMessage(null)
+    const result = await exportToFile()
+    if (result.success) {
+      setImportMessage('エクスポートが完了しました')
+    } else if (result.error !== 'キャンセルされました') {
+      setImportMessage(`エクスポート失敗: ${result.error}`)
+    }
+    setTimeout(() => setImportMessage(null), 5000)
+  }, [exportToFile])
+
+  const handleImportConfirm = useCallback(() => {
+    setShowImportConfirm(true)
+  }, [])
+
+  const handleImport = useCallback(async () => {
+    setShowImportConfirm(false)
+    setImportMessage(null)
+    const result = await importFromFile()
+    if (result.success) {
+      setImportMessage(`インポートが完了しました。バックアップ: ${result.backupPath}`)
+      // 設定を再読み込み
+      await refresh()
+      setIsInitialized(false)
+    } else if (result.error !== 'キャンセルされました') {
+      setImportMessage(`インポート失敗: ${result.error}`)
+    }
+    setTimeout(() => setImportMessage(null), 10000)
+  }, [importFromFile, refresh])
 
   if (isLoading && !isInitialized) {
     return (
@@ -396,6 +429,75 @@ export function NotificationTab(): JSX.Element {
           </p>
         </div>
       </Card>
+
+      {/* エクスポート/インポート */}
+      <Card
+        title="データのエクスポート/インポート"
+        description="コードデータと設定をJSON形式でエクスポート・インポートできます"
+      >
+        <div className="space-y-4">
+          {importMessage && (
+            <div className={`p-3 rounded-lg text-sm ${
+              importMessage.includes('失敗')
+                ? 'bg-red-500/10 border border-red-500/30 text-red-400'
+                : 'bg-green-500/10 border border-green-500/30 text-green-400'
+            }`}>
+              {importMessage}
+            </div>
+          )}
+
+          <div className="flex gap-4">
+            <Button
+              variant="secondary"
+              onClick={() => void handleExport()}
+              isLoading={isExporting}
+            >
+              エクスポート
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleImportConfirm}
+              isLoading={isImporting}
+            >
+              インポート
+            </Button>
+          </div>
+
+          <div className="text-sm text-zinc-400 space-y-1">
+            <p>
+              <strong className="text-zinc-300">エクスポート:</strong>{' '}
+              全てのコードデータと通知設定をJSONファイルとして保存します。
+            </p>
+            <p>
+              <strong className="text-zinc-300">インポート:</strong>{' '}
+              JSONファイルからデータを読み込み、現在のデータを置き換えます。
+              インポート前に自動的にバックアップが作成されます。
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* インポート確認ダイアログ */}
+      <Dialog
+        isOpen={showImportConfirm}
+        onClose={() => setShowImportConfirm(false)}
+        title="データをインポート"
+      >
+        <div className="space-y-4">
+          <p className="text-zinc-300">
+            インポートを実行すると、現在のデータが上書きされます。
+            インポート前に自動的にバックアップが作成されますが、よろしいですか？
+          </p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setShowImportConfirm(false)}>
+              キャンセル
+            </Button>
+            <Button onClick={() => void handleImport()}>
+              インポート実行
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 }

@@ -2,6 +2,12 @@ import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell } from 'electron'
 import { registerIpcHandlers } from './ipc-handlers'
+import {
+  getAllCodes,
+  getNotificationSettings,
+  startNotificationScheduler,
+  stopNotificationScheduler,
+} from './services'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -52,6 +58,9 @@ void app.whenReady().then(() => {
   // IPCハンドラーを登録
   registerIpcHandlers()
 
+  // 通知スケジューラーを初期化
+  initNotificationScheduler()
+
   createWindow()
 
   app.on('activate', () => {
@@ -67,3 +76,21 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+// アプリ終了時に通知スケジューラーを停止
+app.on('will-quit', () => {
+  stopNotificationScheduler()
+})
+
+/**
+ * 通知スケジューラーを初期化
+ */
+function initNotificationScheduler(): void {
+  try {
+    const codes = getAllCodes()
+    const settings = getNotificationSettings()
+    startNotificationScheduler(codes, settings)
+  } catch (error) {
+    console.error('通知スケジューラーの初期化に失敗:', error)
+  }
+}

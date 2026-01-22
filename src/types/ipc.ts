@@ -241,6 +241,52 @@ export interface GetFilteredCodesResponse {
   codes: PromoCodeWithStatus[]
 }
 
+// ==================== ファイルダイアログ ====================
+
+/**
+ * ファイル保存ダイアログの結果
+ */
+export interface SaveFileDialogResponse {
+  /** キャンセルされたかどうか */
+  canceled: boolean
+  /** 保存先ファイルパス（キャンセル時はundefined） */
+  filePath?: string
+}
+
+/**
+ * ファイルにエクスポート
+ */
+export interface ExportToFileResponse {
+  /** 成功かどうか */
+  success: boolean
+  /** 保存先ファイルパス */
+  filePath?: string
+  /** エラーメッセージ */
+  error?: string
+}
+
+/**
+ * ファイル読み込みダイアログの結果
+ */
+export interface OpenFileDialogResponse {
+  /** キャンセルされたかどうか */
+  canceled: boolean
+  /** 選択されたファイルパス（キャンセル時はundefined） */
+  filePath?: string
+}
+
+/**
+ * ファイルからインポート（バックアップ付き）
+ */
+export interface ImportFromFileResponse {
+  /** 成功かどうか */
+  success: boolean
+  /** バックアップファイルパス */
+  backupPath?: string
+  /** エラーメッセージ */
+  error?: string
+}
+
 // ==================== IPC チャンネル名 ====================
 
 export const IPC_CHANNELS = {
@@ -274,6 +320,8 @@ export const IPC_CHANNELS = {
   EXPORT_DATA: 'data:export',
   IMPORT_DATA: 'data:import',
   CREATE_BACKUP: 'data:backup',
+  EXPORT_TO_FILE: 'data:exportToFile',
+  IMPORT_FROM_FILE: 'data:importFromFile',
 
   // メール解析
   PARSE_EMAIL: 'email:parse',
