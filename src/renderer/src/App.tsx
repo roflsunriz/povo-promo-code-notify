@@ -1,30 +1,48 @@
+import {
+  TabLayout,
+  OverviewTab,
+  CodesListTab,
+  RegisterTab,
+  EditTab,
+  NotificationTab,
+} from './components'
+import type { TabId } from './components'
 import type { JSX } from 'react'
+
+function renderTab(tabId: TabId): JSX.Element {
+  switch (tabId) {
+    case 'overview':
+      return <OverviewTab />
+    case 'codes':
+      return <CodesListTab />
+    case 'register':
+      return <RegisterTab />
+    case 'edit':
+      return <EditTab />
+    case 'notification':
+      return <NotificationTab />
+  }
+}
 
 export function App(): JSX.Element {
   return (
-    <div className="min-h-screen bg-zinc-900 text-zinc-100 p-6">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-amber-400">
+    <div className="h-screen flex flex-col bg-zinc-900 text-zinc-100">
+      {/* ヘッダー */}
+      <header className="flex-shrink-0 px-6 py-4 border-b border-zinc-800">
+        <h1 className="text-2xl font-bold text-amber-400">
           povo プロモコード管理
         </h1>
-        <p className="text-zinc-400 mt-2">
-          プロモコードの期限と使用状況を管理します
-        </p>
       </header>
 
-      <main>
-        {/* タブコンポーネントはPhase 3で実装 */}
-        <div className="bg-zinc-800 rounded-lg p-6 border border-zinc-700">
-          <p className="text-zinc-300">
-            アプリケーションの準備が完了しました。
-          </p>
-          <p className="text-zinc-500 text-sm mt-2">
-            Phase 1: プロジェクト基盤構築完了
-          </p>
-        </div>
+      {/* メインコンテンツ */}
+      <main className="flex-1 overflow-hidden">
+        <TabLayout>
+          {(activeTab) => renderTab(activeTab)}
+        </TabLayout>
       </main>
 
-      <footer className="mt-8 text-center text-zinc-500 text-sm">
+      {/* フッター */}
+      <footer className="flex-shrink-0 px-6 py-2 border-t border-zinc-800 text-center text-zinc-500 text-xs">
         <p>povo-promo-code-notify v0.1.0</p>
       </footer>
     </div>

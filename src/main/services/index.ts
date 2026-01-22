@@ -45,3 +45,11 @@ export {
   resetStore,
   getStorePath,
 } from './store'
+
+// メール解析
+export {
+  parseEmailText,
+  parseEmailForRegistration,
+  parseDateInput,
+  parseValidityInput,
+} from './email-parser'
