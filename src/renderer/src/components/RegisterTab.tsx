@@ -30,10 +30,7 @@ function formatDateTime(isoString: string | null): string {
 /**
  * 有効期間をフォーマット
  */
-function formatValidityDuration(
-  minutes: number | null,
-  validityEndAt?: string | null
-): string {
+function formatValidityDuration(minutes: number | null, validityEndAt?: string | null): string {
   // 終端日時指定の場合
   if (validityEndAt) {
     const date = new Date(validityEndAt)
@@ -118,7 +115,15 @@ function ParsedCodeEditForm({
       validityDurationMinutes: totalMinutes || 10080
     })
     setIsEditing(false)
-  }, [index, editedCode, editedDeadline, editedDurationDays, editedDurationHours, editedDurationMinutes, onUpdate])
+  }, [
+    index,
+    editedCode,
+    editedDeadline,
+    editedDurationDays,
+    editedDurationHours,
+    editedDurationMinutes,
+    onUpdate
+  ])
 
   const handleCancel = useCallback(() => {
     setEditedCode(code.code)
@@ -411,13 +416,15 @@ function EndAtInput({ date, time, onDateChange, onTimeChange }: EndAtInputProps)
       {/* 終端日時のプレビュー */}
       {date && time && (
         <div className="text-xs text-zinc-500">
-          = {new Date(`${date}T${time}`).toLocaleString('ja-JP', {
+          ={' '}
+          {new Date(`${date}T${time}`).toLocaleString('ja-JP', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-          })}まで
+          })}
+          まで
         </div>
       )}
     </div>
@@ -549,7 +556,17 @@ function ManualInputForm({
     setEndAtDate('')
     setEndAtTime('00:00')
     setError(null)
-  }, [code, deadline, validityMode, durationDays, durationHours, durationMinutes, endAtDate, endAtTime, onAdd])
+  }, [
+    code,
+    deadline,
+    validityMode,
+    durationDays,
+    durationHours,
+    durationMinutes,
+    endAtDate,
+    endAtTime,
+    onAdd
+  ])
 
   return (
     <Card title="手入力で追加">
