@@ -32,12 +32,12 @@ export const PromoCodeIdSchema = z.string().uuid('内部IDはUUID形式である
 
 /**
  * 有効期間（分単位）のバリデーション
- * 正の整数
+ * 0以上の整数（終端日時モードでは0が許可され、使用開始時に計算される）
  */
 const validityDurationMinutes = z
   .number()
   .int('有効期間は整数で入力してください')
-  .positive('有効期間は正の数で入力してください')
+  .nonnegative('有効期間は0以上で入力してください')
 
 /**
  * 順序のバリデーション
@@ -62,6 +62,7 @@ export const PromoCodeSchema = z.object({
   code: promoCodeString,
   inputDeadline: isoDateTimeString,
   validityDurationMinutes: validityDurationMinutes,
+  validityEndAt: isoDateTimeString.nullable(),
   startedAt: isoDateTimeString.nullable(),
   expiresAt: isoDateTimeString.nullable(),
   createdAt: isoDateTimeString,
@@ -75,7 +76,8 @@ export const CreatePromoCodeInputSchema = z.object({
   order: orderNumber,
   code: promoCodeString,
   inputDeadline: isoDateTimeString,
-  validityDurationMinutes: validityDurationMinutes
+  validityDurationMinutes: validityDurationMinutes,
+  validityEndAt: isoDateTimeString.nullable().optional()
 })
 
 /**
@@ -86,6 +88,7 @@ export const UpdatePromoCodeInputSchema = z.object({
   code: promoCodeString.optional(),
   inputDeadline: isoDateTimeString.optional(),
   validityDurationMinutes: validityDurationMinutes.optional(),
+  validityEndAt: isoDateTimeString.nullable().optional(),
   startedAt: isoDateTimeString.nullable().optional(),
   expiresAt: isoDateTimeString.nullable().optional()
 })

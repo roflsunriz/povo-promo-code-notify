@@ -42,8 +42,17 @@ export interface PromoCode {
    * 有効期間（分単位の整数）
    * 使用開始から所定の期間だけ通信が使い放題になる期間
    * 例: 1時間=60, 7日間=10080
+   * 注意: validityEndAtが設定されている場合、使用開始時に再計算される
    */
   validityDurationMinutes: number
+
+  /**
+   * 終端日時（ISO 8601形式 | null）
+   * povo2.0アプリに表示される終了日時を直接指定する場合に使用
+   * 使用開始時に startedAt と validityEndAt から validityDurationMinutes を計算
+   * 期間指定の場合はnull
+   */
+  validityEndAt: string | null
 
   /**
    * 使用開始日時（ISO 8601形式 | null）
@@ -79,6 +88,7 @@ export interface CreatePromoCodeInput {
   code: string
   inputDeadline: string
   validityDurationMinutes: number
+  validityEndAt?: string | null
 }
 
 /**
@@ -90,6 +100,7 @@ export interface UpdatePromoCodeInput {
   code?: string
   inputDeadline?: string
   validityDurationMinutes?: number
+  validityEndAt?: string | null
   startedAt?: string | null
   expiresAt?: string | null
 }

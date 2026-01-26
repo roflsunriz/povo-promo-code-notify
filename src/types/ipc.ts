@@ -200,6 +200,7 @@ export interface ParsedCodeInfo {
   code: string
   inputDeadline: string | null
   validityDurationMinutes: number | null
+  validityEndAt?: string | null
 }
 
 export interface ParseEmailResponse {

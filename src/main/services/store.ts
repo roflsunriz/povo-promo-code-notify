@@ -63,11 +63,37 @@ function nowISO(): string {
 // ==================== CRUD操作 ====================
 
 /**
+ * マイグレーション前のコードデータ型（validityEndAtがない可能性がある）
+ */
+interface LegacyPromoCode extends Omit<PromoCode, 'validityEndAt'> {
+  validityEndAt?: string | null
+}
+
+/**
  * すべてのコードを取得
  * @returns コード配列
+ *
+ * 注意: 既存データにvalidityEndAtがない場合はnullを追加（マイグレーション）
  */
 export function getAllCodes(): PromoCode[] {
-  return store.get('codes', [])
+  const codes = store.get('codes', []) as LegacyPromoCode[]
+
+  // マイグレーション: validityEndAtがないデータにnullを追加
+  let needsMigration = false
+  const migratedCodes: PromoCode[] = codes.map((code) => {
+    if (!('validityEndAt' in code) || code.validityEndAt === undefined) {
+      needsMigration = true
+      return { ...code, validityEndAt: null }
+    }
+    return code as PromoCode
+  })
+
+  // マイグレーションが必要だった場合は保存
+  if (needsMigration) {
+    store.set('codes', migratedCodes)
+  }
+
+  return migratedCodes
 }
 
 /**
@@ -93,6 +119,7 @@ export function createCode(input: CreatePromoCodeInput): PromoCode {
     code: input.code,
     inputDeadline: input.inputDeadline,
     validityDurationMinutes: input.validityDurationMinutes,
+    validityEndAt: input.validityEndAt ?? null,
     startedAt: null,
     expiresAt: null,
     createdAt: now,
@@ -119,6 +146,7 @@ export function createCodes(inputs: CreatePromoCodeInput[]): PromoCode[] {
     code: input.code,
     inputDeadline: input.inputDeadline,
     validityDurationMinutes: input.validityDurationMinutes,
+    validityEndAt: input.validityEndAt ?? null,
     startedAt: null,
     expiresAt: null,
     createdAt: now,
@@ -196,6 +224,8 @@ export function deleteAllCodes(): void {
  * @param id コードID
  * @param startedAt 使用開始日時（省略時は現在時刻）
  * @returns 更新されたコードまたはundefined
+ *
+ * 注意: validityEndAtが設定されている場合、終端日時からvalidityDurationMinutesを再計算する
  */
 export function startCode(id: string, startedAt?: Date): PromoCode | undefined {
   const code = getCodeById(id)
@@ -204,6 +234,32 @@ export function startCode(id: string, startedAt?: Date): PromoCode | undefined {
   }
 
   const startTime = startedAt ?? new Date()
+
+  // validityEndAtが設定されている場合、終端日時から有効期間を計算
+  if (code.validityEndAt !== null) {
+    const endTime = new Date(code.validityEndAt)
+    const durationMs = endTime.getTime() - startTime.getTime()
+
+    // 終端日時が使用開始日時より前の場合はエラー（期間が負になる）
+    if (durationMs <= 0) {
+      // 終端日時が過去の場合は、そのまま0分として処理（消費済みになる）
+      return updateCode(id, {
+        validityDurationMinutes: 0,
+        startedAt: startTime.toISOString(),
+        expiresAt: endTime.toISOString()
+      })
+    }
+
+    const durationMinutes = Math.ceil(durationMs / (60 * 1000))
+
+    return updateCode(id, {
+      validityDurationMinutes: durationMinutes,
+      startedAt: startTime.toISOString(),
+      expiresAt: endTime.toISOString()
+    })
+  }
+
+  // 期間指定の場合は従来通り
   const expiresAt = new Date(startTime.getTime() + code.validityDurationMinutes * 60 * 1000)
 
   return updateCode(id, {
@@ -229,6 +285,8 @@ export function cancelCode(id: string): PromoCode | undefined {
  * @param id コードID
  * @param newStartedAt 新しい使用開始日時
  * @returns 更新されたコードまたはundefined
+ *
+ * 注意: validityEndAtが設定されている場合、終端日時は変更されず、期間のみ再計算される
  */
 export function editStartedAt(id: string, newStartedAt: Date): PromoCode | undefined {
   const code = getCodeById(id)
@@ -236,6 +294,20 @@ export function editStartedAt(id: string, newStartedAt: Date): PromoCode | undef
     return undefined
   }
 
+  // validityEndAtが設定されている場合、終端日時から有効期間を再計算
+  if (code.validityEndAt !== null) {
+    const endTime = new Date(code.validityEndAt)
+    const durationMs = endTime.getTime() - newStartedAt.getTime()
+    const durationMinutes = Math.max(0, Math.ceil(durationMs / (60 * 1000)))
+
+    return updateCode(id, {
+      validityDurationMinutes: durationMinutes,
+      startedAt: newStartedAt.toISOString(),
+      expiresAt: endTime.toISOString()
+    })
+  }
+
+  // 期間指定の場合は従来通り
   const expiresAt = new Date(newStartedAt.getTime() + code.validityDurationMinutes * 60 * 1000)
 
   return updateCode(id, {

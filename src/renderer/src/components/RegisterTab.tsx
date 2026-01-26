@@ -30,8 +30,23 @@ function formatDateTime(isoString: string | null): string {
 /**
  * 有効期間をフォーマット
  */
-function formatValidityDuration(minutes: number | null): string {
-  if (minutes === null) {
+function formatValidityDuration(
+  minutes: number | null,
+  validityEndAt?: string | null
+): string {
+  // 終端日時指定の場合
+  if (validityEndAt) {
+    const date = new Date(validityEndAt)
+    return `${date.toLocaleString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}まで`
+  }
+
+  if (minutes === null || minutes === 0) {
     return '未設定'
   }
   if (minutes >= 1440) {
@@ -191,7 +206,9 @@ function ParsedCodeEditForm({
             <div className="font-mono text-lg text-amber-400">{code.code}</div>
             <div className="mt-2 text-sm text-zinc-400 space-y-1">
               <div>入力期限: {formatDateTime(code.inputDeadline)}</div>
-              <div>有効期間: {formatValidityDuration(code.validityDurationMinutes)}</div>
+              <div>
+                有効期間: {formatValidityDuration(code.validityDurationMinutes, code.validityEndAt)}
+              </div>
             </div>
           </div>
         )}
@@ -232,6 +249,11 @@ function ParsedCodeEditForm({
     </div>
   )
 }
+
+/**
+ * 有効期間の入力モード
+ */
+type ValidityInputMode = 'duration' | 'endAt'
 
 /**
  * 有効期間プリセット
@@ -349,6 +371,97 @@ function DurationInput({
 }
 
 /**
+ * 終端日時入力コンポーネント
+ */
+interface EndAtInputProps {
+  date: string
+  time: string
+  onDateChange: (value: string) => void
+  onTimeChange: (value: string) => void
+}
+
+function EndAtInput({ date, time, onDateChange, onTimeChange }: EndAtInputProps): JSX.Element {
+  return (
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-zinc-300">終端日時</label>
+      <p className="text-xs text-zinc-500">
+        povo2.0アプリに表示される終了日時を入力してください（使用開始時に期間が計算されます）
+      </p>
+
+      {/* 日時入力 */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => onDateChange(e.target.value)}
+            className="px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => onTimeChange(e.target.value)}
+            className="px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+      </div>
+
+      {/* 終端日時のプレビュー */}
+      {date && time && (
+        <div className="text-xs text-zinc-500">
+          = {new Date(`${date}T${time}`).toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}まで
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 有効期間の入力モード切り替えタブ
+ */
+interface ValidityModeTabsProps {
+  mode: ValidityInputMode
+  onModeChange: (mode: ValidityInputMode) => void
+}
+
+function ValidityModeTabs({ mode, onModeChange }: ValidityModeTabsProps): JSX.Element {
+  return (
+    <div className="flex gap-1 p-1 bg-zinc-800 rounded-lg">
+      <button
+        type="button"
+        onClick={() => onModeChange('duration')}
+        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+          mode === 'duration'
+            ? 'bg-amber-600 text-white'
+            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700'
+        }`}
+      >
+        期間で指定
+      </button>
+      <button
+        type="button"
+        onClick={() => onModeChange('endAt')}
+        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+          mode === 'endAt'
+            ? 'bg-amber-600 text-white'
+            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700'
+        }`}
+      >
+        終端日時で指定
+      </button>
+    </div>
+  )
+}
+
+/**
  * 手入力フォーム
  */
 function ManualInputForm({
@@ -360,9 +473,17 @@ function ManualInputForm({
 }): JSX.Element {
   const [code, setCode] = useState('')
   const [deadline, setDeadline] = useState('')
+  const [validityMode, setValidityMode] = useState<ValidityInputMode>('duration')
+
+  // 期間指定モード用
   const [durationDays, setDurationDays] = useState('7')
   const [durationHours, setDurationHours] = useState('0')
   const [durationMinutes, setDurationMinutes] = useState('0')
+
+  // 終端日時指定モード用
+  const [endAtDate, setEndAtDate] = useState('')
+  const [endAtTime, setEndAtTime] = useState('00:00')
+
   const [error, setError] = useState<string | null>(null)
 
   const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
@@ -381,23 +502,43 @@ function ManualInputForm({
       return
     }
 
-    const totalMinutes = dhmToMinutes(
-      parseInt(durationDays, 10) || 0,
-      parseInt(durationHours, 10) || 0,
-      parseInt(durationMinutes, 10) || 0
-    )
-
-    if (totalMinutes <= 0) {
-      setError('有効期間を1分以上に設定してください')
-      return
-    }
-
     const deadlineIso = `${deadline}T23:59:59.999+09:00`
-    onAdd({
-      code: code.trim().toUpperCase(),
-      inputDeadline: deadlineIso,
-      validityDurationMinutes: totalMinutes
-    })
+
+    if (validityMode === 'duration') {
+      // 期間指定モード
+      const totalMinutes = dhmToMinutes(
+        parseInt(durationDays, 10) || 0,
+        parseInt(durationHours, 10) || 0,
+        parseInt(durationMinutes, 10) || 0
+      )
+
+      if (totalMinutes <= 0) {
+        setError('有効期間を1分以上に設定してください')
+        return
+      }
+
+      onAdd({
+        code: code.trim().toUpperCase(),
+        inputDeadline: deadlineIso,
+        validityDurationMinutes: totalMinutes,
+        validityEndAt: null
+      })
+    } else {
+      // 終端日時指定モード
+      if (!endAtDate || !endAtTime) {
+        setError('終端日時を入力してください')
+        return
+      }
+
+      const validityEndAtIso = `${endAtDate}T${endAtTime}:00.000+09:00`
+
+      onAdd({
+        code: code.trim().toUpperCase(),
+        inputDeadline: deadlineIso,
+        validityDurationMinutes: 0, // 使用開始時に計算される
+        validityEndAt: validityEndAtIso
+      })
+    }
 
     // フォームをリセット
     setCode('')
@@ -405,8 +546,10 @@ function ManualInputForm({
     setDurationDays('7')
     setDurationHours('0')
     setDurationMinutes('0')
+    setEndAtDate('')
+    setEndAtTime('00:00')
     setError(null)
-  }, [code, deadline, durationDays, durationHours, durationMinutes, onAdd])
+  }, [code, deadline, validityMode, durationDays, durationHours, durationMinutes, endAtDate, endAtTime, onAdd])
 
   return (
     <Card title="手入力で追加">
@@ -425,16 +568,34 @@ function ManualInputForm({
           onChange={(e) => setDeadline(e.target.value)}
           error={error && !deadline ? error : undefined}
         />
-        <DurationInput
-          days={durationDays}
-          hours={durationHours}
-          minutes={durationMinutes}
-          onDaysChange={setDurationDays}
-          onHoursChange={setDurationHours}
-          onMinutesChange={setDurationMinutes}
-          onPresetSelect={handlePresetSelect}
-        />
-        {error && error.includes('有効期間') && (
+
+        {/* 有効期間の入力モード切り替え */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-zinc-300">有効期間の指定方法</label>
+          <ValidityModeTabs mode={validityMode} onModeChange={setValidityMode} />
+        </div>
+
+        {/* 入力モードに応じた入力フィールド */}
+        {validityMode === 'duration' ? (
+          <DurationInput
+            days={durationDays}
+            hours={durationHours}
+            minutes={durationMinutes}
+            onDaysChange={setDurationDays}
+            onHoursChange={setDurationHours}
+            onMinutesChange={setDurationMinutes}
+            onPresetSelect={handlePresetSelect}
+          />
+        ) : (
+          <EndAtInput
+            date={endAtDate}
+            time={endAtTime}
+            onDateChange={setEndAtDate}
+            onTimeChange={setEndAtTime}
+          />
+        )}
+
+        {error && (error.includes('有効期間') || error.includes('終端日時')) && (
           <div className="text-red-400 text-sm">{error}</div>
         )}
         <Button onClick={handleAdd} disabled={isLoading}>
@@ -512,11 +673,15 @@ export function RegisterTab(): JSX.Element {
 
   const handleRegister = useCallback(async () => {
     // 入力チェック
+    // 終端日時モード（validityEndAtあり）の場合はvalidityDurationMinutesは0でもOK
     const invalidCodes = parsedCodes.filter(
-      (code) => !code.code || !code.inputDeadline || !code.validityDurationMinutes
+      (code) =>
+        !code.code ||
+        !code.inputDeadline ||
+        (code.validityEndAt === null && !code.validityDurationMinutes)
     )
     if (invalidCodes.length > 0) {
-      setParseError('すべてのコードに入力期限と有効期間を設定してください')
+      setParseError('すべてのコードに入力期限と有効期間（または終端日時）を設定してください')
       return
     }
 
@@ -530,7 +695,8 @@ export function RegisterTab(): JSX.Element {
       order: nextOrder++,
       code: code.code,
       inputDeadline: code.inputDeadline!,
-      validityDurationMinutes: code.validityDurationMinutes!
+      validityDurationMinutes: code.validityDurationMinutes ?? 0,
+      validityEndAt: code.validityEndAt ?? null
     }))
 
     const success = await registerCodes(inputs)
