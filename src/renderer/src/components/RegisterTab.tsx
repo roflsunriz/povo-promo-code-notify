@@ -76,25 +76,42 @@ function ParsedCodeEditForm({
   const [editedDeadline, setEditedDeadline] = useState(
     code.inputDeadline ? code.inputDeadline.substring(0, 10) : ''
   )
-  const [editedDuration, setEditedDuration] = useState(
-    code.validityDurationMinutes?.toString() ?? '10080'
-  )
+
+  // 有効期間を日・時・分に分解
+  const initialDHM = minutesToDHM(code.validityDurationMinutes ?? 10080)
+  const [editedDurationDays, setEditedDurationDays] = useState(initialDHM.days.toString())
+  const [editedDurationHours, setEditedDurationHours] = useState(initialDHM.hours.toString())
+  const [editedDurationMinutes, setEditedDurationMinutes] = useState(initialDHM.minutes.toString())
+
+  const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
+    setEditedDurationDays(days.toString())
+    setEditedDurationHours(hours.toString())
+    setEditedDurationMinutes(minutes.toString())
+  }, [])
 
   const handleSave = useCallback(() => {
     const deadlineIso = editedDeadline ? `${editedDeadline}T23:59:59.999+09:00` : null
+    const totalMinutes = dhmToMinutes(
+      parseInt(editedDurationDays, 10) || 0,
+      parseInt(editedDurationHours, 10) || 0,
+      parseInt(editedDurationMinutes, 10) || 0
+    )
 
     onUpdate(index, {
       code: editedCode,
       inputDeadline: deadlineIso,
-      validityDurationMinutes: parseInt(editedDuration, 10) || 10080
+      validityDurationMinutes: totalMinutes || 10080
     })
     setIsEditing(false)
-  }, [index, editedCode, editedDeadline, editedDuration, onUpdate])
+  }, [index, editedCode, editedDeadline, editedDurationDays, editedDurationHours, editedDurationMinutes, onUpdate])
 
   const handleCancel = useCallback(() => {
     setEditedCode(code.code)
     setEditedDeadline(code.inputDeadline ? code.inputDeadline.substring(0, 10) : '')
-    setEditedDuration(code.validityDurationMinutes?.toString() ?? '10080')
+    const dhm = minutesToDHM(code.validityDurationMinutes ?? 10080)
+    setEditedDurationDays(dhm.days.toString())
+    setEditedDurationHours(dhm.hours.toString())
+    setEditedDurationMinutes(dhm.minutes.toString())
     setIsEditing(false)
   }, [code])
 
@@ -151,12 +168,14 @@ function ParsedCodeEditForm({
               value={editedDeadline}
               onChange={(e) => setEditedDeadline(e.target.value)}
             />
-            <Input
-              label="有効期間（分）"
-              type="number"
-              value={editedDuration}
-              onChange={(e) => setEditedDuration(e.target.value)}
-              helperText="7日=10080, 24時間=1440, 1時間=60"
+            <DurationInput
+              days={editedDurationDays}
+              hours={editedDurationHours}
+              minutes={editedDurationMinutes}
+              onDaysChange={setEditedDurationDays}
+              onHoursChange={setEditedDurationHours}
+              onMinutesChange={setEditedDurationMinutes}
+              onPresetSelect={handlePresetSelect}
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave}>
@@ -215,6 +234,121 @@ function ParsedCodeEditForm({
 }
 
 /**
+ * 有効期間プリセット
+ */
+const DURATION_PRESETS = [
+  { label: '7日', days: 7, hours: 0, minutes: 0 },
+  { label: '24時間', days: 0, hours: 24, minutes: 0 },
+  { label: '1時間', days: 0, hours: 1, minutes: 0 }
+] as const
+
+/**
+ * 分を日・時・分に変換
+ */
+function minutesToDHM(totalMinutes: number): { days: number; hours: number; minutes: number } {
+  const days = Math.floor(totalMinutes / 1440)
+  const remainingAfterDays = totalMinutes % 1440
+  const hours = Math.floor(remainingAfterDays / 60)
+  const minutes = remainingAfterDays % 60
+  return { days, hours, minutes }
+}
+
+/**
+ * 日・時・分を分に変換
+ */
+function dhmToMinutes(days: number, hours: number, minutes: number): number {
+  return days * 1440 + hours * 60 + minutes
+}
+
+/**
+ * 有効期間入力コンポーネント
+ */
+interface DurationInputProps {
+  days: string
+  hours: string
+  minutes: string
+  onDaysChange: (value: string) => void
+  onHoursChange: (value: string) => void
+  onMinutesChange: (value: string) => void
+  onPresetSelect: (days: number, hours: number, minutes: number) => void
+}
+
+function DurationInput({
+  days,
+  hours,
+  minutes,
+  onDaysChange,
+  onHoursChange,
+  onMinutesChange,
+  onPresetSelect
+}: DurationInputProps): JSX.Element {
+  const totalMinutes = dhmToMinutes(
+    parseInt(days, 10) || 0,
+    parseInt(hours, 10) || 0,
+    parseInt(minutes, 10) || 0
+  )
+
+  return (
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-zinc-300">有効期間</label>
+
+      {/* プリセットボタン */}
+      <div className="flex flex-wrap gap-2">
+        {DURATION_PRESETS.map((preset) => (
+          <button
+            key={preset.label}
+            type="button"
+            onClick={() => onPresetSelect(preset.days, preset.hours, preset.minutes)}
+            className="px-3 py-1.5 text-sm bg-zinc-700 hover:bg-zinc-600 text-zinc-200 rounded-md transition-colors"
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 日・時・分入力 */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            min="0"
+            value={days}
+            onChange={(e) => onDaysChange(e.target.value)}
+            className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          <span className="text-sm text-zinc-400">日</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            min="0"
+            max="23"
+            value={hours}
+            onChange={(e) => onHoursChange(e.target.value)}
+            className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          <span className="text-sm text-zinc-400">時間</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={minutes}
+            onChange={(e) => onMinutesChange(e.target.value)}
+            className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          <span className="text-sm text-zinc-400">分</span>
+        </div>
+      </div>
+
+      {/* 合計分表示 */}
+      <div className="text-xs text-zinc-500">= {totalMinutes.toLocaleString()}分</div>
+    </div>
+  )
+}
+
+/**
  * 手入力フォーム
  */
 function ManualInputForm({
@@ -226,8 +360,16 @@ function ManualInputForm({
 }): JSX.Element {
   const [code, setCode] = useState('')
   const [deadline, setDeadline] = useState('')
-  const [duration, setDuration] = useState('10080')
+  const [durationDays, setDurationDays] = useState('7')
+  const [durationHours, setDurationHours] = useState('0')
+  const [durationMinutes, setDurationMinutes] = useState('0')
   const [error, setError] = useState<string | null>(null)
+
+  const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
+    setDurationDays(days.toString())
+    setDurationHours(hours.toString())
+    setDurationMinutes(minutes.toString())
+  }, [])
 
   const handleAdd = useCallback(() => {
     if (!code.trim()) {
@@ -239,19 +381,32 @@ function ManualInputForm({
       return
     }
 
+    const totalMinutes = dhmToMinutes(
+      parseInt(durationDays, 10) || 0,
+      parseInt(durationHours, 10) || 0,
+      parseInt(durationMinutes, 10) || 0
+    )
+
+    if (totalMinutes <= 0) {
+      setError('有効期間を1分以上に設定してください')
+      return
+    }
+
     const deadlineIso = `${deadline}T23:59:59.999+09:00`
     onAdd({
       code: code.trim().toUpperCase(),
       inputDeadline: deadlineIso,
-      validityDurationMinutes: parseInt(duration, 10) || 10080
+      validityDurationMinutes: totalMinutes
     })
 
     // フォームをリセット
     setCode('')
     setDeadline('')
-    setDuration('10080')
+    setDurationDays('7')
+    setDurationHours('0')
+    setDurationMinutes('0')
     setError(null)
-  }, [code, deadline, duration, onAdd])
+  }, [code, deadline, durationDays, durationHours, durationMinutes, onAdd])
 
   return (
     <Card title="手入力で追加">
@@ -270,13 +425,18 @@ function ManualInputForm({
           onChange={(e) => setDeadline(e.target.value)}
           error={error && !deadline ? error : undefined}
         />
-        <Input
-          label="有効期間（分）"
-          type="number"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          helperText="7日=10080, 24時間=1440, 1時間=60"
+        <DurationInput
+          days={durationDays}
+          hours={durationHours}
+          minutes={durationMinutes}
+          onDaysChange={setDurationDays}
+          onHoursChange={setDurationHours}
+          onMinutesChange={setDurationMinutes}
+          onPresetSelect={handlePresetSelect}
         />
+        {error && error.includes('有効期間') && (
+          <div className="text-red-400 text-sm">{error}</div>
+        )}
         <Button onClick={handleAdd} disabled={isLoading}>
           追加
         </Button>
