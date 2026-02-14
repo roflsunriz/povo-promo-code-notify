@@ -8,7 +8,27 @@ import { useCodes, useCodeActions } from '../hooks'
 import { Button, Input, Card, Dialog } from './ui'
 import { Badge, getStatusBadgeVariant, getStatusLabel } from './ui/Badge'
 import type { PromoCodeWithStatus } from '../../../types/code'
-import type { JSX } from 'react'
+import type { JSX, MouseEvent as ReactMouseEvent } from 'react'
+
+/**
+ * コードをマスク表示
+ */
+function maskCode(code: string, showFull: boolean): string {
+  if (showFull || code.length <= 4) {
+    return code
+  }
+  return code.substring(0, 2) + '***' + code.substring(code.length - 2)
+}
+
+/**
+ * 使用回数の表示文字列を生成
+ */
+function formatUseCount(code: PromoCodeWithStatus): string {
+  if (code.status === 'active') {
+    return `${code.useCount + 1}/${code.maxUseCount}回目`
+  }
+  return `${code.useCount}/${code.maxUseCount}`
+}
 
 /**
  * 日時をフォーマット
@@ -53,11 +73,15 @@ function datetimeLocalToIso(datetimeLocal: string): string {
 function CodeSelectCard({
   code,
   isSelected,
-  onSelect
+  showFullCode,
+  onSelect,
+  onToggleCode
 }: {
   code: PromoCodeWithStatus
   isSelected: boolean
+  showFullCode: boolean
   onSelect: () => void
+  onToggleCode: (e: ReactMouseEvent) => void
 }): JSX.Element {
   return (
     <button
@@ -74,9 +98,25 @@ function CodeSelectCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Badge variant={getStatusBadgeVariant(code.status)}>{getStatusLabel(code.status)}</Badge>
-          <span className="font-mono text-zinc-200">{code.code}</span>
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={onToggleCode}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onToggleCode(e as unknown as ReactMouseEvent)
+              }
+            }}
+            className="font-mono text-zinc-200 hover:text-amber-400 transition-colors cursor-pointer"
+            title={showFullCode ? 'マスク表示' : '全表示'}
+          >
+            {maskCode(code.code, showFullCode)}
+          </span>
         </div>
-        <Badge variant="info">#{code.order}</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="info">{formatUseCount(code)}</Badge>
+          <Badge variant="info">#{code.order}</Badge>
+        </div>
       </div>
       <div className="mt-2 text-sm text-zinc-400 grid grid-cols-2 gap-2">
         <div>入力期限: {formatDateTime(code.inputDeadline)}</div>
@@ -109,6 +149,8 @@ function dateToIso(dateStr: string): string {
  */
 function CodeEditPanel({
   code,
+  showFullCode,
+  onToggleCode,
   onStartCode,
   onCancelCode,
   onEditStartedAt,
@@ -118,13 +160,21 @@ function CodeEditPanel({
   onRefresh
 }: {
   code: PromoCodeWithStatus
+  showFullCode: boolean
+  onToggleCode: () => void
   onStartCode: (id: string) => Promise<boolean>
   onCancelCode: (id: string) => Promise<boolean>
   onEditStartedAt: (id: string, newStartedAt: string) => Promise<boolean>
   onDeleteCode: (id: string) => Promise<boolean>
   onUpdateCode: (
     id: string,
-    input: { code?: string; inputDeadline?: string; validityDurationMinutes?: number }
+    input: {
+      code?: string
+      inputDeadline?: string
+      validityDurationMinutes?: number
+      maxUseCount?: number
+      useCount?: number
+    }
   ) => Promise<boolean>
   isLoading: boolean
   onRefresh: () => Promise<void>
@@ -138,6 +188,8 @@ function CodeEditPanel({
   const [editedCode, setEditedCode] = useState(code.code)
   const [editedInputDeadline, setEditedInputDeadline] = useState(isoToDate(code.inputDeadline))
   const [editedDuration, setEditedDuration] = useState(code.validityDurationMinutes.toString())
+  const [editedMaxUseCount, setEditedMaxUseCount] = useState(code.maxUseCount.toString())
+  const [editedUseCount, setEditedUseCount] = useState(code.useCount.toString())
 
   const canStart = code.status === 'unused'
   const canCancel = code.status === 'active' || code.status === 'consumed'
@@ -181,6 +233,8 @@ function CodeEditPanel({
     setEditedCode(code.code)
     setEditedInputDeadline(isoToDate(code.inputDeadline))
     setEditedDuration(code.validityDurationMinutes.toString())
+    setEditedMaxUseCount(code.maxUseCount.toString())
+    setEditedUseCount(code.useCount.toString())
     setIsEditingBasicInfo(true)
   }, [code])
 
@@ -189,7 +243,13 @@ function CodeEditPanel({
   }, [])
 
   const handleSaveBasicInfo = useCallback(async () => {
-    const input: { code?: string; inputDeadline?: string; validityDurationMinutes?: number } = {}
+    const input: {
+      code?: string
+      inputDeadline?: string
+      validityDurationMinutes?: number
+      maxUseCount?: number
+      useCount?: number
+    } = {}
 
     // 変更があった項目のみ更新対象にする
     if (editedCode !== code.code) {
@@ -201,6 +261,14 @@ function CodeEditPanel({
     const newDuration = parseInt(editedDuration, 10)
     if (!isNaN(newDuration) && newDuration !== code.validityDurationMinutes) {
       input.validityDurationMinutes = newDuration
+    }
+    const newMaxUseCount = parseInt(editedMaxUseCount, 10)
+    if (!isNaN(newMaxUseCount) && newMaxUseCount !== code.maxUseCount) {
+      input.maxUseCount = newMaxUseCount
+    }
+    const newUseCount = parseInt(editedUseCount, 10)
+    if (!isNaN(newUseCount) && newUseCount !== code.useCount) {
+      input.useCount = newUseCount
     }
 
     // 何も変更がなければ何もしない
@@ -214,7 +282,16 @@ function CodeEditPanel({
       setIsEditingBasicInfo(false)
       await onRefresh()
     }
-  }, [code, editedCode, editedInputDeadline, editedDuration, onUpdateCode, onRefresh])
+  }, [
+    code,
+    editedCode,
+    editedInputDeadline,
+    editedDuration,
+    editedMaxUseCount,
+    editedUseCount,
+    onUpdateCode,
+    onRefresh
+  ])
 
   return (
     <Card title="コード操作">
@@ -227,7 +304,23 @@ function CodeEditPanel({
                 {getStatusLabel(code.status)}
               </Badge>
               {!isEditingBasicInfo && (
-                <span className="font-mono text-xl text-amber-400">{code.code}</span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={onToggleCode}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      onToggleCode()
+                    }
+                  }}
+                  className="font-mono text-xl text-amber-400 hover:text-amber-300 cursor-pointer transition-colors"
+                  title={showFullCode ? 'マスク表示' : '全表示'}
+                >
+                  {maskCode(code.code, showFullCode)}
+                </span>
+              )}
+              {!isEditingBasicInfo && (
+                <Badge variant="info">{formatUseCount(code)}</Badge>
               )}
             </div>
             {canEditBasicInfo && !isEditingBasicInfo && (
@@ -269,6 +362,22 @@ function CodeEditPanel({
                 onChange={(e) => setEditedDuration(e.target.value)}
                 helperText="7日=10080, 24時間=1440, 1時間=60"
               />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="最大使用回数"
+                  type="number"
+                  value={editedMaxUseCount}
+                  onChange={(e) => setEditedMaxUseCount(e.target.value)}
+                  helperText="例: 1回=1, 24回=24"
+                />
+                <Input
+                  label="使用済み回数"
+                  type="number"
+                  value={editedUseCount}
+                  onChange={(e) => setEditedUseCount(e.target.value)}
+                  helperText="完了した使用回数"
+                />
+              </div>
               <div className="flex gap-2">
                 <Button onClick={() => void handleSaveBasicInfo()} isLoading={isLoading}>
                   保存
@@ -295,6 +404,19 @@ function CodeEditPanel({
               <div>
                 <div className="text-zinc-400">有効期限</div>
                 <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
+              </div>
+              <div>
+                <div className="text-zinc-400">使用回数</div>
+                <div className="text-zinc-200">{formatUseCount(code)}</div>
+              </div>
+              <div>
+                <div className="text-zinc-400">残り回数</div>
+                <div className="text-zinc-200">
+                  {code.status === 'active'
+                    ? code.maxUseCount - code.useCount - 1
+                    : code.maxUseCount - code.useCount}
+                  回
+                </div>
               </div>
             </div>
           )}
@@ -381,7 +503,10 @@ function CodeEditPanel({
         isLoading={isLoading}
       >
         <p>
-          コード <span className="font-mono text-amber-400">{code.code}</span>{' '}
+          コード{' '}
+          <span className="font-mono text-amber-400">
+            {maskCode(code.code, showFullCode)}
+          </span>{' '}
           の使用を取り消します。
         </p>
         <p className="mt-2">使用開始日時と有効期限が未設定に戻り、未使用として扱われます。</p>
@@ -398,7 +523,11 @@ function CodeEditPanel({
         isLoading={isLoading}
       >
         <p>
-          コード <span className="font-mono text-amber-400">{code.code}</span> を削除します。
+          コード{' '}
+          <span className="font-mono text-amber-400">
+            {maskCode(code.code, showFullCode)}
+          </span>{' '}
+          を削除します。
         </p>
         <p className="mt-2 text-red-400">この操作は取り消せません。</p>
       </Dialog>
@@ -419,6 +548,19 @@ export function EditTab(): JSX.Element {
 
   const [selectedCodeId, setSelectedCodeId] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<'all' | 'unused' | 'active'>('all')
+  const [showFullCodes, setShowFullCodes] = useState<Set<string>>(new Set())
+
+  const toggleCodeVisibility = useCallback((codeId: string) => {
+    setShowFullCodes((prev) => {
+      const next = new Set(prev)
+      if (next.has(codeId)) {
+        next.delete(codeId)
+      } else {
+        next.add(codeId)
+      }
+      return next
+    })
+  }, [])
 
   const filteredCodes = useMemo(() => {
     if (filterStatus === 'all') return codes
@@ -495,7 +637,12 @@ export function EditTab(): JSX.Element {
                 key={code.id}
                 code={code}
                 isSelected={selectedCodeId === code.id}
+                showFullCode={showFullCodes.has(code.id)}
                 onSelect={() => setSelectedCodeId(code.id)}
+                onToggleCode={(e) => {
+                  e.stopPropagation()
+                  toggleCodeVisibility(code.id)
+                }}
               />
             ))}
           </div>
@@ -507,6 +654,8 @@ export function EditTab(): JSX.Element {
         {selectedCode ? (
           <CodeEditPanel
             code={selectedCode}
+            showFullCode={showFullCodes.has(selectedCode.id)}
+            onToggleCode={() => toggleCodeVisibility(selectedCode.id)}
             onStartCode={startCode}
             onCancelCode={cancelCode}
             onEditStartedAt={editStartedAt}

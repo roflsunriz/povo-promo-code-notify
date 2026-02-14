@@ -54,8 +54,11 @@ describe('NotificationScheduler', () => {
       code: 'TESTCODE123',
       inputDeadline: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30日後
       validityDurationMinutes: VALIDITY_DURATIONS.SEVEN_DAYS,
+      validityEndAt: null,
       startedAt: null,
       expiresAt: null,
+      maxUseCount: 1,
+      useCount: 0,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
       ...overrides

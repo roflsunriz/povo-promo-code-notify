@@ -94,6 +94,12 @@ function ParsedCodeEditForm({
   const [editedDurationDays, setEditedDurationDays] = useState(initialDHM.days.toString())
   const [editedDurationHours, setEditedDurationHours] = useState(initialDHM.hours.toString())
   const [editedDurationMinutes, setEditedDurationMinutes] = useState(initialDHM.minutes.toString())
+  const [editedMaxUseCount, setEditedMaxUseCount] = useState(
+    (code.maxUseCount ?? 1).toString()
+  )
+  const [editedUseCount, setEditedUseCount] = useState(
+    (code.useCount ?? 0).toString()
+  )
 
   const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
     setEditedDurationDays(days.toString())
@@ -112,7 +118,9 @@ function ParsedCodeEditForm({
     onUpdate(index, {
       code: editedCode,
       inputDeadline: deadlineIso,
-      validityDurationMinutes: totalMinutes || 10080
+      validityDurationMinutes: totalMinutes || 10080,
+      maxUseCount: parseInt(editedMaxUseCount, 10) || 1,
+      useCount: parseInt(editedUseCount, 10) || 0
     })
     setIsEditing(false)
   }, [
@@ -122,6 +130,8 @@ function ParsedCodeEditForm({
     editedDurationDays,
     editedDurationHours,
     editedDurationMinutes,
+    editedMaxUseCount,
+    editedUseCount,
     onUpdate
   ])
 
@@ -132,6 +142,8 @@ function ParsedCodeEditForm({
     setEditedDurationDays(dhm.days.toString())
     setEditedDurationHours(dhm.hours.toString())
     setEditedDurationMinutes(dhm.minutes.toString())
+    setEditedMaxUseCount((code.maxUseCount ?? 1).toString())
+    setEditedUseCount((code.useCount ?? 0).toString())
     setIsEditing(false)
   }, [code])
 
@@ -197,6 +209,28 @@ function ParsedCodeEditForm({
               onMinutesChange={setEditedDurationMinutes}
               onPresetSelect={handlePresetSelect}
             />
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="1"
+                  value={editedMaxUseCount}
+                  onChange={(e) => setEditedMaxUseCount(e.target.value)}
+                  className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm text-zinc-400">最大回数</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  value={editedUseCount}
+                  onChange={(e) => setEditedUseCount(e.target.value)}
+                  className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm text-zinc-400">使用済み</span>
+              </div>
+            </div>
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave}>
                 保存
@@ -213,6 +247,9 @@ function ParsedCodeEditForm({
               <div>入力期限: {formatDateTime(code.inputDeadline)}</div>
               <div>
                 有効期間: {formatValidityDuration(code.validityDurationMinutes, code.validityEndAt)}
+              </div>
+              <div>
+                使用回数: {code.useCount ?? 0}/{code.maxUseCount ?? 1}
               </div>
             </div>
           </div>
@@ -491,6 +528,10 @@ function ManualInputForm({
   const [endAtDate, setEndAtDate] = useState('')
   const [endAtTime, setEndAtTime] = useState('00:00')
 
+  // 使用回数
+  const [maxUseCount, setMaxUseCount] = useState('1')
+  const [useCount, setUseCount] = useState('0')
+
   const [error, setError] = useState<string | null>(null)
 
   const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
@@ -511,6 +552,9 @@ function ManualInputForm({
 
     const deadlineIso = `${deadline}T23:59:59.999+09:00`
 
+    const parsedMaxUseCount = parseInt(maxUseCount, 10) || 1
+    const parsedUseCount = parseInt(useCount, 10) || 0
+
     if (validityMode === 'duration') {
       // 期間指定モード
       const totalMinutes = dhmToMinutes(
@@ -528,7 +572,9 @@ function ManualInputForm({
         code: code.trim().toUpperCase(),
         inputDeadline: deadlineIso,
         validityDurationMinutes: totalMinutes,
-        validityEndAt: null
+        validityEndAt: null,
+        maxUseCount: parsedMaxUseCount,
+        useCount: parsedUseCount
       })
     } else {
       // 終端日時指定モード
@@ -543,7 +589,9 @@ function ManualInputForm({
         code: code.trim().toUpperCase(),
         inputDeadline: deadlineIso,
         validityDurationMinutes: 0, // 使用開始時に計算される
-        validityEndAt: validityEndAtIso
+        validityEndAt: validityEndAtIso,
+        maxUseCount: parsedMaxUseCount,
+        useCount: parsedUseCount
       })
     }
 
@@ -555,6 +603,8 @@ function ManualInputForm({
     setDurationMinutes('0')
     setEndAtDate('')
     setEndAtTime('00:00')
+    setMaxUseCount('1')
+    setUseCount('0')
     setError(null)
   }, [
     code,
@@ -565,6 +615,8 @@ function ManualInputForm({
     durationMinutes,
     endAtDate,
     endAtTime,
+    maxUseCount,
+    useCount,
     onAdd
   ])
 
@@ -611,6 +663,36 @@ function ManualInputForm({
             onTimeChange={setEndAtTime}
           />
         )}
+
+        {/* 使用回数 */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-zinc-300">使用回数</label>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="1"
+                value={maxUseCount}
+                onChange={(e) => setMaxUseCount(e.target.value)}
+                className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <span className="text-sm text-zinc-400">最大回数</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="0"
+                value={useCount}
+                onChange={(e) => setUseCount(e.target.value)}
+                className="w-16 px-2 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-md text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <span className="text-sm text-zinc-400">使用済み回数</span>
+            </div>
+          </div>
+          <div className="text-xs text-zinc-500">
+            ※ 購入時に即時適用された場合は、使用済み回数を1に設定してください
+          </div>
+        </div>
 
         {error && (error.includes('有効期間') || error.includes('終端日時')) && (
           <div className="text-red-400 text-sm">{error}</div>
@@ -713,7 +795,9 @@ export function RegisterTab(): JSX.Element {
       code: code.code,
       inputDeadline: code.inputDeadline!,
       validityDurationMinutes: code.validityDurationMinutes ?? 0,
-      validityEndAt: code.validityEndAt ?? null
+      validityEndAt: code.validityEndAt ?? null,
+      maxUseCount: code.maxUseCount ?? 1,
+      useCount: code.useCount ?? 0
     }))
 
     const success = await registerCodes(inputs)

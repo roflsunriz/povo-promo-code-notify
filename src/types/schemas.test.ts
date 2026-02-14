@@ -93,6 +93,44 @@ describe('PromoCodeSchema', () => {
       expect(result.success).toBe(false)
     })
 
+    it('maxUseCount/useCountが省略された場合はデフォルト値が適用される', () => {
+      const result = PromoCodeSchema.safeParse(validPromoCode)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.maxUseCount).toBe(1)
+        expect(result.data.useCount).toBe(0)
+      }
+    })
+
+    it('maxUseCount/useCountを明示的に指定できる', () => {
+      const result = PromoCodeSchema.safeParse({
+        ...validPromoCode,
+        maxUseCount: 24,
+        useCount: 3
+      })
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.maxUseCount).toBe(24)
+        expect(result.data.useCount).toBe(3)
+      }
+    })
+
+    it('maxUseCountが0の場合は拒否される', () => {
+      const result = PromoCodeSchema.safeParse({
+        ...validPromoCode,
+        maxUseCount: 0
+      })
+      expect(result.success).toBe(false)
+    })
+
+    it('useCountが負の場合は拒否される', () => {
+      const result = PromoCodeSchema.safeParse({
+        ...validPromoCode,
+        useCount: -1
+      })
+      expect(result.success).toBe(false)
+    })
+
     it('無効な日時文字列は拒否される', () => {
       const result = PromoCodeSchema.safeParse({
         ...validPromoCode,
@@ -123,6 +161,18 @@ describe('CreatePromoCodeInputSchema', () => {
     })
     expect(result.success).toBe(false)
   })
+
+  it('maxUseCount/useCountをオプションで指定できる', () => {
+    const result = CreatePromoCodeInputSchema.safeParse({
+      order: 1,
+      code: 'TESTCODE123',
+      inputDeadline: '2026-06-20T23:59:59.000Z',
+      validityDurationMinutes: 10080,
+      maxUseCount: 24,
+      useCount: 1
+    })
+    expect(result.success).toBe(true)
+  })
 })
 
 describe('UpdatePromoCodeInputSchema', () => {
@@ -150,6 +200,14 @@ describe('UpdatePromoCodeInputSchema', () => {
     const result = UpdatePromoCodeInputSchema.safeParse({
       startedAt: '2026-01-15T12:00:00.000Z',
       expiresAt: '2026-01-22T12:00:00.000Z'
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('maxUseCount/useCountを更新できる', () => {
+    const result = UpdatePromoCodeInputSchema.safeParse({
+      maxUseCount: 24,
+      useCount: 5
     })
     expect(result.success).toBe(true)
   })

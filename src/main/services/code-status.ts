@@ -38,6 +38,13 @@ export function determineCodeStatus(code: PromoCode, now: Date = new Date()): Co
     }
   } else {
     // 使用開始日時が未設定
+
+    // 複数回使用コード: 一度でも使用開始したコード(useCount > 0)は
+    // povoシステムに既に登録済みのため、入力期限に関係なく再使用可能
+    if (code.useCount > 0 && code.useCount < code.maxUseCount) {
+      return 'unused'
+    }
+
     if (currentTime <= inputDeadlineTime) {
       // 現在時刻がコード入力期限以前 → 未使用
       return 'unused'

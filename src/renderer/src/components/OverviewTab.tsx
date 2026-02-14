@@ -85,6 +85,9 @@ function ActiveCodeCard({ code }: { code: PromoCodeWithStatus }): JSX.Element {
       <div className="flex items-center gap-3">
         <Badge variant={getStatusBadgeVariant(code.status)}>{getStatusLabel(code.status)}</Badge>
         <span className="font-mono text-sm text-zinc-300">{maskCode(code.code)}</span>
+        <Badge variant="info">
+          {code.useCount + 1}/{code.maxUseCount}
+        </Badge>
       </div>
       <div className="text-right">
         <div className="text-sm text-zinc-400">有効期限</div>

@@ -54,6 +54,24 @@ const orderNumber = z
 export const CodeStatusSchema = z.enum(['unused', 'active', 'consumed', 'expired'])
 
 /**
+ * 最大使用回数のバリデーション
+ * 正の整数（1以上）
+ */
+const maxUseCountNumber = z
+  .number()
+  .int('最大使用回数は整数で入力してください')
+  .positive('最大使用回数は1以上で入力してください')
+
+/**
+ * 使用済み回数のバリデーション
+ * 非負整数（0以上）
+ */
+const useCountNumber = z
+  .number()
+  .int('使用済み回数は整数で入力してください')
+  .nonnegative('使用済み回数は0以上で入力してください')
+
+/**
  * プロモコードエンティティスキーマ
  */
 export const PromoCodeSchema = z.object({
@@ -65,6 +83,8 @@ export const PromoCodeSchema = z.object({
   validityEndAt: isoDateTimeString.nullable(),
   startedAt: isoDateTimeString.nullable(),
   expiresAt: isoDateTimeString.nullable(),
+  maxUseCount: maxUseCountNumber.default(1),
+  useCount: useCountNumber.default(0),
   createdAt: isoDateTimeString,
   updatedAt: isoDateTimeString
 })
@@ -77,7 +97,9 @@ export const CreatePromoCodeInputSchema = z.object({
   code: promoCodeString,
   inputDeadline: isoDateTimeString,
   validityDurationMinutes: validityDurationMinutes,
-  validityEndAt: isoDateTimeString.nullable().optional()
+  validityEndAt: isoDateTimeString.nullable().optional(),
+  maxUseCount: maxUseCountNumber.optional(),
+  useCount: useCountNumber.optional()
 })
 
 /**
@@ -90,7 +112,9 @@ export const UpdatePromoCodeInputSchema = z.object({
   validityDurationMinutes: validityDurationMinutes.optional(),
   validityEndAt: isoDateTimeString.nullable().optional(),
   startedAt: isoDateTimeString.nullable().optional(),
-  expiresAt: isoDateTimeString.nullable().optional()
+  expiresAt: isoDateTimeString.nullable().optional(),
+  maxUseCount: maxUseCountNumber.optional(),
+  useCount: useCountNumber.optional()
 })
 
 /**

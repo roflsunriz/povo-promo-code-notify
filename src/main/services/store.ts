@@ -63,29 +63,99 @@ function nowISO(): string {
 // ==================== CRUD操作 ====================
 
 /**
- * マイグレーション前のコードデータ型（validityEndAtがない可能性がある）
+ * マイグレーション前のコードデータ型（一部フィールドがない可能性がある）
  */
-interface LegacyPromoCode extends Omit<PromoCode, 'validityEndAt'> {
+interface LegacyPromoCode extends Omit<PromoCode, 'validityEndAt' | 'maxUseCount' | 'useCount'> {
   validityEndAt?: string | null
+  maxUseCount?: number
+  useCount?: number
+}
+
+/**
+ * 複数回使用コードの自動リセット処理
+ * 使用期間が終了した複数回使用コードを自動的に未使用状態に戻す
+ *
+ * @param codes マイグレーション済みコード配列
+ * @param now 現在時刻
+ * @returns 処理結果（コード配列と変更有無）
+ */
+function autoResetExpiredMultiUseCodes(
+  codes: PromoCode[],
+  now: Date
+): { codes: PromoCode[]; needsSave: boolean } {
+  let needsSave = false
+  const nowTime = now.getTime()
+  const nowIso = now.toISOString()
+
+  const processed = codes.map((code) => {
+    // 使用中でない、または有効期限内のコードはスキップ
+    if (code.startedAt === null || code.expiresAt === null) {
+      return code
+    }
+
+    const expiresAtTime = new Date(code.expiresAt).getTime()
+    if (nowTime <= expiresAtTime) {
+      return code
+    }
+
+    // ここに到達 = 使用期間が終了している（consumed状態になるべき）
+    const completedUses = code.useCount + 1
+
+    if (completedUses < code.maxUseCount) {
+      // まだ使用回数が残っている → 自動リセット（unused に戻す）
+      needsSave = true
+      return {
+        ...code,
+        useCount: completedUses,
+        startedAt: null,
+        expiresAt: null,
+        updatedAt: nowIso
+      }
+    } else if (code.useCount < code.maxUseCount) {
+      // 最後の使用が完了 → useCount をインクリメントのみ（consumed のまま）
+      needsSave = true
+      return {
+        ...code,
+        useCount: completedUses,
+        updatedAt: nowIso
+      }
+    }
+
+    // useCount が既に maxUseCount 以上 → 変更なし
+    return code
+  })
+
+  return { codes: processed, needsSave }
 }
 
 /**
  * すべてのコードを取得
  * @returns コード配列
  *
- * 注意: 既存データにvalidityEndAtがない場合はnullを追加（マイグレーション）
+ * 注意:
+ * - 既存データにvalidityEndAt/maxUseCount/useCountがない場合はデフォルト値を追加（マイグレーション）
+ * - 使用期間が終了した複数回使用コードは自動的にunused状態にリセットされる
  */
 export function getAllCodes(): PromoCode[] {
   const codes = store.get('codes', []) as LegacyPromoCode[]
 
-  // マイグレーション: validityEndAtがないデータにnullを追加
+  // マイグレーション: 不足フィールドにデフォルト値を追加
   let needsMigration = false
   const migratedCodes: PromoCode[] = codes.map((code) => {
+    let migrated = { ...code } as Record<string, unknown>
     if (!('validityEndAt' in code) || code.validityEndAt === undefined) {
       needsMigration = true
-      return { ...code, validityEndAt: null }
+      migrated = { ...migrated, validityEndAt: null }
     }
-    return code as PromoCode
+    if (!('maxUseCount' in code) || code.maxUseCount === undefined) {
+      needsMigration = true
+      migrated = { ...migrated, maxUseCount: 1 }
+    }
+    if (!('useCount' in code) || code.useCount === undefined) {
+      needsMigration = true
+      migrated = { ...migrated, useCount: 0 }
+    }
+    return migrated as PromoCode
   })
 
   // マイグレーションが必要だった場合は保存
@@ -93,7 +163,13 @@ export function getAllCodes(): PromoCode[] {
     store.set('codes', migratedCodes)
   }
 
-  return migratedCodes
+  // 複数回使用コードの自動リセット処理
+  const autoResetResult = autoResetExpiredMultiUseCodes(migratedCodes, new Date())
+  if (autoResetResult.needsSave) {
+    store.set('codes', autoResetResult.codes)
+  }
+
+  return autoResetResult.codes
 }
 
 /**
@@ -122,6 +198,8 @@ export function createCode(input: CreatePromoCodeInput): PromoCode {
     validityEndAt: input.validityEndAt ?? null,
     startedAt: null,
     expiresAt: null,
+    maxUseCount: input.maxUseCount ?? 1,
+    useCount: input.useCount ?? 0,
     createdAt: now,
     updatedAt: now
   }
@@ -149,6 +227,8 @@ export function createCodes(inputs: CreatePromoCodeInput[]): PromoCode[] {
     validityEndAt: input.validityEndAt ?? null,
     startedAt: null,
     expiresAt: null,
+    maxUseCount: input.maxUseCount ?? 1,
+    useCount: input.useCount ?? 0,
     createdAt: now,
     updatedAt: now
   }))

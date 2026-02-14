@@ -28,8 +28,11 @@ function createTestCode(overrides: Partial<PromoCode> = {}): PromoCode {
     code: 'TESTCODE123',
     inputDeadline: '2026-06-20T23:59:59.000Z',
     validityDurationMinutes: 10080, // 7日間
+    validityEndAt: null,
     startedAt: null,
     expiresAt: null,
+    maxUseCount: 1,
+    useCount: 0,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...overrides
@@ -156,6 +159,92 @@ describe('determineCodeStatus', () => {
         inputDeadline: '2026-06-20T23:59:59.000Z',
         startedAt: null,
         expiresAt: null
+      })
+
+      expect(determineCodeStatus(code)).toBe('expired')
+    })
+  })
+
+  describe('複数回使用コード', () => {
+    it('使用済み回数が残り回数内で自動リセット後は未使用として扱う', () => {
+      vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+
+      // useCount=1, maxUseCount=24: 入力期限は過ぎているが、
+      // 既に一度使用したコードなのでunusedに戻る
+      const code = createTestCode({
+        inputDeadline: '2026-06-20T23:59:59.000Z', // 過去
+        startedAt: null,
+        expiresAt: null,
+        maxUseCount: 24,
+        useCount: 1
+      })
+
+      expect(determineCodeStatus(code)).toBe('unused')
+    })
+
+    it('useCount=0かつ入力期限切れの場合はexpired', () => {
+      vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+
+      const code = createTestCode({
+        inputDeadline: '2026-06-20T23:59:59.000Z',
+        startedAt: null,
+        expiresAt: null,
+        maxUseCount: 24,
+        useCount: 0
+      })
+
+      expect(determineCodeStatus(code)).toBe('expired')
+    })
+
+    it('全回使用済み（useCount=maxUseCount）かつ入力期限切れはexpired', () => {
+      vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+
+      const code = createTestCode({
+        inputDeadline: '2026-06-20T23:59:59.000Z',
+        startedAt: null,
+        expiresAt: null,
+        maxUseCount: 24,
+        useCount: 24
+      })
+
+      expect(determineCodeStatus(code)).toBe('expired')
+    })
+
+    it('全回使用済みでもstartedAtがあればconsumed', () => {
+      vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+
+      const code = createTestCode({
+        startedAt: '2026-06-20T12:00:00.000Z',
+        expiresAt: '2026-06-27T12:00:00.000Z',
+        maxUseCount: 24,
+        useCount: 24
+      })
+
+      expect(determineCodeStatus(code)).toBe('consumed')
+    })
+
+    it('複数回使用コードが使用中の場合はactive', () => {
+      vi.setSystemTime(new Date('2026-01-16T12:00:00.000Z'))
+
+      const code = createTestCode({
+        startedAt: '2026-01-15T12:00:00.000Z',
+        expiresAt: '2026-01-22T12:00:00.000Z',
+        maxUseCount: 24,
+        useCount: 3
+      })
+
+      expect(determineCodeStatus(code)).toBe('active')
+    })
+
+    it('単一回使用コードで入力期限切れはexpired（従来動作と互換）', () => {
+      vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+
+      const code = createTestCode({
+        inputDeadline: '2026-06-20T23:59:59.000Z',
+        startedAt: null,
+        expiresAt: null,
+        maxUseCount: 1,
+        useCount: 0
       })
 
       expect(determineCodeStatus(code)).toBe('expired')

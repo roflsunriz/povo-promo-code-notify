@@ -65,6 +65,8 @@ export interface UpdateCodeRequest {
     code?: string
     inputDeadline?: string
     validityDurationMinutes?: number
+    maxUseCount?: number
+    useCount?: number
   }
 }
 
@@ -201,6 +203,8 @@ export interface ParsedCodeInfo {
   inputDeadline: string | null
   validityDurationMinutes: number | null
   validityEndAt?: string | null
+  maxUseCount?: number
+  useCount?: number
 }
 
 export interface ParseEmailResponse {

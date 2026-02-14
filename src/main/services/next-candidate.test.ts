@@ -17,8 +17,11 @@ function createTestCode(overrides: Partial<PromoCode> = {}): PromoCode {
     code: 'TESTCODE123',
     inputDeadline: '2026-06-20T23:59:59.000Z',
     validityDurationMinutes: 10080, // 7日間
+    validityEndAt: null,
     startedAt: null,
     expiresAt: null,
+    maxUseCount: 1,
+    useCount: 0,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...overrides

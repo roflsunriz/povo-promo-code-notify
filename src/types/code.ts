@@ -69,6 +69,20 @@ export interface PromoCode {
   expiresAt: string | null
 
   /**
+   * 最大使用回数（既定: 1）
+   * 1つのプロモコードで複数回使用できる場合に1より大きい値を設定
+   * 例: 24回使用可能なコードは24
+   */
+  maxUseCount: number
+
+  /**
+   * 使用済み回数（既定: 0）
+   * 使用開始（startCode）した回数を記録
+   * 使用中(active)から消費済み(consumed)に遷移した際に自動インクリメント
+   */
+  useCount: number
+
+  /**
    * 作成日時（ISO 8601形式）
    */
   readonly createdAt: string
@@ -89,6 +103,8 @@ export interface CreatePromoCodeInput {
   inputDeadline: string
   validityDurationMinutes: number
   validityEndAt?: string | null
+  maxUseCount?: number
+  useCount?: number
 }
 
 /**
@@ -103,6 +119,8 @@ export interface UpdatePromoCodeInput {
   validityEndAt?: string | null
   startedAt?: string | null
   expiresAt?: string | null
+  maxUseCount?: number
+  useCount?: number
 }
 
 /**

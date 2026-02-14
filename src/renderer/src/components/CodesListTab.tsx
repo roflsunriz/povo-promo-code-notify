@@ -103,6 +103,11 @@ function CodeRow({
       <td className="px-4 py-3 text-zinc-400 text-sm">
         {formatValidityDuration(code.validityDurationMinutes)}
       </td>
+      <td className="px-4 py-3 text-zinc-400 text-sm">
+        {code.status === 'active'
+          ? `${code.useCount + 1}/${code.maxUseCount}`
+          : `${code.useCount}/${code.maxUseCount}`}
+      </td>
     </tr>
   )
 }
@@ -344,6 +349,7 @@ export function CodesListTab(): JSX.Element {
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用開始</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期限</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期間</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用回数</th>
               </tr>
             </thead>
             <tbody>
