@@ -319,9 +319,7 @@ function CodeEditPanel({
                   {maskCode(code.code, showFullCode)}
                 </span>
               )}
-              {!isEditingBasicInfo && (
-                <Badge variant="info">{formatUseCount(code)}</Badge>
-              )}
+              {!isEditingBasicInfo && <Badge variant="info">{formatUseCount(code)}</Badge>}
             </div>
             {canEditBasicInfo && !isEditingBasicInfo && (
               <button
@@ -504,9 +502,7 @@ function CodeEditPanel({
       >
         <p>
           コード{' '}
-          <span className="font-mono text-amber-400">
-            {maskCode(code.code, showFullCode)}
-          </span>{' '}
+          <span className="font-mono text-amber-400">{maskCode(code.code, showFullCode)}</span>{' '}
           の使用を取り消します。
         </p>
         <p className="mt-2">使用開始日時と有効期限が未設定に戻り、未使用として扱われます。</p>
@@ -524,9 +520,7 @@ function CodeEditPanel({
       >
         <p>
           コード{' '}
-          <span className="font-mono text-amber-400">
-            {maskCode(code.code, showFullCode)}
-          </span>{' '}
+          <span className="font-mono text-amber-400">{maskCode(code.code, showFullCode)}</span>{' '}
           を削除します。
         </p>
         <p className="mt-2 text-red-400">この操作は取り消せません。</p>

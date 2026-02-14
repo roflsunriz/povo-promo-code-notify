@@ -94,12 +94,8 @@ function ParsedCodeEditForm({
   const [editedDurationDays, setEditedDurationDays] = useState(initialDHM.days.toString())
   const [editedDurationHours, setEditedDurationHours] = useState(initialDHM.hours.toString())
   const [editedDurationMinutes, setEditedDurationMinutes] = useState(initialDHM.minutes.toString())
-  const [editedMaxUseCount, setEditedMaxUseCount] = useState(
-    (code.maxUseCount ?? 1).toString()
-  )
-  const [editedUseCount, setEditedUseCount] = useState(
-    (code.useCount ?? 0).toString()
-  )
+  const [editedMaxUseCount, setEditedMaxUseCount] = useState((code.maxUseCount ?? 1).toString())
+  const [editedUseCount, setEditedUseCount] = useState((code.useCount ?? 0).toString())
 
   const handlePresetSelect = useCallback((days: number, hours: number, minutes: number) => {
     setEditedDurationDays(days.toString())

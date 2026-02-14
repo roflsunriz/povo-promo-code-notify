@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "electron-store": "^11.0.2",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -40,39 +40,36 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@electron-toolkit/utils": "^4.0.0",
-    "@eslint/js": "^9.39.2",
-    "@playwright/test": "^1.57.0",
+    "@eslint/js": "^10.0.1",
+    "@isaacs/brace-expansion": "^5.0.1",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.1.10",
-    "@types/node": "^25.0.10",
-    "@types/react": "^19.1.6",
+    "@types/node": "^25.2.3",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.1.5",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "@vitejs/plugin-react": "^5.1.2",
-    "@vitest/coverage-v8": "^4.0.17",
-    "electron": "^40.0.0",
-    "electron-builder": "^26.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
+    "@typescript-eslint/parser": "^8.55.0",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/coverage-v8": "^4.0.18",
+    "electron": "^40.4.1",
+    "electron-builder": "^26.7.0",
     "electron-vite": "^5.0.0",
-    "eslint": "^9.27.0",
+    "eslint": "^10.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-unused-imports": "^4.1.4",
-    "globals": "^17.0.0",
-    "playwright": "^1.57.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.3.0",
+    "playwright": "^1.58.2",
     "png-to-ico": "^3.0.1",
     "prettier": "^3.5.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.10",
+    "tar": "^7.5.7",
     "typescript": "^5.8.3",
     "vite": "^7.3.1",
-    "vitest": "^4.0.17"
-  },
-  "pnpm": {
-    "overrides": {
-      "tar": ">=7.5.4"
-    }
+    "vitest": "^4.0.18"
   }
 }
