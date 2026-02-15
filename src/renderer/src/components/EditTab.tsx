@@ -172,6 +172,7 @@ function CodeEditPanel({
       code?: string
       inputDeadline?: string
       validityDurationMinutes?: number
+      expiresAt?: string | null
       maxUseCount?: number
       useCount?: number
     }
@@ -194,8 +195,6 @@ function CodeEditPanel({
   const canStart = code.status === 'unused'
   const canCancel = code.status === 'active' || code.status === 'consumed'
   const canEdit = code.startedAt !== null
-  // 未使用・期限切れのコードのみ基本情報を編集可能
-  const canEditBasicInfo = code.status === 'unused' || code.status === 'expired'
 
   const handleStart = useCallback(async () => {
     const success = await onStartCode(code.id)
@@ -247,6 +246,7 @@ function CodeEditPanel({
       code?: string
       inputDeadline?: string
       validityDurationMinutes?: number
+      expiresAt?: string | null
       maxUseCount?: number
       useCount?: number
     } = {}
@@ -261,6 +261,13 @@ function CodeEditPanel({
     const newDuration = parseInt(editedDuration, 10)
     if (!isNaN(newDuration) && newDuration !== code.validityDurationMinutes) {
       input.validityDurationMinutes = newDuration
+
+      // 使用中コードの有効期間が変更された場合、有効期限を再計算
+      if (code.startedAt !== null) {
+        const startTime = new Date(code.startedAt).getTime()
+        const newExpiresAt = new Date(startTime + newDuration * 60 * 1000)
+        input.expiresAt = newExpiresAt.toISOString()
+      }
     }
     const newMaxUseCount = parseInt(editedMaxUseCount, 10)
     if (!isNaN(newMaxUseCount) && newMaxUseCount !== code.maxUseCount) {
@@ -321,7 +328,7 @@ function CodeEditPanel({
               )}
               {!isEditingBasicInfo && <Badge variant="info">{formatUseCount(code)}</Badge>}
             </div>
-            {canEditBasicInfo && !isEditingBasicInfo && (
+            {!isEditingBasicInfo && (
               <button
                 onClick={handleStartEditBasicInfo}
                 className="p-2 text-zinc-400 hover:text-zinc-200"
