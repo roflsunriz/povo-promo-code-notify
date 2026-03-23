@@ -28,7 +28,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "pnpm build && playwright test",
-    "build:win": "pnpm build && electron-builder --win --config"
+    "build:win": "pnpm build && pnpm exec electron-builder --win --config"
   },
   "dependencies": {
     "electron-store": "^11.0.2",
