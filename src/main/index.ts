@@ -14,6 +14,7 @@ import {
   startNotificationScheduler,
   stopNotificationScheduler
 } from './services'
+import { initUpdater } from './updater'
 
 /**
  * Get the application icon path based on environment
@@ -84,6 +85,8 @@ function createWindow(): void {
     })
     return { action: 'deny' }
   })
+
+  initUpdater(mainWindow)
 
   // HMR for renderer based on electron-vite CLI
   // Load the remote URL for development or the local html file for production

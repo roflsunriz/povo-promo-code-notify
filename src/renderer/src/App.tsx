@@ -4,7 +4,8 @@ import {
   CodesListTab,
   RegisterTab,
   EditTab,
-  NotificationTab
+  NotificationTab,
+  UpdateTab
 } from './components'
 import type { TabId } from './components'
 import type { JSX } from 'react'
@@ -21,6 +22,8 @@ function renderTab(tabId: TabId): JSX.Element {
       return <EditTab />
     case 'notification':
       return <NotificationTab />
+    case 'update':
+      return <UpdateTab />
   }
 }
 
@@ -39,7 +42,7 @@ export function App(): JSX.Element {
 
       {/* フッター */}
       <footer className="flex-shrink-0 px-6 py-2 border-t border-zinc-800 text-center text-zinc-500 text-xs">
-        <p>povo-promo-code-notify v1.4.1</p>
+        <p>povo-promo-code-notify v1.5.0</p>
       </footer>
     </div>
   )

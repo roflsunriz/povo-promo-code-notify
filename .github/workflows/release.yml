@@ -44,7 +44,7 @@ jobs:
         run: pnpm build
 
       - name: Build Windows installer
-        run: pnpm build:win
+        run: pnpm build && electron-builder --win --config --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -75,6 +75,8 @@ jobs:
             詳細は [RELEASE_NOTES.md](https://github.com/${{ github.repository }}/blob/main/docs/RELEASE_NOTES.md) を参照してください。
           files: |
             release/*.exe
+            release/latest.yml
+            release/*.blockmap
           draft: false
           prerelease: false
         env:

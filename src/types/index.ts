@@ -101,6 +101,11 @@ export type {
   CodeSort,
   GetFilteredCodesRequest,
   GetFilteredCodesResponse,
+  UpdaterStatus,
+  UpdaterEvent,
+  DownloadProgressInfo,
+  GetAppVersionResponse,
+  CheckForUpdatesResponse,
   IpcChannel
 } from './ipc'
 

@@ -4,6 +4,7 @@ import { IPC_CHANNELS } from '../types/ipc'
 import type {
   CancelCodeRequest,
   CancelCodeResponse,
+  CheckForUpdatesResponse,
   CreateBackupResponse,
   CreateCodeRequest,
   CreateCodeResponse,
@@ -11,11 +12,13 @@ import type {
   CreateCodesResponse,
   DeleteCodeRequest,
   DeleteCodeResponse,
+  DownloadProgressInfo,
   EditStartedAtRequest,
   EditStartedAtResponse,
   ExportDataResponse,
   ExportToFileResponse,
   GetAllCodesResponse,
+  GetAppVersionResponse,
   GetCoverageResponse,
   GetDashboardResponse,
   GetFilteredCodesRequest,
@@ -34,8 +37,10 @@ import type {
   UpdateNotificationSettingsRequest,
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
-  UpdateOrdersResponse
+  UpdateOrdersResponse,
+  UpdaterEvent
 } from '../types/ipc'
+import type { IpcRendererEvent } from 'electron'
 
 // Custom APIs for renderer
 const api = {
@@ -109,7 +114,35 @@ const api = {
 
   // テスト通知
   sendTestNotification: (): Promise<{ success: boolean }> =>
-    ipcRenderer.invoke(IPC_CHANNELS.SEND_TEST_NOTIFICATION)
+    ipcRenderer.invoke(IPC_CHANNELS.SEND_TEST_NOTIFICATION),
+
+  // アプリ更新
+  getAppVersion: (): Promise<GetAppVersionResponse> =>
+    ipcRenderer.invoke(IPC_CHANNELS.GET_APP_VERSION),
+
+  checkForUpdates: (): Promise<CheckForUpdatesResponse> =>
+    ipcRenderer.invoke(IPC_CHANNELS.CHECK_FOR_UPDATES),
+
+  downloadUpdate: (): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke(IPC_CHANNELS.DOWNLOAD_UPDATE),
+
+  quitAndInstall: (): Promise<void> => ipcRenderer.invoke(IPC_CHANNELS.QUIT_AND_INSTALL),
+
+  onUpdaterEvent: (callback: (data: UpdaterEvent) => void): (() => void) => {
+    const handler = (_event: IpcRendererEvent, data: UpdaterEvent): void => callback(data)
+    ipcRenderer.on(IPC_CHANNELS.UPDATER_EVENT, handler)
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.UPDATER_EVENT, handler)
+    }
+  },
+
+  onDownloadProgress: (callback: (data: DownloadProgressInfo) => void): (() => void) => {
+    const handler = (_event: IpcRendererEvent, data: DownloadProgressInfo): void => callback(data)
+    ipcRenderer.on(IPC_CHANNELS.UPDATER_PROGRESS, handler)
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.UPDATER_PROGRESS, handler)
+    }
+  }
 }
 
 export type ApiType = typeof api

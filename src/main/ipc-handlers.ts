@@ -46,17 +46,19 @@ import {
   updateNotificationSchedulerCodes,
   updateNotificationSchedulerSettings
 } from './services'
+import { checkForUpdates, downloadUpdate, quitAndInstall } from './updater'
 import type { CodeStatus, PromoCodeWithStatus } from '@types/code'
 import type {
   CancelCodeRequest,
   CancelCodeResponse,
+  CheckForUpdatesResponse,
   CodeFilter,
   CodeSort,
+  CreateBackupResponse,
   CreateCodeRequest,
   CreateCodeResponse,
   CreateCodesRequest,
   CreateCodesResponse,
-  CreateBackupResponse,
   DashboardData,
   DeleteCodeRequest,
   DeleteCodeResponse,
@@ -65,6 +67,7 @@ import type {
   ExportDataResponse,
   ExportToFileResponse,
   GetAllCodesResponse,
+  GetAppVersionResponse,
   GetCoverageResponse,
   GetDashboardResponse,
   GetFilteredCodesRequest,
@@ -138,6 +141,12 @@ export function registerIpcHandlers(): void {
 
   // テスト通知
   registerSendTestNotification()
+
+  // アプリ更新
+  registerGetAppVersion()
+  registerCheckForUpdates()
+  registerDownloadUpdate()
+  registerQuitAndInstall()
 }
 
 // ==================== コード操作 ====================
@@ -584,6 +593,44 @@ function registerSendTestNotification(): void {
 
       notification.show()
       return { success: true }
+    })
+  )
+}
+
+// ==================== アプリ更新 ====================
+
+function registerGetAppVersion(): void {
+  ipcMain.handle(IPC_CHANNELS.GET_APP_VERSION, () =>
+    withTrace('ipc:getAppVersion', (): GetAppVersionResponse => {
+      return { version: app.getVersion() }
+    })
+  )
+}
+
+function registerCheckForUpdates(): void {
+  ipcMain.handle(
+    IPC_CHANNELS.CHECK_FOR_UPDATES,
+    async (): Promise<CheckForUpdatesResponse> =>
+      withTrace('ipc:checkForUpdates', async () => {
+        return await checkForUpdates()
+      })
+  )
+}
+
+function registerDownloadUpdate(): void {
+  ipcMain.handle(
+    IPC_CHANNELS.DOWNLOAD_UPDATE,
+    async (): Promise<{ success: boolean; error?: string }> =>
+      withTrace('ipc:downloadUpdate', async () => {
+        return await downloadUpdate()
+      })
+  )
+}
+
+function registerQuitAndInstall(): void {
+  ipcMain.handle(IPC_CHANNELS.QUIT_AND_INSTALL, () =>
+    withTrace('ipc:quitAndInstall', () => {
+      quitAndInstall()
     })
   )
 }

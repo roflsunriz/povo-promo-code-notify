@@ -309,6 +309,56 @@ export interface ImportFromFileResponse {
   error?: string
 }
 
+// ==================== アプリ更新 ====================
+
+/**
+ * アップデーターの状態
+ */
+export type UpdaterStatus =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'not-available'
+  | 'downloading'
+  | 'downloaded'
+  | 'error'
+
+/**
+ * アップデーターのステータスイベント（メインからレンダラーへプッシュ）
+ */
+export interface UpdaterEvent {
+  status: UpdaterStatus
+  version?: string
+  error?: string
+  releaseNotes?: string
+}
+
+/**
+ * ダウンロード進捗情報（メインからレンダラーへプッシュ）
+ */
+export interface DownloadProgressInfo {
+  bytesPerSecond: number
+  percent: number
+  transferred: number
+  total: number
+}
+
+/**
+ * アプリバージョン取得レスポンス
+ */
+export interface GetAppVersionResponse {
+  version: string
+}
+
+/**
+ * 更新確認レスポンス
+ */
+export interface CheckForUpdatesResponse {
+  updateAvailable: boolean
+  version?: string
+  error?: string
+}
+
 // ==================== IPC チャンネル名 ====================
 
 export const IPC_CHANNELS = {
@@ -350,7 +400,15 @@ export const IPC_CHANNELS = {
   PARSE_EMAIL: 'email:parse',
 
   // テスト通知
-  SEND_TEST_NOTIFICATION: 'notification:sendTest'
+  SEND_TEST_NOTIFICATION: 'notification:sendTest',
+
+  // アプリ更新
+  GET_APP_VERSION: 'updater:getVersion',
+  CHECK_FOR_UPDATES: 'updater:check',
+  DOWNLOAD_UPDATE: 'updater:download',
+  QUIT_AND_INSTALL: 'updater:quitAndInstall',
+  UPDATER_EVENT: 'updater:event',
+  UPDATER_PROGRESS: 'updater:progress'
 } as const
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]

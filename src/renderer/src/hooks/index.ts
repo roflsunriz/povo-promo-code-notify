@@ -14,3 +14,6 @@ export {
 } from './useCodes'
 
 export type { ExportResult, ImportResult } from './useCodes'
+
+export { useUpdater } from './useUpdater'
+export type { UseUpdaterReturn } from './useUpdater'

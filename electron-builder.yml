@@ -39,5 +39,10 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 
+publish:
+  - provider: github
+    owner: roflsunriz
+    repo: povo-promo-code-notify
+
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
