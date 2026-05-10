@@ -102,6 +102,7 @@ povo 2.0では「データ使い放題」などのトッピングをプロモコ
 - **TypeScript** - 型安全な開発
 - **TailwindCSS** - スタイリング
 - **Vite / electron-vite** - ビルドツール
+- **bun** - パッケージマネージャ
 - **Zod** - バリデーション
 - **Vitest** - テストフレームワーク
 - **Playwright** - E2Eテスト
@@ -113,56 +114,53 @@ povo 2.0では「データ使い放題」などのトッピングをプロモコ
 #### 前提条件
 
 - Node.js 22以上（LTS）
-- pnpm 10以上（Corepackで有効化）
+- bun 1.3.8以上
 
 #### セットアップ
 
 ```bash
-# Corepack有効化
-corepack enable
-
 # 依存パッケージのインストール
-pnpm install
+bun install
 
 # 開発サーバー起動
-pnpm dev
+bun dev
 ```
 
 ### 開発コマンド
 
 ```bash
 # 開発サーバー起動（HMR有効）
-pnpm dev
+bun dev
 
 # リンター実行
-pnpm lint
+bun lint
 
 # リンター自動修正
-pnpm lint:fix
+bun lint:fix
 
 # 型チェック
-pnpm type-check
+bun type-check
 
 # フォーマット
-pnpm format
+bun format
 
 # テスト実行
-pnpm test
+bun test
 
 # テスト（監視モード）
-pnpm test:watch
+bun test:watch
 
 # カバレッジ付きテスト
-pnpm test:coverage
+bun test:coverage
 
 # E2Eテスト
-pnpm test:e2e
+bun test:e2e
 
 # プロダクションビルド
-pnpm build
+bun build
 
 # Windowsインストーラー作成
-pnpm build:win
+bun build:win
 ```
 
 ### 環境変数
@@ -211,7 +209,7 @@ src/
 
 ## 運用・デプロイ
 
-- Windows向けの配布物は `pnpm build:win` で作成します
+- Windows向けの配布物は `bun build:win` で作成します
 - 生成物は `release/`（electron-builderの出力先）に配置されます
 - GitHub Releasesから最新版をダウンロードできます
 
@@ -222,8 +220,8 @@ src/
 1. `%APPDATA%\povo-promo-code-notify\logs\app.log` を確認
 2. 依存関係の問題がある場合は再インストール:
    ```bash
-   pnpm install
-   pnpm build
+   bun install
+   bun build
    ```
 
 ### 通知が届かない

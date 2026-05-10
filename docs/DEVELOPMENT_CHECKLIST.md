@@ -12,13 +12,13 @@
 | バリデーション | Zod | 3.x |
 | 永続化 | electron-store | latest |
 | テスト | Vitest + Playwright | latest |
-| パッケージ管理 | pnpm | latest |
+| パッケージ管理 | bun | 1.3.8 |
 
 ---
 
 ## Phase 1: プロジェクト基盤構築
 
-- [x] 1.1 pnpmでelectron-viteプロジェクト初期化（React + TypeScript）
+- [x] 1.1 bunでelectron-viteプロジェクト初期化（React + TypeScript）
 - [x] 1.2 package.jsonにengines設定追加（Node.js LTS指定）
 - [x] 1.3 tsconfig.jsonをstrict強化（ユーザールール準拠）
 - [x] 1.4 ESLint 9設定（TypeScript強化ルール）

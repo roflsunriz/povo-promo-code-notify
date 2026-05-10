@@ -3,7 +3,7 @@
  * SVGからアルファチャンネル対応のマルチサイズICOを生成
  *
  * 使用方法: node scripts/generate-ico.mjs
- * 前提: pnpm add -D sharp png-to-ico
+ * 前提: bun add -d sharp png-to-ico
  */
 import { readFileSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
