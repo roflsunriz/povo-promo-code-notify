@@ -1,3 +1,6 @@
+![summary](./gallery/summary.png)
+![list](./gallery/list.png)
+
 # povo プロモコード管理
 
 povo 2.0のプロモコードを管理するWindows 11向けデスクトップアプリケーションです。
