@@ -7,6 +7,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useCodes } from '../hooks'
 import { Select, Checkbox } from './ui'
 import { Badge, getStatusBadgeVariant, getStatusLabel } from './ui/Badge'
+import { UseCountProgressBadge, getUseCountProgressDetail } from './UseCountProgressBadge'
 import type { CodeStatus, PromoCodeWithStatus } from '../../../types/code'
 import type { CodeFilter, CodeSort, CodeSortKey } from '../../../types/ipc'
 import type { JSX } from 'react'
@@ -103,10 +104,9 @@ function CodeRow({
       <td className="px-4 py-3 text-zinc-400 text-sm">
         {formatValidityDuration(code.validityDurationMinutes)}
       </td>
-      <td className="px-4 py-3 text-zinc-400 text-sm">
-        {code.status === 'active'
-          ? `${code.useCount + 1}/${code.maxUseCount}`
-          : `${code.useCount}/${code.maxUseCount}`}
+      <td className="px-4 py-3 text-zinc-400 text-sm whitespace-nowrap">
+        <UseCountProgressBadge code={code} />
+        <div className="mt-1 text-xs text-zinc-500">{getUseCountProgressDetail(code)}</div>
       </td>
     </tr>
   )
@@ -349,7 +349,7 @@ export function CodesListTab(): JSX.Element {
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用開始</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期限</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">有効期間</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用回数</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">使用状況</th>
               </tr>
             </thead>
             <tbody>

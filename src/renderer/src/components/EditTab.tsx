@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useCodes, useCodeActions } from '../hooks'
 import { Button, Input, Card, Dialog } from './ui'
 import { Badge, getStatusBadgeVariant, getStatusLabel } from './ui/Badge'
+import { UseCountProgressBadge, getUseCountProgressDetail } from './UseCountProgressBadge'
 import type { PromoCodeWithStatus } from '../../../types/code'
 import type { JSX, MouseEvent as ReactMouseEvent } from 'react'
 
@@ -18,16 +19,6 @@ function maskCode(code: string, showFull: boolean): string {
     return code
   }
   return code.substring(0, 2) + '***' + code.substring(code.length - 2)
-}
-
-/**
- * 使用回数の表示文字列を生成
- */
-function formatUseCount(code: PromoCodeWithStatus): string {
-  if (code.status === 'active') {
-    return `${code.useCount + 1}/${code.maxUseCount}回目`
-  }
-  return `${code.useCount}/${code.maxUseCount}`
 }
 
 /**
@@ -114,7 +105,7 @@ function CodeSelectCard({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="info">{formatUseCount(code)}</Badge>
+          <UseCountProgressBadge code={code} />
           <Badge variant="info">#{code.order}</Badge>
         </div>
       </div>
@@ -326,7 +317,7 @@ function CodeEditPanel({
                   {maskCode(code.code, showFullCode)}
                 </span>
               )}
-              {!isEditingBasicInfo && <Badge variant="info">{formatUseCount(code)}</Badge>}
+              {!isEditingBasicInfo && <UseCountProgressBadge code={code} />}
             </div>
             {!isEditingBasicInfo && (
               <button
@@ -411,17 +402,11 @@ function CodeEditPanel({
                 <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
               </div>
               <div>
-                <div className="text-zinc-400">使用回数</div>
-                <div className="text-zinc-200">{formatUseCount(code)}</div>
-              </div>
-              <div>
-                <div className="text-zinc-400">残り回数</div>
-                <div className="text-zinc-200">
-                  {code.status === 'active'
-                    ? code.maxUseCount - code.useCount - 1
-                    : code.maxUseCount - code.useCount}
-                  回
+                <div className="text-zinc-400">使用状況</div>
+                <div className="mt-1">
+                  <UseCountProgressBadge code={code} />
                 </div>
+                <div className="mt-1 text-xs text-zinc-500">{getUseCountProgressDetail(code)}</div>
               </div>
             </div>
           )}

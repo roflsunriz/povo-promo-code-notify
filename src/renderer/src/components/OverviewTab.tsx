@@ -6,6 +6,7 @@
 import { useDashboard } from '../hooks'
 import { Card } from './ui'
 import { Badge, getStatusBadgeVariant, getStatusLabel } from './ui/Badge'
+import { UseCountProgressBadge, getUseCountProgressDetail } from './UseCountProgressBadge'
 import type { PromoCodeWithStatus } from '../../../types/code'
 import type { JSX } from 'react'
 
@@ -81,15 +82,16 @@ function ActiveCodeCard({ code }: { code: PromoCodeWithStatus }): JSX.Element {
     remainingMs !== null ? Math.max(0, Math.floor(remainingMs / (1000 * 60))) : null
 
   return (
-    <div className="flex items-center justify-between p-3 bg-zinc-700/50 rounded-lg">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-start justify-between gap-4 p-3 bg-zinc-700/50 rounded-lg">
+      <div className="flex flex-wrap items-center gap-3 min-w-0">
         <Badge variant={getStatusBadgeVariant(code.status)}>{getStatusLabel(code.status)}</Badge>
         <span className="font-mono text-sm text-zinc-300">{maskCode(code.code)}</span>
-        <Badge variant="info">
-          {code.useCount + 1}/{code.maxUseCount}
-        </Badge>
+        <div className="flex flex-col gap-1">
+          <UseCountProgressBadge code={code} />
+          <span className="text-xs text-zinc-500">{getUseCountProgressDetail(code)}</span>
+        </div>
       </div>
-      <div className="text-right">
+      <div className="text-right shrink-0">
         <div className="text-sm text-zinc-400">有効期限</div>
         <div className="text-zinc-200">{formatDateTime(code.expiresAt)}</div>
         <div className="text-sm text-amber-400">残り {formatRemainingTime(remainingMinutes)}</div>
