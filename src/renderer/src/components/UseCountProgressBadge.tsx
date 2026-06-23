@@ -14,9 +14,7 @@ function getUseCountProgress(code: PromoCodeWithStatus): UseCountProgress {
   const completedUses = Math.min(code.useCount, total)
   const current = code.status === 'active' ? Math.min(completedUses + 1, total) : completedUses
   const remainingAfterCurrent =
-    code.status === 'active'
-      ? Math.max(0, total - current)
-      : Math.max(0, total - completedUses)
+    code.status === 'active' ? Math.max(0, total - current) : Math.max(0, total - completedUses)
 
   return {
     current,
