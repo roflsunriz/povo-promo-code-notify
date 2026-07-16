@@ -26,6 +26,10 @@ extraResources:
   - from: resources/icon.ico
     to: icon.ico
 
+extraFiles:
+  - from: scripts/register-logon-task.ps1
+    to: register-logon-task.ps1
+
 win:
   executableName: povo-promo-code-notify
   target:

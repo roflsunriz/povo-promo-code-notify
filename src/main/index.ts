@@ -14,6 +14,7 @@ import {
   startNotificationScheduler,
   stopNotificationScheduler
 } from './services'
+import { shouldStartInTray } from './startup-options'
 import { initUpdater } from './updater'
 
 /**
@@ -34,6 +35,8 @@ let tray: Tray | null = null
 let mainWindow: BrowserWindow | null = null
 /** アプリを完全に終了するかどうか（トレイから終了時にtrue） */
 let isQuitting = false
+/** 起動時にメインウィンドウを表示せず、トレイに常駐するかどうか */
+const startInTray = shouldStartInTray(process.argv)
 
 configureObservability({ logLevel: 'info' })
 setupProcessErrorHandlers()
@@ -41,10 +44,11 @@ setupProcessErrorHandlers()
 logEvent({
   level: 'info',
   message: 'app:boot',
-  traceId: createTraceId()
+  traceId: createTraceId(),
+  context: { startInTray }
 })
 
-function createWindow(): void {
+function createWindow(showOnReady = true): void {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -63,7 +67,9 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow?.show()
+    if (showOnReady) {
+      mainWindow?.show()
+    }
   })
 
   // ウィンドウを閉じようとした時、トレイに最小化する（完全終了フラグがfalseの場合）
@@ -114,7 +120,7 @@ function createWindow(): void {
 /**
  * Create system tray
  */
-function createTray(): void {
+function createTray(): boolean {
   try {
     const iconPath = getIconPath()
     const icon = nativeImage.createFromPath(iconPath)
@@ -128,7 +134,7 @@ function createTray(): void {
         context: { iconPath }
       })
       // フォールバック: デフォルトアイコンを使わずにエラーログのみ
-      return
+      return false
     }
 
     // ICOファイルには複数サイズが含まれているため、Windowsが自動的に適切なサイズを選択
@@ -169,6 +175,7 @@ function createTray(): void {
       message: 'tray:created',
       traceId: createTraceId()
     })
+    return true
   } catch (error) {
     logEvent({
       level: 'warn',
@@ -176,6 +183,7 @@ function createTray(): void {
       traceId: createTraceId(),
       context: { error: error instanceof Error ? error.message : String(error) }
     })
+    return false
   }
 }
 
@@ -196,10 +204,11 @@ void app.whenReady().then(() => {
   // 通知スケジューラーを初期化
   initNotificationScheduler()
 
-  createWindow()
-
   // システムトレイを作成
-  createTray()
+  const trayCreated = createTray()
+
+  // トレイを利用できない場合は、--start-in-tray 指定時も操作不能を避けるため表示する
+  createWindow(!startInTray || !trayCreated)
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the

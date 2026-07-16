@@ -45,6 +45,31 @@ test.describe('受け入れ条件テスト', () => {
       expect(windows.length).toBe(1)
     })
 
+    test('通常起動ではメインウィンドウが表示されること', async () => {
+      const browserWindow = await electronApp.browserWindow(page)
+      await expect.poll(() => browserWindow.evaluate((window) => window.isVisible())).toBe(true)
+    })
+
+    test('--start-in-tray 起動ではメインウィンドウが表示されないこと', async () => {
+      const trayApp = await electron.launch({
+        args: [path.join(__dirname, '../out/main/index.js'), '--start-in-tray'],
+        env: {
+          ...process.env,
+          NODE_ENV: 'test'
+        }
+      })
+
+      try {
+        const trayPage = await trayApp.firstWindow()
+        await trayPage.waitForLoadState('domcontentloaded')
+        const browserWindow = await trayApp.browserWindow(trayPage)
+
+        await expect.poll(() => browserWindow.evaluate((window) => window.isVisible())).toBe(false)
+      } finally {
+        await trayApp.close()
+      }
+    })
+
     test('起動時に概略タブが表示されること', async () => {
       // 概略タブがアクティブであることを確認
       const overviewTab = page.getByRole('tab', { name: '概略' })
