@@ -315,13 +315,7 @@ export interface ImportFromFileResponse {
  * アップデーターの状態
  */
 export type UpdaterStatus =
-  | 'idle'
-  | 'checking'
-  | 'available'
-  | 'not-available'
-  | 'downloading'
-  | 'downloaded'
-  | 'error'
+  'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
 
 /**
  * アップデーターのステータスイベント（メインからレンダラーへプッシュ）

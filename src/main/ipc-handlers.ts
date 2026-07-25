@@ -608,12 +608,10 @@ function registerGetAppVersion(): void {
 }
 
 function registerCheckForUpdates(): void {
-  ipcMain.handle(
-    IPC_CHANNELS.CHECK_FOR_UPDATES,
-    async (): Promise<CheckForUpdatesResponse> =>
-      withTrace('ipc:checkForUpdates', async () => {
-        return await checkForUpdates()
-      })
+  ipcMain.handle(IPC_CHANNELS.CHECK_FOR_UPDATES, async (): Promise<CheckForUpdatesResponse> =>
+    withTrace('ipc:checkForUpdates', async () => {
+      return await checkForUpdates()
+    })
   )
 }
 
