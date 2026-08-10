@@ -8,7 +8,7 @@
 
 ### Security
 
-- push前監査で検出された既知の依存脆弱性を解消するため、安全版へ依存関係とロックファイルを更新した。
+- CI の依存監査で検出された高重大度の脆弱性を解消するため、Electron、fast-uri、brace-expansion、nanoid、undici、sharp を安全版へ更新した。
 
 ### Changed
 
