@@ -8,9 +8,11 @@
 
 ### Security
 
-- push前監査で検出された既知の依存脆弱性を解消するため、安全版へ依存関係とロックファイルを更新した。
+- CI の依存監査で検出された高重大度の脆弱性を解消するため、Electron、fast-uri、brace-expansion、nanoid、undici、sharp を安全版へ更新した。
 
 ### Changed
+
+- GitHub Actions の Node.js 20 非推奨警告を解消するため、checkout と setup-node を Node.js 24 対応版へ更新した。
 
 - 作業開始時の共通指針見落としを防ぐため、調査やコマンド実行より前に `COMMON-AGENTS.md` を先頭から末尾まで読み、EOFを確認する必須ゲートを追加した。
 
