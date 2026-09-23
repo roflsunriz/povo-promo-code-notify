@@ -8,10 +8,12 @@
 
 ### Security
 
+- 既知の脆弱性を解消するため、上流依存が旧版へ固定する fast-uri、nanoid、sharp を安全な patch 版へ更新し、Bun のロックファイルを再生成した。
 - CI の依存監査で検出された高重大度の脆弱性を解消するため、Electron、fast-uri、brace-expansion、nanoid、undici、sharp を安全版へ更新した。
 
 ### Changed
 
+- 依存更新を安全に省力化するため、Dependabot の patch／minor PR を既存 CI の全チェック成功後に自動取り込みし、失敗ジョブを一度再実行し、必要なら `bun.lock` を限定して再生成する設定を追加した。
 - GitHub Actions の Node.js 20 非推奨警告を解消するため、checkout と setup-node を Node.js 24 対応版へ更新した。
 
 - 作業開始時の共通指針見落としを防ぐため、調査やコマンド実行より前に `COMMON-AGENTS.md` を先頭から末尾まで読み、EOFを確認する必須ゲートを追加した。
