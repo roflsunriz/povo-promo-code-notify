@@ -11,3 +11,5 @@
 監査では fast-uri、nanoid、sharp を含む推移依存の旧版が検出された。Bun 1.4.0 で lockfile の固定インストールと再監査を行い、既知脆弱性 0 件を確認した。書式・lint・型・192件のテスト・ビルド成功。
 
 初回の GitHub Windows CI は Bun 1.3.8 が `bun.lock` の形式3を読めずに失敗した。`packageManager` を Bun 1.4.0 に更新し、CI とリリースの setup-bun がこの値を読む構成で再確認する。
+
+大量の Dependabot PR により CI 完了より分類が遅れる場合でも、分類後の `workflow_dispatch` が現在の PR 番号と head SHA を照合して再評価する。別の作成者、古い SHA、未完了の CI はマージしない。
