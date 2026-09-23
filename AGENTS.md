@@ -20,6 +20,7 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 ## 依存監査で確定した事項（2026-09-23）
 
 - `bun audit fix` だけでは fast-uri、nanoid、sharp の脆弱版が上流の厳密な依存範囲で残る。`package.json` の既存 `overrides` と `bun.lock` を同時に更新し、`bun audit` と関連テスト・ビルドで確認する。上流が安全版を取り込んだ場合は override の必要性を再評価する。
+- Bun 1.4.0 で再生成した `bun.lock` は lockfile 形式3で、Bun 1.3.8 の CI は読めない。`packageManager` を下げるときは lockfile の形式と CI/Release の固定インストールを同時に確認する。setup-bun v2 は `packageManager` から Bun 版を解決する。
 
 ## Dependabot の限定修復（2026-09-23）
 
