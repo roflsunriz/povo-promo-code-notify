@@ -16,6 +16,7 @@
 - 修正済み依存を含む新しい `bun.lock` を CI とリリースで読めるように、Bun の要求版を 1.4.0 へ更新した。
 - 依存更新を安全に省力化するため、Dependabot の patch／minor PR を既存 CI の全チェック成功後に自動取り込みし、失敗ジョブを一度再実行し、必要なら `bun.lock` を限定して再生成する設定を追加した。
 - GitHub Actions の Node.js 20 非推奨警告を解消するため、checkout と setup-node を Node.js 24 対応版へ更新した。
+- リリースワークフローでも Node.js 24 対応ランタイムで動作させるため、checkout と setup-node を v7、action-gh-release を v3 へ更新した（Dependabot #2-#4 対応）。
 
 - 作業開始時の共通指針見落としを防ぐため、調査やコマンド実行より前に `COMMON-AGENTS.md` を先頭から末尾まで読み、EOFを確認する必須ゲートを追加した。
 
