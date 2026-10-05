@@ -8,6 +8,8 @@
 
 ### Security
 
+- Electron 41.10.7 と系列別の間接依存修正版へ更新し、アプリと配布ツールの脆弱性を解消した。古い Electron ダウンローダー由来の機密キャッシュ問題を除くため、公式 @electron/get 5.1.0 へ限定移行した。
+
 - 既知の脆弱性を解消するため、上流依存が旧版へ固定する fast-uri、nanoid、sharp を安全な patch 版へ更新し、Bun のロックファイルを再生成した。
 - CI の依存監査で検出された高重大度の脆弱性を解消するため、Electron、fast-uri、brace-expansion、nanoid、undici、sharp を安全版へ更新した。
 
