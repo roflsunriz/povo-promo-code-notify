@@ -124,121 +124,44 @@ povo 2.0では「データ使い放題」などのトッピングをプロモコ
 
 ## 技術スタック
 
-- **Electron** - デスクトップアプリフレームワーク
-- **React** - UIライブラリ
-- **TypeScript** - 型安全な開発
-- **TailwindCSS** - スタイリング
-- **Vite / electron-vite** - ビルドツール
-- **bun** - パッケージマネージャ
-- **Zod** - バリデーション
-- **Vitest** - テストフレームワーク
-- **Playwright** - E2Eテスト
+具体的な手順・構成・知見は [findings.md](<findings.md#readme-4>) に移動しました。着手前に該当条件を確認してください。
 
 ## 開発者向け情報
 
+具体的な手順・構成・知見は [findings.md](<findings.md#readme-5>) に移動しました。着手前に該当条件を確認してください。
+
 ### 環境構築
+
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 #### 前提条件
 
-- Node.js 22.12以上（CIではNode.js 22を使用）
-- Bun 1.4.0以上（`bun.lock` の形式に対応するため）
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 #### セットアップ
 
-```bash
-# 依存パッケージのインストール
-bun install
-
-# 開発サーバー起動
-bun run dev
-```
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 ### 開発コマンド
 
-```bash
-# 開発サーバー起動（HMR有効）
-bun run dev
-
-# リンター実行
-bun run lint
-
-# リンター自動修正
-bun run lint:fix
-
-# 型チェック
-bun run type-check
-
-# フォーマット
-bun run format
-
-# テスト実行
-bun run test
-
-# テスト（監視モード）
-bun run test:watch
-
-# カバレッジ付きテスト
-bun run test:coverage
-
-# E2Eテスト
-bun run test:e2e
-
-# プロダクションビルド
-bun run build
-
-# Windowsインストーラー作成
-bun run build:win
-```
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 ### 環境変数
 
-現在は必須の環境変数はありません。必要になった場合は `.env.example` を用意し、`dotenv-safe` で検証します。
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 ### ディレクトリ構造
 
-```
-src/
-├── main/              # Electronメインプロセス
-│   ├── services/      # ビジネスロジック
-│   │   ├── code-status.ts      # コードステータス計算
-│   │   ├── coverage.ts         # カバレッジ計算
-│   │   ├── email-parser.ts     # メール本文解析
-│   │   ├── next-candidate.ts   # 次候補コード選定
-│   │   ├── notification-scheduler.ts  # 通知スケジュール
-│   │   └── store.ts            # データ永続化
-│   ├── ipc-handlers.ts         # IPC通信ハンドラ
-│   ├── observability.ts        # ログ・エラー収集
-│   └── index.ts                # エントリポイント
-├── preload/           # preloadスクリプト
-├── renderer/          # Reactアプリ（レンダラープロセス）
-│   └── src/
-│       ├── components/         # UIコンポーネント
-│       │   ├── ui/             # 汎用UIパーツ
-│       │   ├── OverviewTab.tsx # ダッシュボード
-│       │   ├── CodesListTab.tsx # コード一覧
-│       │   ├── RegisterTab.tsx  # 登録
-│       │   ├── EditTab.tsx      # 編集
-│       │   └── NotificationTab.tsx # 通知設定
-│       └── hooks/              # カスタムフック
-└── types/             # 型定義（一元管理）
-    ├── code.ts        # ドメイン型
-    ├── ipc.ts         # IPC通信型
-    └── schemas.ts     # Zodスキーマ
-```
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
 
 ### リリース手順
 
-1. `package.json` のバージョンを更新
-2. `CHANGELOG.md` と `docs/RELEASE_NOTES.md` に変更内容を記載
-3. 変更をコミット・プッシュ
-4. タグを作成してプッシュ: `git tag v1.x.x && git push origin v1.x.x`
-5. GitHub Actions がインストーラーをビルドし、Releaseを自動作成
+本文は [findings.md](<findings.md#readme-5>) を参照してください。
+
 
 ## 運用・デプロイ
 
-- Windows向けの配布物は `bun build:win` で作成します
-- 生成物は `release/`（electron-builderの出力先）に配置されます
-- GitHub Releasesから最新版をダウンロードできます
+具体的な手順・構成・知見は [findings.md](<findings.md#readme-6>) に移動しました。着手前に該当条件を確認してください。
 
 ## トラブルシュート
 
@@ -288,4 +211,4 @@ MIT License
 
 ## 依存更新の自動処理
 
-Dependabot は対象の依存関係を毎週確認します。majorを含む更新は、互換性を確認し、PR のチェック（CI）が成功した後に自動で squash merge されます。CI の失敗ジョブは 1 回だけ再実行します。再失敗時は読み取り権限のジョブで `bun.lock` を再生成し、限定した修正コミットで CI を再実行します。修復できない PR は残します。互換性修正が必要な更新は、手動で修正・検証してから取り込みます。
+具体的な手順・構成・知見は [findings.md](<findings.md#readme-10>) に移動しました。着手前に該当条件を確認してください。

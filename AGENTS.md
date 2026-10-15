@@ -15,29 +15,27 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 
 ## パッケージ管理
 
-- パッケージマネージャは Bun を使用する。
+具体的な手順・構成・知見は [findings.md](<findings.md#agents-2>) に移動しました。着手前に該当条件を確認してください。
 
 ## 依存監査で確定した事項（2026-09-23）
 
-- `bun audit fix` だけでは fast-uri、nanoid、sharp の脆弱版が上流の厳密な依存範囲で残る。`package.json` の既存 `overrides` と `bun.lock` を同時に更新し、`bun audit` と関連テスト・ビルドで確認する。上流が安全版を取り込んだ場合は override の必要性を再評価する。
-- Bun 1.4.0 で再生成した `bun.lock` は lockfile 形式3で、Bun 1.3.8 の CI は読めない。`packageManager` を下げるときは lockfile の形式と CI/Release の固定インストールを同時に確認する。setup-bun v2 は `packageManager` から Bun 版を解決する。
+具体的な手順・構成・知見は [findings.md](<findings.md#agents-3>) に移動しました。着手前に該当条件を確認してください。
 
 ## Dependabot の限定修復（2026-09-23）
 
-- CI 再失敗後の自動修復は `bun.lock` だけをパッチとして適用する。修復後は `workflow_dispatch` で `.github/workflows/ci.yml` を再実行するため、この CI の `contents: read` と checkout の `persist-credentials: false` を維持し、PR コードを実行するジョブへ書き込み権限や秘密情報を渡さない。根拠は `.github/workflows/dependabot-automation.yml` と共通ワークフローの権限分離。
+具体的な手順・構成・知見は [findings.md](<findings.md#agents-4>) に移動しました。着手前に該当条件を確認してください。
 
 ## 系列別の依存修復（2026-10-05）
 
-- 全majorへの一律overrideを避け、親パッケージの要求系列に合う修正版をversion-scoped overrideで選ぶ。lockfileの実効版、固定インストール、全重大度監査と製品チェックを確認する。
-- electron-builder 26.15.3が取り込む旧 @electron/get 3 は got/cacheable-request 経由で未解決の機密キャッシュ問題を持つため、公式5.1.0へ限定移行する。Node.js 22.12以降が必要で、downloadArtifact互換性はWindows梱包でも確認する。http-cache-semantics 4.3.0の監査0件だけでは安全性を判断しない。PoCと実際の経路は `verification.md` を参照。
-- asarの梱包中は文書も含めて入力ファイルを変更しない。ヘッダーへ記録したサイズと実際の書き込みがずれ、JSを読んだ際に別ファイルの本文が返る破損を実測した。起動より先に全outと同梱文書のサイズ・ハッシュ、抽出JSの構文をオフライン検査する。
+具体的な手順・構成・知見は [findings.md](<findings.md#agents-5>) に移動しました。着手前に該当条件を確認してください。
 
 ## 実体を検査する型チェック（2026-10-15）
 
-- ルートtsconfigはfilesが空でreferencesのみのため、tsc --noEmitだけでは製品ソースを検査しない。type-checkはnode/web両プロジェクトを明示指定する。共有型のaliasはTypeScript予約スコープとの衝突を避けて@sharedを使う。
-- preloadのindex.tsと同名のindex.d.tsは同一プロジェクトで読み込まれない場合があるため、Window宣言はapi.d.tsに分離する。E2Eもこの宣言を参照する。
-- TypeScript 7はtypescript-eslint 8.71.2のpeer範囲（6.1未満）外なので6.0系列を使う。更新時に公式npmメタデータを再確認する。Vite 8はelectron-vite 6とReactプラグイン6を組み合わせ、vitest設定はESMの.mtsで保管する。
-- 依存更新の隔離操作確認はbunx playwright test e2e/dependency-update.e2e.ts --reporter=listを使う。userDataを製品import前に一時フォルダへ設定し、--start-in-trayで非表示起動する。実ユーザーデータを使う既存E2Eとは区別する。
+具体的な手順・構成・知見は [findings.md](<findings.md#agents-6>) に移動しました。着手前に該当条件を確認してください。
 
 
-- electron-builderはGitのignoreを配布除外に使わず、COMMON-AGENTS.mdのリンク先やルートのtmp・tsbuildinfoも梱包する。electron-builder.ymlのfiles除外を保ち、asar一覧で開発用データの混入を確認する。
+## findings.md の確認と記録
+
+- [COMMON-AGENTS.md](COMMON-AGENTS.md) を全文読了した後、調査・計画・コマンド実行・編集の前に [findings.md](findings.md) も先頭から末尾まで全文読む。出力省略や要約を読了として扱わない。
+- 構成一覧、環境情報、コマンド、調査結果、過去の事実は `findings.md` に記録する。このファイルには目的、純粋な行動義務と禁止条件を残す。
+- 変更履歴と実測検証を記録し、ユーザーの指示、変更禁止、秘密情報保護、観測可能な完了条件を弱めない。

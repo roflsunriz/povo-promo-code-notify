@@ -46,3 +46,6 @@ COMMON-AGENTS.md
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# エージェントの一時作業メモ
+subagents/
