@@ -12,7 +12,7 @@ import type { JSX } from 'react'
 /**
  * 既定の閾値（コンポーネント外で定義して参照安定性を確保）
  */
-const DEFAULT_EXPIRY_THRESHOLDS = [1440, 180, 60, 30] as const // 24h, 3h, 1h, 30m
+const DEFAULT_EXPIRY_THRESHOLDS: readonly number[] = [1440, 180, 60, 30] // 24h, 3h, 1h, 30m
 
 /**
  * 分を人間が読みやすい形式に変換

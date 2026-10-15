@@ -4,10 +4,10 @@
  */
 
 import { is } from '@electron-toolkit/utils'
-import { IPC_CHANNELS } from '@types/ipc'
+import { IPC_CHANNELS } from '@shared/ipc'
 import { autoUpdater } from 'electron-updater'
 import { createTraceId, logEvent } from './observability'
-import type { CheckForUpdatesResponse, DownloadProgressInfo, UpdaterEvent } from '@types/ipc'
+import type { CheckForUpdatesResponse, DownloadProgressInfo, UpdaterEvent } from '@shared/ipc'
 import type { BrowserWindow } from 'electron'
 
 let targetWindow: BrowserWindow | null = null
@@ -48,7 +48,11 @@ export function initUpdater(win: BrowserWindow): void {
         : Array.isArray(info.releaseNotes)
           ? info.releaseNotes.map((n) => n.note).join('\n')
           : undefined
-    sendUpdaterEvent({ status: 'available', version: info.version, releaseNotes: notes })
+    sendUpdaterEvent({
+      status: 'available',
+      version: info.version,
+      ...(notes !== undefined ? { releaseNotes: notes } : {})
+    })
   })
 
   autoUpdater.on('update-not-available', () => {

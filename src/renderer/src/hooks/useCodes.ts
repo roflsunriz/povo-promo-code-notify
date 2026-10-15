@@ -71,7 +71,10 @@ export function useCodes(
     try {
       setIsLoading(true)
       setError(null)
-      const response = await window.api.getFilteredCodes({ filter, sort })
+      const response = await window.api.getFilteredCodes({
+        ...(filter !== undefined ? { filter } : {}),
+        ...(sort !== undefined ? { sort } : {})
+      })
       setCodes(response.codes)
     } catch (e) {
       setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
@@ -106,7 +109,10 @@ export function useCodeActions(): {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await window.api.startCode({ id, startedAt })
+      const response = await window.api.startCode({
+        id,
+        ...(startedAt !== undefined ? { startedAt } : {})
+      })
       return response.code !== null
     } catch (e) {
       setError(e instanceof Error ? e.message : '不明なエラーが発生しました')
@@ -323,7 +329,7 @@ export function useOrderUpdate(): {
  * 前回の値を保持するフック
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>()
+  const ref = useRef<T | undefined>(undefined)
   useEffect(() => {
     ref.current = value
   }, [value])

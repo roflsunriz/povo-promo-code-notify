@@ -2,9 +2,9 @@
  * 通知スケジューラーのテスト
  */
 
-import { VALIDITY_DURATIONS } from '@types/code'
+import { VALIDITY_DURATIONS } from '@shared/code'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { PromoCode, NotificationSettings } from '@types/code'
+import type { PromoCode, NotificationSettings } from '@shared/code'
 
 // Electronモジュールをモック
 vi.mock('electron', () => ({

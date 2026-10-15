@@ -12,7 +12,7 @@
  * 消費済みまたは使用中として扱う
  */
 
-import type { CodeStatus, PromoCode, PromoCodeWithStatus } from '@types/code'
+import type { CodeStatus, PromoCode, PromoCodeWithStatus } from '@shared/code'
 
 /**
  * コードの状態を判定する

@@ -12,7 +12,7 @@
  * - テキストを上から下へ走査し、見出しと値の近接関係により推定する
  */
 
-import type { ParsedCodeInfo } from '@types/ipc'
+import type { ParsedCodeInfo } from '@shared/ipc'
 
 /**
  * 有効期間のパターン

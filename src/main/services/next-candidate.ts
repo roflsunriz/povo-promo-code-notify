@@ -11,7 +11,7 @@
  */
 
 import { getUnusedCodes } from './code-status'
-import type { NextCandidateResult, PromoCode, PromoCodeWithStatus } from '@types/code'
+import type { NextCandidateResult, PromoCode, PromoCodeWithStatus } from '@shared/code'
 
 /**
  * 次に開始すべきコード候補を取得する

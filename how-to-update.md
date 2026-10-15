@@ -2,7 +2,7 @@
 
 ## Dependabot PR の更新
 
-前提は `.github/dependabot.yml` と PR 用 CI（CI）です。更新 PR の head SHA と `gh pr checks <PR番号>` の結果を確認してください。patch／minor は全チェック成功後に自動取り込みされます。初回 CI 失敗は failed jobs のみを 1 回再実行し、再失敗時は `bun.lock` の再生成を試み、修復後の CI を再実行します。変更がない場合や再度失敗した場合は PR を残します。
+前提は `.github/dependabot.yml` と PR 用 CI（CI）です。更新 PR の head SHA と `gh pr checks <PR番号>` の結果を確認してください。majorを含め、互換性を確認して全チェック成功後に自動取り込みされます。初回 CI 失敗は failed jobs のみを 1 回再実行し、再失敗時は `bun.lock` の再生成を試み、修復後の CI を再実行します。変更がない場合や再度失敗した場合は PR を残します。
 
 設定を変えたときは `actionlint .github/workflows/dependabot-automation.yml` と実際の PR の Actions 結果を確認します。問題があれば呼び出し先の共通 workflow SHA を直前の検証済み値へ戻すコミットを push します。取り込まれた依存更新に問題があれば通常の revert コミットで復旧します。
 
@@ -15,3 +15,7 @@ CI 完了より Dependabot の分類が遅れる場合は、`callback_workflow_f
 ## 系列別overrideの保守
 
 `package.json` のversion-scoped overrideは親依存のmajor範囲を確認して更新し、同じBunでlockfile生成・固定インストール・全重大度監査・既存品質チェックを実行してください。上流が修正版を取り込んだ際は不要なoverrideを外せるか確認します。問題があれば修復コミットを通常のrevertで戻し、package.jsonとlockfileを同じ版に保ちます。今回の既知制約と配布検証は `verification.md` を参照してください。
+
+## Vite 8以降の更新
+
+Viteはelectron-viteとReactプラグインのpeerDependenciesを同時に確認して更新します。Vite 8への移行ではelectron-vite 6とReactプラグイン6を使用します。TypeScriptはtypescript-eslintの対応範囲内で選びます。更新後は固定インストール、全重大度監査、lint、書式、型、単体テスト、ビルド、隔離データでのElectron操作を確認します。復旧は関連する依存・設定・lockfileをまとめてrevertします。

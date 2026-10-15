@@ -11,10 +11,9 @@
     "useUnknownInCatchVariables": true,
     "noPropertyAccessFromIndexSignature": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/renderer/src/*"],
-      "@types/*": ["./src/types/*"]
+      "@shared/*": ["./src/types/*"]
     }
   }
 }

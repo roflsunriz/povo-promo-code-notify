@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { getNextCandidate, getUnusedCodesSorted, getNextCandidateSummary } from './next-candidate'
-import type { PromoCode } from '@types/code'
+import type { PromoCode } from '@shared/code'
 
 /**
  * テスト用のプロモコードを作成するヘルパー

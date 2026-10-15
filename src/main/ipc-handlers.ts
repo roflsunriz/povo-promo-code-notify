@@ -5,7 +5,7 @@
 
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { IPC_CHANNELS } from '@types/ipc'
+import { IPC_CHANNELS } from '@shared/ipc'
 import {
   CancelCodeRequestSchema,
   CreateCodeRequestSchema,
@@ -19,7 +19,8 @@ import {
   UpdateCodeRequestSchema,
   UpdateNotificationSettingsRequestSchema,
   UpdateOrdersRequestSchema
-} from '@types/ipc-schemas'
+} from '@shared/ipc-schemas'
+import { omitUndefined } from '@shared/schemas'
 import { app, dialog, ipcMain, Notification } from 'electron'
 import { withTrace } from './observability'
 import {
@@ -47,7 +48,7 @@ import {
   updateNotificationSchedulerSettings
 } from './services'
 import { checkForUpdates, downloadUpdate, quitAndInstall } from './updater'
-import type { CodeStatus, PromoCodeWithStatus } from '@types/code'
+import type { CodeStatus, PromoCodeWithStatus } from '@shared/code'
 import type {
   CancelCodeRequest,
   CancelCodeResponse,
@@ -87,7 +88,7 @@ import type {
   UpdateNotificationSettingsResponse,
   UpdateOrdersRequest,
   UpdateOrdersResponse
-} from '@types/ipc'
+} from '@shared/ipc'
 import type { ZodType } from 'zod'
 
 function parseRequest<T>(schema: ZodType<T>, payload: unknown): T {
@@ -165,7 +166,7 @@ function registerCreateCode(): void {
   ipcMain.handle(IPC_CHANNELS.CREATE_CODE, (_event, request: CreateCodeRequest) =>
     withTrace('ipc:createCode', (): CreateCodeResponse => {
       const parsed = parseRequest(CreateCodeRequestSchema, request)
-      const code = createCode(parsed.input)
+      const code = createCode(omitUndefined(parsed.input))
       // 通知スケジューラーを更新
       updateNotificationSchedulerCodes(getAllCodes())
       return { code }
@@ -177,7 +178,7 @@ function registerCreateCodes(): void {
   ipcMain.handle(IPC_CHANNELS.CREATE_CODES, (_event, request: CreateCodesRequest) =>
     withTrace('ipc:createCodes', (): CreateCodesResponse => {
       const parsed = parseRequest(CreateCodesRequestSchema, request)
-      const codes = createCodes(parsed.inputs)
+      const codes = createCodes(parsed.inputs.map(omitUndefined))
       // 通知スケジューラーを更新
       updateNotificationSchedulerCodes(getAllCodes())
       return { codes }
@@ -201,7 +202,7 @@ function registerUpdateCode(): void {
   ipcMain.handle(IPC_CHANNELS.UPDATE_CODE, (_event, request: UpdateCodeRequest) =>
     withTrace('ipc:updateCode', (): UpdateCodeResponse => {
       const parsed = parseRequest(UpdateCodeRequestSchema, request)
-      const code = updateCode(parsed.id, parsed.input)
+      const code = updateCode(parsed.id, omitUndefined(parsed.input))
       // 通知スケジューラーを更新
       updateNotificationSchedulerCodes(getAllCodes())
       return { code: code ?? null }
@@ -318,7 +319,7 @@ function registerGetFilteredCodes(): void {
 
       // フィルター適用
       if (parsed.filter) {
-        codesWithStatus = applyFilter(codesWithStatus, parsed.filter, now)
+        codesWithStatus = applyFilter(codesWithStatus, omitUndefined(parsed.filter), now)
       }
 
       // ソート適用
@@ -516,7 +517,7 @@ function registerImportFromFile(): void {
       if (!importResult.success) {
         return {
           success: false,
-          error: importResult.error,
+          error: importResult.error ?? 'インポートに失敗しました',
           backupPath
         }
       }
@@ -587,8 +588,7 @@ function registerSendTestNotification(): void {
 
       const notification = new Notification({
         title: 'povo プロモコード管理',
-        body: 'テスト通知です。通知が正常に機能しています。',
-        icon: undefined // アイコンは後で追加可能
+        body: 'テスト通知です。通知が正常に機能しています。'
       })
 
       notification.show()

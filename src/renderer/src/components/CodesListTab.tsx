@@ -131,7 +131,7 @@ export function CodesListTab(): JSX.Element {
       return undefined
     }
     return {
-      statuses: selectedStatuses.length > 0 ? selectedStatuses : undefined,
+      ...(selectedStatuses.length > 0 ? { statuses: selectedStatuses } : {}),
       inputDeadlineWithinDays: deadlineWithinDays
     }
   }, [selectedStatuses, deadlineWithinDays])

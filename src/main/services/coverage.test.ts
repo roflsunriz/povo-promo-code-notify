@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { calculateCoverage, formatRemainingTime, formatCoverageEndAt } from './coverage'
-import type { PromoCode } from '@types/code'
+import type { PromoCode } from '@shared/code'
 
 /**
  * テスト用のプロモコードを作成するヘルパー

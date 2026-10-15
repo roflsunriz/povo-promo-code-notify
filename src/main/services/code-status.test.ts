@@ -16,7 +16,7 @@ import {
   isCodeUsable,
   isCodeFinished
 } from './code-status'
-import type { PromoCode } from '@types/code'
+import type { PromoCode } from '@shared/code'
 
 /**
  * テスト用のプロモコードを作成するヘルパー

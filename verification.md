@@ -2,7 +2,7 @@
 
 ## Dependabot 自動処理（2026-09-23）
 
-`.github/workflows/dependabot-automation.yml` を actionlint で検査し、PR 用 workflow 名（CI）と一致することを確認する。Dependabot の patch／minor かつ全 PR チェック成功の場合だけ取り込み、major・古い SHA・限定修復後も失敗した PR は残す。
+`.github/workflows/dependabot-automation.yml` を actionlint で検査し、PR 用 workflow 名（CI）と一致することを確認する。Dependabot の majorを含め全 PR チェック成功の場合だけ取り込み、古い SHA・限定修復後も失敗した PR は残す。
 
 実際の Dependabot PR がまだない場合、動作経路は未検証として扱う。実 PR 発生後に自動化ジョブ、CI の再試行、マージ結果を確認する。
 
@@ -31,3 +31,20 @@
 - 固定インストール、全重大度の `bun audit`（0件）、lint、型、既存 192 テスト、main/preload/rendererビルドを確認。配布パッケージを作成し、非梱包ビルドを専用userDataで非表示起動して確認した。現在の配布物は起動前のオフライン照合を行う。公開、実ユーザーへのインストール、自動更新の実適用は行わない。
 - Electron 41.10.7 で6タブ切り替えとプロモコードの登録・再読込・削除IPCを確認し、rendererのコンソールエラー0件。
 - 非梱包ビルドの操作確認後、隔離フォルダでasarを作る間に文書を更新し、一時配布物のオフセットを破損させた。梱包済みJSを読んだ際に更新手順の本文が返り、検証用Electronのエラーダイアログが表示された。検証プロセスだけを終了し、元checkout・実ユーザーデータ・GitHubの配布物は変更していない。GUI再実行を停止し、入力を固定して再生成したasarの全out・同梱文書のサイズとSHA-256、抽出JSの構文をオフラインで照合する。
+
+## 2026-10-15: Open PR #7〜#11の統合と互換性修正
+
+- 5件の失敗原因はsharp 0.35.4とsource-map-js 1.2.1の高重大度脆弱性。sharp 0.35.5とsource-map-js 1.2.2へ更新し、全重大度監査0件を確認した。source-map-jsは1系列へ限定したoverrideを使う。
+- Vite 8.3.4、electron-vite 6、Reactプラグイン6、Electron 44.7.2、electron-store 12、Vitest 5へ移行した。TypeScript 7はparserのpeer範囲外のため6.0.3を選んだ。
+- 従来のtype-checkは参照先ソースを検査していなかった。node/webを明示した型チェックに修正し、共有型alias、preload宣言、optional値、React refを修正した。undefinedを除く回帰テストを追加した。
+- 品質検証はbun install --frozen-lockfile、bun audit、bun run lint、bun run format:check、bun run type-check、bun run test、bun run buildを使う。製品操作はbunx playwright test e2e/dependency-update.e2e.ts --reporter=listで、隔離した一時userDataと非表示ウィンドウに限定する。
+- Vite 8の移行根拠: https://vite.dev/guide/migration 。配布パッケージは--publish neverで作成し、実ユーザーへのインストール・自動更新適用・Release公開は行わない。
+
+
+### 今回の実行結果
+
+- 固定インストール、全重大度監査（0件）、lint、書式、node/webの実体型検査、単体194件、3プロセスのビルドが成功した。
+- 隔離E2Eが成功した。1280x720と800x600で6タブ切替、横はみ出しなし、登録・編集（undefined保持）・開始・取消・削除、設定保存、再読込と再起動後の永続化を確認した。rendererエラー0件。既存の実ユーザーデータを利用するE2E全体は実行せず、専用の隔離テストを使った。
+- Windows NSISインストーラーとblockmapの生成が成功した。既存ミラーの取得は進行が止まったため検証用プロセスを停止し、postinstallで取得済みのElectron 44.7.2を--config.electronDist=node_modules/electron/distで指定した。標準ミラー経由の再取得は未検証として残る。
+- 梱包内容の検査でGit管理外のCOMMON-AGENTS.md、検証用tmp、TypeScriptキャッシュが混入する既存設定を検出し、開発専用ディレクトリとともにfilesの除外対象へ追加した。
+- 最終asarの全outと同梱文書15ファイルについて、元ファイルとのサイズ・SHA-256一致を確認した。抽出JS 3ファイルの構文検査が成功し、内部指針・開発用ディレクトリ・ルートのtmpとtsbuildinfoが含まれないことを確認した。

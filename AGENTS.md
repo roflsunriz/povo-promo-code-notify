@@ -31,3 +31,13 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 - 全majorへの一律overrideを避け、親パッケージの要求系列に合う修正版をversion-scoped overrideで選ぶ。lockfileの実効版、固定インストール、全重大度監査と製品チェックを確認する。
 - electron-builder 26.15.3が取り込む旧 @electron/get 3 は got/cacheable-request 経由で未解決の機密キャッシュ問題を持つため、公式5.1.0へ限定移行する。Node.js 22.12以降が必要で、downloadArtifact互換性はWindows梱包でも確認する。http-cache-semantics 4.3.0の監査0件だけでは安全性を判断しない。PoCと実際の経路は `verification.md` を参照。
 - asarの梱包中は文書も含めて入力ファイルを変更しない。ヘッダーへ記録したサイズと実際の書き込みがずれ、JSを読んだ際に別ファイルの本文が返る破損を実測した。起動より先に全outと同梱文書のサイズ・ハッシュ、抽出JSの構文をオフライン検査する。
+
+## 実体を検査する型チェック（2026-10-15）
+
+- ルートtsconfigはfilesが空でreferencesのみのため、tsc --noEmitだけでは製品ソースを検査しない。type-checkはnode/web両プロジェクトを明示指定する。共有型のaliasはTypeScript予約スコープとの衝突を避けて@sharedを使う。
+- preloadのindex.tsと同名のindex.d.tsは同一プロジェクトで読み込まれない場合があるため、Window宣言はapi.d.tsに分離する。E2Eもこの宣言を参照する。
+- TypeScript 7はtypescript-eslint 8.71.2のpeer範囲（6.1未満）外なので6.0系列を使う。更新時に公式npmメタデータを再確認する。Vite 8はelectron-vite 6とReactプラグイン6を組み合わせ、vitest設定はESMの.mtsで保管する。
+- 依存更新の隔離操作確認はbunx playwright test e2e/dependency-update.e2e.ts --reporter=listを使う。userDataを製品import前に一時フォルダへ設定し、--start-in-trayで非表示起動する。実ユーザーデータを使う既存E2Eとは区別する。
+
+
+- electron-builderはGitのignoreを配布除外に使わず、COMMON-AGENTS.mdのリンク先やルートのtmp・tsbuildinfoも梱包する。electron-builder.ymlのfiles除外を保ち、asar一覧で開発用データの混入を確認する。

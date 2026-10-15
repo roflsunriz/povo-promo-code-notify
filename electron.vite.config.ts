@@ -1,13 +1,13 @@
 import { resolve } from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['electron-store'] })],
     build: {
-      rollupOptions: {
+      externalizeDeps: { exclude: ['electron-store'] },
+      rolldownOptions: {
         input: {
           index: resolve(__dirname, 'src/main/index.ts')
         }
@@ -15,14 +15,13 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        '@types': resolve(__dirname, 'src/types')
+        '@shared': resolve(__dirname, 'src/types')
       }
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         input: {
           index: resolve(__dirname, 'src/preload/index.ts')
         }
@@ -30,14 +29,14 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        '@types': resolve(__dirname, 'src/types')
+        '@shared': resolve(__dirname, 'src/types')
       }
     }
   },
   renderer: {
     root: resolve(__dirname, 'src/renderer'),
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         input: {
           index: resolve(__dirname, 'src/renderer/index.html')
         }
@@ -47,7 +46,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src/renderer/src'),
-        '@types': resolve(__dirname, 'src/types')
+        '@shared': resolve(__dirname, 'src/types')
       }
     }
   }

@@ -11,7 +11,7 @@
  */
 
 import { getActiveCodes } from './code-status'
-import type { CoverageResult, PromoCode } from '@types/code'
+import type { CoverageResult, PromoCode } from '@shared/code'
 
 /**
  * 時間区間を表す型

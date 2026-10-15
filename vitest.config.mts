@@ -40,7 +40,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@types': resolve(__dirname, 'src/types')
+      '@shared': resolve(__dirname, 'src/types')
     }
   }
 })

@@ -13,8 +13,26 @@ import {
   validateCreatePromoCodeInput,
   validateUpdatePromoCodeInput,
   validateStoreData,
-  validateExportData
+  validateExportData,
+  omitUndefined
 } from './schemas'
+
+describe('omitUndefined', () => {
+  it('部分更新でundefinedを除き、null・0・false・空文字を保持する', () => {
+    const input = { order: undefined, startedAt: null, useCount: 0, enabled: false, code: '' }
+    const output = omitUndefined(input)
+    expect(output).toEqual({ startedAt: null, useCount: 0, enabled: false, code: '' })
+    expect(input).toHaveProperty('order')
+  })
+
+  it('省略した項目で既存データを上書きしない', () => {
+    const input = UpdatePromoCodeInputSchema.parse({ order: undefined, code: 'NEW123' })
+    expect({ order: 3, code: 'OLD123', ...omitUndefined(input) }).toEqual({
+      order: 3,
+      code: 'NEW123'
+    })
+  })
+})
 
 describe('PromoCodeSchema', () => {
   const validPromoCode = {

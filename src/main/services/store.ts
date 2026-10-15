@@ -8,8 +8,8 @@
  * - インポート前の自動バックアップ
  */
 
-import { INITIAL_STORE_DATA } from '@types/code'
-import { StoreDataSchema } from '@types/schemas'
+import { INITIAL_STORE_DATA } from '@shared/code'
+import { StoreDataSchema } from '@shared/schemas'
 import Store from 'electron-store'
 import type {
   CreatePromoCodeInput,
@@ -17,7 +17,7 @@ import type {
   PromoCode,
   StoreData,
   UpdatePromoCodeInput
-} from '@types/code'
+} from '@shared/code'
 
 /**
  * ストアのスキーマ定義
@@ -142,20 +142,22 @@ export function getAllCodes(): PromoCode[] {
   // マイグレーション: 不足フィールドにデフォルト値を追加
   let needsMigration = false
   const migratedCodes: PromoCode[] = codes.map((code) => {
-    let migrated = { ...code } as Record<string, unknown>
+    const migrated: PromoCode = {
+      ...code,
+      validityEndAt: code.validityEndAt ?? null,
+      maxUseCount: code.maxUseCount ?? 1,
+      useCount: code.useCount ?? 0
+    }
     if (!('validityEndAt' in code) || code.validityEndAt === undefined) {
       needsMigration = true
-      migrated = { ...migrated, validityEndAt: null }
     }
     if (!('maxUseCount' in code) || code.maxUseCount === undefined) {
       needsMigration = true
-      migrated = { ...migrated, maxUseCount: 1 }
     }
     if (!('useCount' in code) || code.useCount === undefined) {
       needsMigration = true
-      migrated = { ...migrated, useCount: 0 }
     }
-    return migrated as PromoCode
+    return migrated
   })
 
   // マイグレーションが必要だった場合は保存

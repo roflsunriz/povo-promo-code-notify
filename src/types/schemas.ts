@@ -5,6 +5,17 @@
 
 import { z } from 'zod'
 
+/** 省略可能な入力のundefinedを除き、部分更新で既存値を上書きしない。 */
+export function omitUndefined<T extends object>(
+  input: T
+): {
+  [K in keyof T]: Exclude<T[K], undefined>
+} {
+  return Object.fromEntries(Object.entries(input).filter(([, value]) => value !== undefined)) as {
+    [K in keyof T]: Exclude<T[K], undefined>
+  }
+}
+
 /**
  * ISO 8601形式の日時文字列バリデーション
  */

@@ -25,7 +25,7 @@ export default [
   },
   // Base config for all files
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
+    files: ['**/*.{js,mjs,cjs,ts,mts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module'
@@ -208,7 +208,7 @@ export default [
   },
   // Config files (relaxed rules)
   {
-    files: ['*.config.{js,mjs,ts}', 'electron.vite.config.ts'],
+    files: ['*.config.{js,mjs,ts,mts}', 'electron.vite.config.ts'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {

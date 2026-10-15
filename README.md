@@ -140,7 +140,7 @@ povo 2.0では「データ使い放題」などのトッピングをプロモコ
 
 #### 前提条件
 
-- Node.js 22以上（LTS）
+- Node.js 22.12以上（CIではNode.js 22を使用）
 - Bun 1.4.0以上（`bun.lock` の形式に対応するため）
 
 #### セットアップ
@@ -150,44 +150,44 @@ povo 2.0では「データ使い放題」などのトッピングをプロモコ
 bun install
 
 # 開発サーバー起動
-bun dev
+bun run dev
 ```
 
 ### 開発コマンド
 
 ```bash
 # 開発サーバー起動（HMR有効）
-bun dev
+bun run dev
 
 # リンター実行
-bun lint
+bun run lint
 
 # リンター自動修正
-bun lint:fix
+bun run lint:fix
 
 # 型チェック
-bun type-check
+bun run type-check
 
 # フォーマット
-bun format
+bun run format
 
 # テスト実行
-bun test
+bun run test
 
 # テスト（監視モード）
-bun test:watch
+bun run test:watch
 
 # カバレッジ付きテスト
-bun test:coverage
+bun run test:coverage
 
 # E2Eテスト
-bun test:e2e
+bun run test:e2e
 
 # プロダクションビルド
-bun build
+bun run build
 
 # Windowsインストーラー作成
-bun build:win
+bun run build:win
 ```
 
 ### 環境変数
@@ -229,7 +229,7 @@ src/
 ### リリース手順
 
 1. `package.json` のバージョンを更新
-2. `docs/RELEASE_NOTES.md` にリリースノートを追記
+2. `CHANGELOG.md` と `docs/RELEASE_NOTES.md` に変更内容を記載
 3. 変更をコミット・プッシュ
 4. タグを作成してプッシュ: `git tag v1.x.x && git push origin v1.x.x`
 5. GitHub Actions がインストーラーをビルドし、Releaseを自動作成
@@ -288,4 +288,4 @@ MIT License
 
 ## 依存更新の自動処理
 
-Dependabot は対象の依存関係を毎週確認します。patch／minor 更新は PR のチェック（CI）が成功した後に自動で squash merge されます。CI の失敗ジョブは 1 回だけ再実行します。再失敗時は読み取り権限のジョブで `bun.lock` を再生成し、限定した修正コミットで CI を再実行します。修復できない PR は残します。major 更新は手動で確認します。
+Dependabot は対象の依存関係を毎週確認します。majorを含む更新は、互換性を確認し、PR のチェック（CI）が成功した後に自動で squash merge されます。CI の失敗ジョブは 1 回だけ再実行します。再失敗時は読み取り権限のジョブで `bun.lock` を再生成し、限定した修正コミットで CI を再実行します。修復できない PR は残します。互換性修正が必要な更新は、手動で修正・検証してから取り込みます。

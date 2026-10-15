@@ -10,7 +10,7 @@
 
 import { Notification } from 'electron'
 import { determineCodeStatus } from './code-status'
-import type { NotificationSettings, PromoCode } from '@types/code'
+import type { NotificationSettings, PromoCode } from '@shared/code'
 
 /**
  * スケジュールされた通知の情報
