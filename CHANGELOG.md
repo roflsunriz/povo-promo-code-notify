@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 同じ参照の古いCIを取り消し、Bun依存キャッシュを再利用してWindows検証の待ち時間を短縮した。
+
 ### Security
 
 - 依存更新PRのCIを妨げていたsharpとsource-map-jsの高重大度脆弱性を修正した。
