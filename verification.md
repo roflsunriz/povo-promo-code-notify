@@ -61,3 +61,8 @@
 - Windows NSISインストーラーとblockmapの生成が成功した。既存ミラーの取得は進行が止まったため検証用プロセスを停止し、postinstallで取得済みのElectron 44.7.2を--config.electronDist=node_modules/electron/distで指定した。標準ミラー経由の再取得は未検証として残る。
 - 梱包内容の検査でGit管理外のCOMMON-AGENTS.md、検証用tmp、TypeScriptキャッシュが混入する既存設定を検出し、開発専用ディレクトリとともにfilesの除外対象へ追加した。
 - 最終asarの全outと同梱文書15ファイルについて、元ファイルとのサイズ・SHA-256一致を確認した。抽出JS 3ファイルの構文検査が成功し、内部指針・開発用ディレクトリ・ルートのtmpとtsbuildinfoが含まれないことを確認した。
+
+## 2026-10-20: Dependabot 月末一括処理
+
+- `.github/dependabot.yml` は毎月28日00:00、`.github/workflows/dependabot-automation.yml` は同日18:00（いずれも `Asia/Tokyo`）に設定した。呼び出し先は検証済み共通 workflow の固定 SHA とし、現在の head SHA、Dependabot の資格状態、全 PR チェック成功を merge 前に再確認する。
+- YAML 構文、変更差分、空白エラーをローカルで検査した。実際の月末 schedule と Dependabot PR の merge 経路は、次回の毎月28日実行で確認する。
