@@ -15,23 +15,23 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 
 ## パッケージ管理
 
-具体的な手順・構成・知見は [findings.md](<findings.md#agents-2>) に移動しました。着手前に該当条件を確認してください。
+具体的な手順・構成・知見は [findings.md](findings.md) に集約しています。
 
 ## 依存監査で確定した事項（2026-09-23）
 
-具体的な手順・構成・知見は [findings.md](<findings.md#agents-3>) に移動しました。着手前に該当条件を確認してください。
+具体的な手順・構成・知見は [findings.md](findings.md) に集約しています。
 
 ## Dependabot の限定修復（2026-09-23）
 
-具体的な手順・構成・知見は [findings.md](<findings.md#agents-4>) に移動しました。着手前に該当条件を確認してください。
+具体的な手順・構成・知見は [findings.md](findings.md) に集約しています。
 
 ## 系列別の依存修復（2026-10-05）
 
-具体的な手順・構成・知見は [findings.md](<findings.md#agents-5>) に移動しました。着手前に該当条件を確認してください。
+具体的な手順・構成・知見は [findings.md](findings.md) に集約しています。
 
 ## 実体を検査する型チェック（2026-10-15）
 
-具体的な手順・構成・知見は [findings.md](<findings.md#agents-6>) に移動しました。着手前に該当条件を確認してください。
+具体的な手順・構成・知見は [findings.md](findings.md) に集約しています。
 
 
 ## findings.md の確認と記録
