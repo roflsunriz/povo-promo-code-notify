@@ -10,6 +10,9 @@
 
 - GitHub Actions の月間利用時間を抑えるため、Dependabot version update と自動マージを毎週・即時処理から毎月28日（Asia/Tokyo）の月末一括処理へ変更した。
 - 同じ参照の古いCIを取り消し、Bun依存キャッシュを再利用してWindows検証の待ち時間を短縮した。
+- TypeScriptの静的解析でpeer依存を一致させるため、eslint-pluginとparserをともに8.72.1へ更新した。
+- ChromiumとNode.jsの更新を取り込むため、Electronを45.1.0へ更新した。
+- 自動更新機能の修正を取り込むため、electron-updaterを6.8.11へ更新した。
 
 ### Security
 

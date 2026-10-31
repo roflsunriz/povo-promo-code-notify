@@ -1,5 +1,11 @@
 # 検証手順
 
+## 2026-10-31: Dependabot PR #17・#19
+
+- @typescript-eslintのeslint-pluginとparserを8.72.1に揃え、Electron 45.1.0とelectron-updater 6.8.11を含む統合状態で固定インストール、全重大度監査578パッケージ0件、lint、書式、node/web型、199テスト、ビルドを確認した。
+- Electron 45.1.0で専用userData・非表示ウィンドウの依存更新E2Eを実行し、6タブと登録・編集・開始・取消・削除、設定保存、再起動後の復元が成功した。
+- Windows NSISインストーラーを公開せずに生成し、asar全ファイルのサイズとSHA-256、出力JavaScriptの構文、除外対象、更新メタデータを照合した。実ユーザーへのインストール・公開・自動更新適用は行っていない。
+
 ## 2026-10-31: Dependabot PR #13
 
 - electron-builder 26.18.0と内部ライブラリの実効版を揃え、Electron 44.10.0、fast-uri、undici、minimatchの修正版を取り込んだ。Bun 1.4.0で固定インストール、全重大度監査578パッケージ0件、lint、型、199テスト、ビルドが成功した。
