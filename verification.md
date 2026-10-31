@@ -1,5 +1,9 @@
 # 検証手順
 
+## 2026-10-31: Dependabot PR #14
+
+- Vitestと `@vitest/coverage-v8` を5.0.5に揃え、Bun 1.4.0で固定インストール、全重大度監査578パッケージ0件、lint、書式、型、カバレッジ付き199テストとビルドの成功を確認した。
+
 ## 2026-10-31: Dependabot PR #17・#19
 
 - @typescript-eslintのeslint-pluginとparserを8.72.1に揃え、Electron 45.1.0とelectron-updater 6.8.11を含む統合状態で固定インストール、全重大度監査578パッケージ0件、lint、書式、node/web型、199テスト、ビルドを確認した。
