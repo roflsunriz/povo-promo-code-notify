@@ -14,6 +14,9 @@
 *.yaml text eol=lf
 *.yml text eol=lf
 
+# A single space represents an empty context line in a unified patch.
+patches/*.patch text eol=lf whitespace=-blank-at-eol
+
 # Binary files
 *.png binary
 *.jpg binary

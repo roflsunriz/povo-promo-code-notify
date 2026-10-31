@@ -13,9 +13,10 @@ directories:
   output: release
 
 files:
-  - '!{.agents,.cache,.github,e2e,coverage,dist,logs,playwright-report,release,test-results}/**'
+  - '!{.agents,.cache,.github,e2e,coverage,dist,logs,patches,playwright-report,release,test-results}/**'
   - '!{AGENTS.md,COMMON-AGENTS.md,*.tmp,*.tsbuildinfo,vitest.config.*,playwright.config.*}'
   - '!**/.vscode/*'
+  - '!**/*_vite_proxy.tmp.*'
   - '!src/*'
   - '!electron.vite.config.*'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc,dev-app-update.yml,CHANGELOG.md,README.md}'
